@@ -1,0 +1,11 @@
+# Forex Trading Journal - DTOs
+
+This directory contains Data Transfer Objects.
+
+## Purpose
+DTOs are simple objects that carry data between processes and layers.
+
+## Examples
+- TradeData DTO
+- AnalyticsData DTO
+- ImportData DTO

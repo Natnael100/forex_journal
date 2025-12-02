@@ -1,0 +1,12 @@
+# Forex Trading Journal - Enums
+
+This directory contains enumeration classes.
+
+## Purpose
+Enums define constant values used throughout the application.
+
+## Examples
+- TradeDirection (Buy/Sell)
+- TradeOutcome (Win/Loss/Breakeven)
+- MarketSession (London/NewYork/Asia/Sydney)
+- UserRole (Admin/Trader/Analyst)

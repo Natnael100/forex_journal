@@ -1,0 +1,11 @@
+# Forex Trading Journal - Traits
+
+This directory contains reusable trait classes.
+
+## Purpose
+Traits provide reusable methods that can be included in multiple classes.
+
+## Examples
+- Auditable trait for activity logging
+- Filterable trait for query filtering
+- HasStatistics trait for performance metrics

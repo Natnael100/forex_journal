@@ -1,0 +1,12 @@
+# Forex Trading Journal - Service Layer
+
+This directory contains business logic services for the application.
+
+## Purpose
+Services encapsulate complex business logic and coordinate between controllers, models, and repositories.
+
+## Examples
+- Trade logging service
+- Analytics calculation service
+- Import/export service
+- Feedback management service

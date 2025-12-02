@@ -1,0 +1,11 @@
+# Forex Trading Journal - Repositories
+
+This directory contains repository classes for data access.
+
+## Purpose
+Repositories abstract database operations and provide a clean API for data access.
+
+## Examples
+- TradeRepository
+- UserRepository
+- FeedbackRepository
