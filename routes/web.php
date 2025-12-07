@@ -53,6 +53,10 @@ Route::middleware('auth')->group(function () {
         
         // Trade Management
         Route::resource('trades', \App\Http\Controllers\Trader\TradeController::class);
+        
+        // Analytics
+        Route::get('/analytics', [\App\Http\Controllers\Trader\AnalyticsController::class, 'index'])->name('analytics.index');
+        Route::get('/analytics/review', [\App\Http\Controllers\Trader\AnalyticsController::class, 'review'])->name('analytics.review');
     });
 
     // Analyst Routes
