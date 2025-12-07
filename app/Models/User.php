@@ -47,10 +47,35 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the trades for the user
+     * Relationships
      */
     public function trades()
     {
         return $this->hasMany(\App\Models\Trade::class);
+    }
+
+    public function feedbackGiven()
+    {
+        return $this->hasMany(\App\Models\Feedback::class, 'analyst_id');
+    }
+
+    public function feedbackReceived()
+    {
+        return $this->hasMany(\App\Models\Feedback::class, 'trader_id');
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(\App\Models\Notification::class);
+    }
+
+    public function analystAssignments()
+    {
+        return $this->hasMany(\App\Models\AnalystAssignment::class, 'trader_id');
+    }
+
+    public function tradersAssigned()
+    {
+        return $this->hasMany(\App\Models\AnalystAssignment::class, 'analyst_id');
     }
 }

@@ -38,6 +38,8 @@ class RegisterController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'email_verified_at' => now(), // Auto-verify email
+            'verification_status' => 'pending', // Requires admin approval
+            'is_active' => true, // Active but unverified
         ]);
 
         // Assign selected role
