@@ -71,7 +71,7 @@ class UserManagementController extends Controller
 
     /**
      * Update user
-     */
+    */
     public function update(Request $request, $userId)
     {
         $user = User::findOrFail($userId);
@@ -163,7 +163,7 @@ class UserManagementController extends Controller
     }
 
     /**
-     * Delete user (soft delete)
+     * Delete user permanently (traders and analysts only)
      */
     public function destroy($userId)
     {
@@ -176,14 +176,63 @@ class UserManagementController extends Controller
                 ->with('error', 'You cannot delete your own account!');
         }
 
-        $user->delete();
+        // Prevent deleting admins
+        if ($user->hasRole('admin')) {
+            return redirect()
+                ->route('admin.users.index')
+                ->with('error', 'Admin accounts cannot be deleted!');
+        }
 
-        activity()
-            ->performedOn($user)
-            ->log('User deleted');
+        // Only allow deleting traders and analysts
+        if (!$user->hasAnyRole(['trader', 'analyst'])) {
+            return redirect()
+                ->route('admin.users.index')
+                ->with('error', 'This user cannot be deleted!');
+        }
 
-        return redirect()
-            ->route('admin.users.index')
-            ->with('success', 'User deleted successfully!');
+        $userName = $user->name;
+
+        // Delete related data
+        try {
+            // Delete analyst assignments (both as analyst and as trader)
+            \DB::table('analyst_assignments')
+                ->where('analyst_id', $user->id)
+                ->orWhere('trader_id', $user->id)
+                ->delete();
+
+            // Delete feedback (both given and received)
+            \DB::table('feedback')
+                ->where('analyst_id', $user->id)
+                ->orWhere('trader_id', $user->id)
+                ->delete();
+
+            // Delete notifications
+            \DB::table('notifications')
+                ->where('user_id', $user->id)
+                ->delete();
+
+            // Delete trades (if trader)
+            if ($user->hasRole('trader')) {
+                \DB::table('trades')->where('user_id', $user->id)->delete();
+            }
+
+            // Finally delete the user
+            $user->delete();
+
+            activity()
+                ->performedOn($user)
+                ->log("User '{$userName}' permanently deleted");
+
+            return redirect()
+                ->route('admin.users.index')
+                ->with('success', "User '{$userName}' has been permanently deleted!");
+
+        } catch (\Exception $e) {
+            \Log::error('Error deleting user: ' . $e->getMessage());
+            
+            return redirect()
+                ->route('admin.users.index')
+                ->with('error', 'Failed to delete user. Please try again.');
+        }
     }
 }

@@ -68,6 +68,26 @@ Route::middleware('auth')->group(function () {
         Route::post('/assignments/assign', [\App\Http\Controllers\Admin\AssignmentController::class, 'assign'])->name('assignments.assign');
         Route::put('/assignments/{assignment}', [\App\Http\Controllers\Admin\AssignmentController::class, 'reassign'])->name('assignments.reassign');
         Route::delete('/assignments/{assignment}', [\App\Http\Controllers\Admin\AssignmentController::class, 'remove'])->name('assignments.remove');
+        
+        // Analytics Oversight
+        Route::get('/analytics', [\App\Http\Controllers\Admin\AdminAnalyticsController::class, 'index'])->name('analytics.index');
+        Route::get('/analytics/trades', [\App\Http\Controllers\Admin\AdminAnalyticsController::class, 'allTrades'])->name('analytics.trades');
+        Route::get('/analytics/traders/{trader}', [\App\Http\Controllers\Admin\AdminAnalyticsController::class, 'traderAnalytics'])->name('analytics.trader');
+        
+        // Activity Logs
+        Route::get('/activity-logs', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-logs.index');
+        Route::get('/activity-logs/export', [\App\Http\Controllers\Admin\ActivityLogController::class, 'export'])->name('activity-logs.export');
+        
+        // Backup Management
+        Route::get('/backups', [\App\Http\Controllers\Admin\BackupController::class, 'index'])->name('backups.index');
+        Route::post('/backups/create', [\App\Http\Controllers\Admin\BackupController::class, 'create'])->name('backups.create');
+        Route::get('/backups/{filename}/download', [\App\Http\Controllers\Admin\BackupController::class, 'download'])->name('backups.download');
+        Route::post('/backups/{filename}/restore', [\App\Http\Controllers\Admin\BackupController::class, 'restore'])->name('backups.restore');
+        Route::delete('/backups/{filename}', [\App\Http\Controllers\Admin\BackupController::class, 'destroy'])->name('backups.destroy');
+        
+        // System Settings
+        Route::get('/settings', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'index'])->name('settings.index');
+        Route::put('/settings', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'update'])->name('settings.update');
     });
 
     // Analyst Routes (requires verification)

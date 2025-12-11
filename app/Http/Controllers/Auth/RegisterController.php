@@ -49,7 +49,14 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        // Redirect to role-specific dashboard
+        // Check verification status - redirect pending users to verification page
+        if ($user->verification_status === 'pending') {
+            return redirect()
+                ->route('verification.pending')
+                ->with('info', 'Your account has been created and is pending admin approval.');
+        }
+
+        // Redirect verified users to role-specific dashboard
         if ($user->hasRole('analyst')) {
             return redirect()->route('analyst.dashboard');
         } else {
