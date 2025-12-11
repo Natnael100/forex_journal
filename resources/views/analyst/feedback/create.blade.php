@@ -147,7 +147,12 @@
                                 <h3 class="font-semibold text-red-300 mb-3">⚠️ Behavioral Warnings</h3>
                                 @foreach($aiSuggestions['behavioral_pattern_analysis'] as $pattern)
                                     <div class="mb-3 last:mb-0">
-                                        <p class="text-sm font-medium text-red-400">{{ $pattern['pattern'] }} ({{ $pattern['occurrences'] }} occurrences)</p>
+                                        <p class="text-sm font-medium text-red-400">
+                                            {{ $pattern['pattern'] }}
+                                            @if(isset($pattern['occurrences']))
+                                                ({{ $pattern['occurrences'] }} occurrences)
+                                            @endif
+                                        </p>
                                         <p class="text-sm text-slate-300">{{ $pattern['suggestion'] }}</p>
                                     </div>
                                 @endforeach

@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Trader\TraderDashboardController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 // Guest Routes (Public)
@@ -45,6 +46,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
+
+    // Notification Routes (Authenticated Users)
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
 
     // Admin Routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -118,6 +124,11 @@ Route::middleware('auth')->group(function () {
         // Analytics
         Route::get('/analytics', [\App\Http\Controllers\Trader\AnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/analytics/review', [\App\Http\Controllers\Trader\AnalyticsController::class, 'review'])->name('analytics.review');
+        Route::get('/analytics/pair/{pair}', [\App\Http\Controllers\Trader\AnalyticsController::class, 'pairAnalysis'])->name('analytics.pair');
+        
+        // Feedback
+        Route::get('/feedback', [\App\Http\Controllers\Trader\FeedbackController::class, 'index'])->name('feedback.index');
+        Route::get('/feedback/{feedback}', [\App\Http\Controllers\Trader\FeedbackController::class, 'show'])->name('feedback.show');
     });
 
     // Analyst Routes

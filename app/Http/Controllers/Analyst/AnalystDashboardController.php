@@ -67,7 +67,7 @@ class AnalystDashboardController extends Controller
     /**
      * Show individual trader profile with full analytics
      */
-    public function traderProfile($traderId)
+    public function traderProfile(Request $request, $traderId)
     {
         $analyst = Auth::user();
         $trader = User::findOrFail($traderId);

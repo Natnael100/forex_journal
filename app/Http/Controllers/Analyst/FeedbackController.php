@@ -74,7 +74,7 @@ class FeedbackController extends Controller
         $feedback = Feedback::create([
             'trader_id' => $validated['trader_id'],
             'analyst_id' => $analyst->id,
-            'trade_id' => $validated['trade_id'],
+            'trade_id' => $validated['trade_id'] ?? null,
             'content' => $validated['content'],
             'ai_suggestions' => $aiSuggestions,
             'status' => 'submitted',

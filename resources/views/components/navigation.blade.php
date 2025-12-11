@@ -96,7 +96,7 @@
             <span class="font-medium">Analytics</span>
         </a>
 
-        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800/50 hover:text-white transition-all duration-200">
+        <a href="{{ route('trader.feedback.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('trader.feedback.*') ? 'bg-purple-500/20 text-purple-400' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }} transition-all duration-200">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
             </svg>
@@ -113,24 +113,11 @@
             <span class="font-medium">Dashboard</span>
         </a>
 
-
-        <!-- Quick Guide -->
-        <div class="mt-6 p-4 bg-blue-900/20 border border-blue-700/50 rounded-lg">
-            <p class="text-xs text-blue-400 font-semibold mb-3">💡 How to Use:</p>
-            <ul class="text-xs text-slate-300 space-y-2">
-                <li class="flex items-start gap-2">
-                    <span class="text-emerald-400 mt-0.5">1.</span>
-                    <span>View assigned traders on your dashboard</span>
-                </li>
-                <li class="flex items-start gap-2">
-                    <span class="text-emerald-400 mt-0.5">2.</span>
-                    <span>Click "View Profile" to see trader analytics</span>
-                </li>
-                <li class="flex items-start gap-2">
-                    <span class="text-emerald-400 mt-0.5">3.</span>
-                    <span>Click "Provide Feedback" to submit AI-assisted feedback</span>
-                </li>
-            </ul>
-        </div>
+        <a href="{{ route('notifications.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('notifications.*') ? 'bg-blue-500/20 text-blue-400' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }} transition-all duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+            </svg>
+            <span class="font-medium">Notifications</span>
+        </a>
     @endif
 </nav>
