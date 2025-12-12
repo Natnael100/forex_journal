@@ -33,6 +33,9 @@ Route::get('/verification/pending', function () {
     return view('auth.verification-pending');
 })->middleware('auth')->name('verification.pending');
 
+// Public Profile View (accessible to all)
+Route::get('/profile/{username}', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
+
 // Authenticated Routes
 Route::middleware('auth')->group(function () {
     // Logout
@@ -52,6 +55,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
     Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
 
+    // Profile Routes (Authenticated Users)
+    Route::get('/settings/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/settings/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/settings/profile/photo', [\App\Http\Controllers\ProfileController::class, 'uploadPhoto'])->name('profile.upload-photo');
+    Route::post('/settings/profile/cover', [\App\Http\Controllers\ProfileController::class, 'uploadCover'])->name('profile.upload-cover');
+    Route::delete('/settings/profile/photo', [\App\Http\Controllers\ProfileController::class, 'deletePhoto'])->name('profile.delete-photo');
+    Route::delete('/settings/profile/cover', [\App\Http\Controllers\ProfileController::class, 'deleteCover'])->name('profile.delete-cover');
+
     // Admin Routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
@@ -62,6 +73,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/users/{user}/deactivate', [\App\Http\Controllers\Admin\UserManagementController::class, 'deactivate'])->name('users.deactivate');
         Route::post('/users/{user}/reactivate', [\App\Http\Controllers\Admin\UserManagementController::class, 'reactivate'])->name('users.reactivate');
         Route::post('/users/{user}/reset-password', [\App\Http\Controllers\Admin\UserManagementController::class, 'resetPassword'])->name('users.reset-password');
+        Route::post('/users/{user}/reset-profile-photo', [\App\Http\Controllers\Admin\UserManagementController::class, 'resetProfilePhoto'])->name('users.reset-profile-photo');
+        Route::post('/users/{user}/reset-cover-photo', [\App\Http\Controllers\Admin\UserManagementController::class, 'resetCoverPhoto'])->name('users.reset-cover-photo');
+        Route::post('/users/{user}/update-username', [\App\Http\Controllers\Admin\UserManagementController::class, 'updateUsername'])->name('users.update-username');
+        Route::post('/users/{user}/moderate-bio', [\App\Http\Controllers\Admin\UserManagementController::class, 'moderateBio'])->name('users.moderate-bio');
+        Route::post('/users/{user}/toggle-verification', [\App\Http\Controllers\Admin\UserManagementController::class, 'toggleVerification'])->name('users.toggle-verification');
         
         // Verification
         Route::get('/verifications', [\App\Http\Controllers\Admin\VerificationController::class, 'index'])->name('verifications.index');

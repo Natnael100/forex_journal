@@ -25,6 +25,17 @@
         </div>
     </div>
 
+    <!-- Trader Profile Card -->
+    <div class="mb-8">
+        <x-profile-card :user="$trader" :showBio="true" :showStats="true">
+            <x-slot name="action">
+                <a href="{{ $trader->getProfileUrl() }}" class="text-blue-400 hover:text-blue-300 text-sm font-medium">
+                    View Full Profile →
+                </a>
+            </x-slot>
+        </x-profile-card>
+    </div>
+
     <!-- Metrics Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         @include('components.stat-card', [

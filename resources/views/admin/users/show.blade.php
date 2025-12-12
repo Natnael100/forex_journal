@@ -112,6 +112,79 @@
                     </form>
                 </div>
             </div>
+
+            <!-- Profile Management Card -->
+            <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50 mt-6">
+                <h3 class="text-lg font-bold text-white mb-4">Profile Management</h3>
+                
+                <!-- Profile Photo -->
+                <div class="mb-4">
+                    <div class="flex items-center gap-4 mb-2">
+                        <img src="{{ $user->getProfilePhotoUrl('medium') }}" alt="{{ $user->name }}" class="w-16 h-16 rounded-full border-2 border-s Late-700" />
+                        <div class="flex-1">
+                            <p class="text-sm text-slate-400">Profile Photo</p>
+                            @if($user->profile_photo)
+                                <form action="{{ route('admin.users.reset-profile-photo', $user) }}" method="POST" class="inline" onsubmit="return confirm('Reset profile photo?')">
+                                    @csrf
+                                    <button type="submit" class="text-xs text-red-400 hover:text-red-300">Reset to Default</button>
+                                </form>
+                            @else
+                                <p class="text-xs text-slate-500">Using default</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Username -->
+                <div class="mb-4">
+                    <p class="text-sm text-slate-400 mb-2">Username</p>
+                    <div class="flex items-center gap-2">
+                        <span class="text-white">@{{ $user->username ?? 'Not set' }}</span>
+                        @if($user->is_profile_verified)
+                            <svg class="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Bio -->
+                @if($user->bio)
+                    <div class="mb-4">
+                        <p class="text-sm text-slate-400 mb-2">Bio</p>
+                        <p class="text-sm text-slate-300 bg-white/5 p-3 rounded">{{ $user->bio }}</p>
+                        <form action="{{ route('admin.users.moderate-bio', $user) }}" method="POST" class="mt-2" onsubmit="return confirm('Remove this bio?')">
+                            @csrf
+                            <button type="submit" class="text-xs text-red-400 hover:text-red-300">Remove Bio</button>
+                        </form>
+                    </div>
+                @endif
+
+                <!-- Profile Completeness -->
+                <div class="mb-4">
+                    <p class="text-sm text-slate-400 mb-2">Profile Completeness</p>
+                    <div class="flex items-center gap-3">
+                        <div class="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500" style="width: {{ $user->calculateProfileCompletion() }}%"></div>
+                        </div>
+                        <span class="text-sm font-medium text-white">{{ $user->calculateProfileCompletion() }}%</span>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="space-y-2 pt-4 border-t border-slate-700">
+                    <form action="{{ route('admin.users.toggle-verification', $user) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="w-full px-4 py-2 {{ $user->is_profile_verified ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700' }} text-white text-sm font-medium rounded-lg transition-colors">
+                            {{ $user->is_profile_verified ? '✗ Unverify Profile' : '✓ Verify Profile' }}
+                        </button>
+                    </form>
+                    
+                    <a href="{{ $user->getProfileUrl() }}" class="block w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors text-center">
+                        View Public Profile
+                    </a>
+                </div>
+            </div>
         </div>
 
         <!-- Activity & Stats -->

@@ -1,0 +1,36 @@
+=== Starting Database Fix ===
+2025-12-11 13:18:26
+
+Checking if username column exists...
+Username exists: NO
+
+=== Adding Columns ===
+
+✓ Added: username
+✓ Added: profile_visibility
+✓ Added: bio
+✓ Added: profile_photo
+✓ Added: cover_photo
+✓ Added: country
+✓ Added: timezone
+✓ Added: experience_level
+✓ Added: specialization
+✓ Added: trading_style
+✓ Added: preferred_sessions
+✓ Added: favorite_pairs
+✓ Added: profile_tags
+✓ Added: social_links
+✓ Added: show_last_active
+✓ Added: profile_completed_at
+✓ Added: is_profile_verified
+
+=== Summary ===
+Success: 17
+Failed: 0
+
+Final verification - Username column exists: YES ✓
+
+✓✓✓ DATABASE FIX SUCCESSFUL! ✓✓✓
+You can now access /settings/profile
+
+===== END =====

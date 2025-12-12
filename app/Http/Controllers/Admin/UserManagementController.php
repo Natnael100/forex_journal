@@ -235,4 +235,80 @@ class UserManagementController extends Controller
                 ->with('error', 'Failed to delete user. Please try again.');
         }
     }
+
+    /**
+     * Admin: Reset user's profile photo
+     */
+    public function resetProfilePhoto(User $user)
+    {
+        $user->update(['profile_photo' => null]);
+        
+        activity()
+            ->performedOn($user)
+            ->log('Admin reset profile photo');
+        
+        return back()->with('success', 'Profile photo reset successfully!');
+    }
+
+    /**
+     * Admin: Reset user's cover photo
+     */
+    public function resetCoverPhoto(User $user)
+    {
+        $user->update(['cover_photo' => null]);
+        
+        activity()
+            ->performedOn($user)
+            ->log('Admin reset cover photo');
+        
+        return back()->with('success', 'Cover photo reset successfully!');
+    }
+
+    /**
+     * Admin: Update user's username
+     */
+    public function updateUsername(Request $request, User $user)
+    {
+        $request->validate([
+            'username' => 'required|string|min:3|max:20|unique:users,username,' . $user->id,
+        ]);
+        
+        $oldUsername = $user->username;
+        $user->update(['username' => $request->username]);
+        
+        activity()
+            ->performedOn($user)
+            ->log("Admin changed username from '{$oldUsername}' to '{$request->username}'");
+        
+        return back()->with('success', 'Username updated successfully!');
+    }
+
+    /**
+     * Admin: Hide/moderate user's bio
+     */
+    public function moderateBio(User $user)
+    {
+        $user->update(['bio' => null]);
+        
+        activity()
+            ->performedOn($user)
+            ->log('Admin removed inappropriate bio content');
+        
+        return back()->with('success', 'Bio content removed!');
+    }
+
+    /**
+     * Admin: Toggle profile verification
+     */
+    public function toggleVerification(User $user)
+    {
+        $newStatus = !$user->is_profile_verified;
+        $user->update(['is_profile_verified' => $newStatus]);
+        
+        activity()
+            ->performedOn($user)
+            ->log('Admin ' . ($newStatus ? 'verified' : 'unverified') . ' profile');
+        
+        return back()->with('success', 'Profile verification updated!');
+    }
 }

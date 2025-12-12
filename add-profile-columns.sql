@@ -1,0 +1,17 @@
+ALTER TABLE users ADD COLUMN username VARCHAR(20) UNIQUE;
+ALTER TABLE users ADD COLUMN profile_visibility TEXT DEFAULT 'analyst_only';
+ALTER TABLE users ADD COLUMN bio TEXT;
+ALTER TABLE users ADD COLUMN profile_photo VARCHAR(255);
+ALTER TABLE users ADD COLUMN cover_photo VARCHAR(255);
+ALTER TABLE users ADD COLUMN country VARCHAR(100);
+ALTER TABLE users ADD COLUMN timezone VARCHAR(100) DEFAULT 'UTC';
+ALTER TABLE users ADD COLUMN experience_level VARCHAR(20);
+ALTER TABLE users ADD COLUMN specialization VARCHAR(100);
+ALTER TABLE users ADD COLUMN trading_style VARCHAR(100);
+ALTER TABLE users ADD COLUMN preferred_sessions TEXT;
+ALTER TABLE users ADD COLUMN favorite_pairs TEXT;
+ALTER TABLE users ADD COLUMN profile_tags TEXT;
+ALTER TABLE users ADD COLUMN social_links TEXT;
+ALTER TABLE users ADD COLUMN show_last_active INTEGER DEFAULT 1;
+ALTER TABLE users ADD COLUMN profile_completed_at TIMESTAMP;
+ALTER TABLE users ADD COLUMN is_profile_verified INTEGER DEFAULT 0;

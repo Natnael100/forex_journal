@@ -16,12 +16,20 @@
                     <div class="bg-gradient-to-r from-purple-600/10 to-pink-600/10 border-b border-slate-700/50 p-6">
                         <div class="flex items-start justify-between">
                             <div class="flex items-center gap-4">
-                                <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                                    {{ substr($item->analyst->name, 0, 1) }}
-                                </div>
+                                <img src="{{ $item->analyst->getProfilePhotoUrl('medium') }}" 
+                                     alt="{{ $item->analyst->name }}" 
+                                     class="w-14 h-14 rounded-full border-2 border-purple-500/30 shadow-lg" />
                                 <div>
                                     <h3 class="text-xl font-bold text-white mb-1">{{ $item->analyst->name }}</h3>
-                                    <div class="flex items-center gap-2 text-sm text-slate-400">
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <a href="{{ $item->analyst->getProfileUrl() }}" class="text-purple-400 hover:text-purple-300 transition">
+                                            @{{ $item->analyst->username }}
+                                        </a>
+                                        @if($item->analyst->specialization)
+                                            <span class="text-slate-400">• {{ $item->analyst->specialization }}</span>
+                                        @endif
+                                    </div>
+                                    <div class="flex items-center gap-2 text-xs text-slate-400 mt-1">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                         </svg>
