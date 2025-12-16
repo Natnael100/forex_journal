@@ -64,6 +64,28 @@
             </svg>
             <span class="font-medium">Settings</span>
         </a>
+
+        <a href="{{ route('profile.show', $user->username ?? $user->id) }}" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('profile.show') ? 'bg-indigo-500/20 text-indigo-400' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }} transition-all duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            <span class="font-medium">My Profile</span>
+        </a>
+
+        <a href="{{ route('notifications.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('notifications.*') ? 'bg-yellow-500/20 text-yellow-400' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }} transition-all duration-200 relative">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+            </svg>
+            <span class="font-medium">Notifications</span>
+            @php
+                $unreadCount = \App\Models\Notification::where('user_id', auth()->id())->whereNull('read_at')->count();
+            @endphp
+            @if($unreadCount > 0)
+                <span class="ml-auto min-w-[20px] h-5 px-1.5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-sm" style="background-color: #ef4444; color: white;">
+                    {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                </span>
+            @endif
+        </a>
     @endif
 
     {{-- Trader Navigation --}}
@@ -103,7 +125,22 @@
             <span class="font-medium">Feedback</span>
         </a>
 
-        <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('profile.*') ? 'bg-blue-500/20 text-blue-400' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }} transition-all duration-200">
+        <a href="{{ route('notifications.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('notifications.*') ? 'bg-yellow-500/20 text-yellow-400' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }} transition-all duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+            </svg>
+            <span class="font-medium">Notifications</span>
+            @php
+                $unreadCount = \App\Models\Notification::where('user_id', auth()->id())->whereNull('read_at')->count();
+            @endphp
+            @if($unreadCount > 0)
+                <span class="ml-auto min-w-[20px] h-5 px-1.5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-sm" style="background-color: #ef4444; color: white;">
+                    {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                </span>
+            @endif
+        </a>
+
+        <a href="{{ route('profile.show', $user->username ?? $user->id) }}" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('profile.show') ? 'bg-blue-500/20 text-blue-400' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }} transition-all duration-200">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
             </svg>
@@ -125,9 +162,17 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
             </svg>
             <span class="font-medium">Notifications</span>
+            @php
+                $unreadCount = \App\Models\Notification::where('user_id', auth()->id())->whereNull('read_at')->count();
+            @endphp
+            @if($unreadCount > 0)
+                <span class="ml-auto min-w-[20px] h-5 px-1.5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-sm" style="background-color: #ef4444; color: white;">
+                    {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                </span>
+            @endif
         </a>
 
-        <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('profile.*') ? 'bg-purple-500/20 text-purple-400' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }} transition-all duration-200">
+        <a href="{{ route('profile.show', $user->username ?? $user->id) }}" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('profile.show') ? 'bg-purple-500/20 text-purple-400' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }} transition-all duration-200">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
             </svg>

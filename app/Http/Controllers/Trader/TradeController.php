@@ -9,9 +9,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Trade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TradeController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */

@@ -78,8 +78,9 @@ class AssignmentController extends Controller
             'assigned_by' => Auth::id(),
         ]);
 
-        // Notify analyst
+        // Notify analyst and trader
         $this->notificationService->notifyAnalystAssigned($analyst, $trader);
+        $this->notificationService->notifyTraderAssigned($trader, $analyst);
 
         activity()
             ->performedOn($assignment)
@@ -108,8 +109,9 @@ class AssignmentController extends Controller
             'assigned_by' => Auth::id(),
         ]);
 
-        // Notify new analyst
+        // Notify new analyst and trader
         $this->notificationService->notifyAnalystAssigned($newAnalyst, $assignment->trader);
+        $this->notificationService->notifyTraderAssigned($assignment->trader, $newAnalyst);
 
         activity()
             ->performedOn($assignment)

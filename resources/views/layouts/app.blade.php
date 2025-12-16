@@ -31,16 +31,20 @@
 
             <!-- User Profile -->
             <div class="mt-auto p-4 border-t border-slate-800/50">
-                <div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-slate-800/30">
-                    <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white font-semibold">
-                        {{ substr(auth()->user()->name, 0, 1) }}
+                <a href="{{ route('profile.show', auth()->user()->username ?? auth()->user()->id) }}" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-slate-800/30 hover:bg-slate-800/80 transition-colors mb-2 group">
+                    <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white font-semibold border-2 border-transparent group-hover:border-slate-600 transition-colors">
+                        @if(auth()->user()->profile_photo_path)
+                             <img src="{{ auth()->user()->getProfilePhotoUrl() }}" class="w-full h-full rounded-full object-cover">
+                        @else
+                             {{ substr(auth()->user()->name, 0, 1) }}
+                        @endif
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-white truncate">{{ auth()->user()->name }}</p>
+                        <p class="text-sm font-medium text-white truncate group-hover:text-blue-400 transition-colors">{{ auth()->user()->name }}</p>
                         <p class="text-xs text-slate-400 truncate">{{ auth()->user()->roles->first()?->name ?? 'User' }}</p>
                     </div>
-                </div>
-                <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                </a>
+                <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="w-full px-4 py-2 text-sm text-left text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-lg transition-colors">
                         Logout

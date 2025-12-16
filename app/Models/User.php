@@ -44,6 +44,12 @@ class User extends Authenticatable
         'show_last_active',
         'profile_completed_at',
         'is_profile_verified',
+        // Analyst fields
+        'years_of_experience',
+        'analysis_specialization',
+        'psychology_focus_areas',
+        'feedback_style',
+        'max_traders_assigned',
     ];
 
     /**
@@ -75,6 +81,8 @@ class User extends Authenticatable
             'show_last_active' => 'boolean',
             'is_profile_verified' => 'boolean',
             'profile_completed_at' => 'datetime',
+            // Analyst casts
+            'psychology_focus_areas' => 'array',
         ];
     }
 
@@ -99,6 +107,11 @@ class User extends Authenticatable
     public function notifications()
     {
         return $this->hasMany(\App\Models\Notification::class);
+    }
+
+    public function unreadNotifications()
+    {
+        return $this->hasMany(\App\Models\Notification::class)->whereNull('read_at');
     }
 
     public function analystAssignments()

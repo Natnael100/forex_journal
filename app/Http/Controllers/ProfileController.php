@@ -22,7 +22,16 @@ class ProfileController extends Controller
      */
     public function show(string $username)
     {
-        $user = User::where('username', $username)->firstOrFail();
+        $user = User::where('username', $username)->first();
+
+        // Fallback: try finding by ID if username lookup failed and input is numeric
+        if (!$user && is_numeric($username)) {
+            $user = User::find($username);
+        }
+
+        if (!$user) {
+            abort(404);
+        }
         
         // Check if user can view this profile
         $this->authorize('view', $user);

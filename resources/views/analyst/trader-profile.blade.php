@@ -29,7 +29,7 @@
     <div class="mb-8">
         <x-profile-card :user="$trader" :showBio="true" :showStats="true">
             <x-slot name="action">
-                <a href="{{ $trader->getProfileUrl() }}" class="text-blue-400 hover:text-blue-300 text-sm font-medium">
+                <a href="{{ route('profile.show', $trader->username ?? $trader->id) }}" class="text-blue-400 hover:text-blue-300 text-sm font-medium">
                     View Full Profile →
                 </a>
             </x-slot>

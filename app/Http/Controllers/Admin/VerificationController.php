@@ -55,6 +55,9 @@ class VerificationController extends Controller
         $user->verification_status = 'verified';
         $user->save();
 
+        // Send notification
+        $this->notificationService->notifyVerificationApproved($user);
+
         activity()
             ->performedOn($user)
             ->log('User verified');
@@ -78,6 +81,9 @@ class VerificationController extends Controller
         $user->verification_status = 'rejected';
         $user->rejection_reason = $validated['rejection_reason'];
         $user->save();
+
+        // Send notification
+        $this->notificationService->notifyVerificationRejected($user, $validated['rejection_reason']);
 
         activity()
             ->performedOn($user)

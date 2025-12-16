@@ -5,6 +5,12 @@ namespace App\Services;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\Feedback;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VerificationApproved;
+use App\Mail\VerificationRejected;
+use App\Mail\FeedbackReceived;
+use App\Mail\AnalystAssigned;
+use App\Mail\TraderAssignedAnalyst;
 
 class NotificationService
 {
@@ -25,6 +31,11 @@ class NotificationService
                 'timestamp' => now()->toDateTimeString(),
             ],
         ]);
+
+        // Send email
+        if ($trader->email) {
+            Mail::to($trader->email)->send(new FeedbackReceived($trader, $feedback));
+        }
     }
 
     /**
@@ -42,6 +53,33 @@ class NotificationService
                 'timestamp' => now()->toDateTimeString(),
             ],
         ]);
+
+        // Send email
+        if ($analyst->email) {
+            Mail::to($analyst->email)->send(new AnalystAssigned($analyst, $trader));
+        }
+    }
+
+    /**
+     * Notify trader when assigned to an analyst
+     */
+    public function notifyTraderAssigned(User $trader, User $analyst): void
+    {
+        Notification::create([
+            'user_id' => $trader->id,
+            'type' => 'analyst_assigned',
+            'data' => [
+                'analyst_name' => $analyst->name,
+                'analyst_id' => $analyst->id,
+                'message' => "{$analyst->name} has been assigned as your analyst",
+                'timestamp' => now()->toDateTimeString(),
+            ],
+        ]);
+
+        // Send email
+        if ($trader->email) {
+            Mail::to($trader->email)->send(new TraderAssignedAnalyst($trader, $analyst));
+        }
     }
 
     /**
@@ -60,6 +98,48 @@ class NotificationService
                 'timestamp' => now()->toDateTimeString(),
             ],
         ]);
+    }
+
+    /**
+     * Notify user when verification is approved
+     */
+    public function notifyVerificationApproved(User $user): void
+    {
+        Notification::create([
+            'user_id' => $user->id,
+            'type' => 'verification',
+            'data' => [
+                'title' => '✅ Account Verified!',
+                'message' => 'Your account has been approved by an administrator. You now have full access to the platform.',
+                'url' => $user->hasRole('analyst') ? route('analyst.dashboard') : route('trader.dashboard'),
+            ],
+        ]);
+
+        // Send email
+        if ($user->email) {
+            Mail::to($user->email)->send(new VerificationApproved($user));
+        }
+    }
+
+    /**
+     * Notify user when verification is rejected
+     */
+    public function notifyVerificationRejected(User $user, string $reason): void
+    {
+        Notification::create([
+            'user_id' => $user->id,
+            'type' => 'verification',
+            'data' => [
+                'title' => '❌ Account Verification Rejected',
+                'message' => "Your account verification was rejected. Reason: {$reason}",
+                'url' => route('profile.edit'),
+            ],
+        ]);
+
+        // Send email
+        if ($user->email) {
+            Mail::to($user->email)->send(new VerificationRejected($user, $reason));
+        }
     }
 
     /**
