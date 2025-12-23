@@ -50,7 +50,9 @@
         <!-- Time of Day Performance -->
         <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
             <h3 class="text-lg font-semibold text-white mb-4">⏰ Time of Day Performance</h3>
-            <canvas id="timeOfDayChart"></canvas>
+            <div class="relative h-80 w-full">
+                <canvas id="timeOfDayChart"></canvas>
+            </div>
             <div class="mt-4 p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
                 <p class="text-sm text-blue-300">💡 <strong>Tip:</strong> Identify your most profitable trading hours</p>
             </div>
@@ -59,7 +61,9 @@
         <!-- Day of Week Performance -->
         <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
             <h3 class="text-lg font-semibold text-white mb-4">📅 Day of Week Performance</h3>
-            <canvas id="dayOfWeekChart"></canvas>
+            <div class="relative h-80 w-full">
+                <canvas id="dayOfWeekChart"></canvas>
+            </div>
             <div class="mt-4 p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
                 <p class="text-sm text-purple-300">💡 <strong>Tip:</strong> Some traders perform better on specific days</p>
             </div>
@@ -164,6 +168,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
                         tooltip: {
@@ -200,6 +205,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
                         tooltip: {

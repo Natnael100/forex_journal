@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Create Feedback')
+@section('title', 'Create Structured Feedback')
 
 @section('content')
     <!-- Header -->
     <div class="mb-8">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-3xl font-bold text-white mb-2">Provide Feedback</h1>
+                <h1 class="text-3xl font-bold text-white mb-2">Provide Structured Feedback</h1>
                 <p class="text-slate-400">
                     For: <span class="text-white font-semibold">{{ $trader->name }}</span>
                     @if($trade)
@@ -21,234 +21,217 @@
         </div>
     </div>
 
-    <form action="{{ route('analyst.feedback.store') }}" method="POST">
+    <form action="{{ route('analyst.feedback.store') }}" method="POST" id="feedback-form">
         @csrf
         <input type="hidden" name="trader_id" value="{{ $trader->id }}">
         @if($trade)
             <input type="hidden" name="trade_id" value="{{ $trade->id }}">
         @endif
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Left Column: Manual Feedback Form -->
-            <div class="space-y-6">
-                <!-- Feedback Textarea -->
-                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
-                    <h2 class="text-xl font-semibold text-white mb-4">Your Feedback</h2>
-                    
-                    <textarea 
-                        id="feedback-content" 
-                        name="content" 
-                        rows="15"
-                        class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Write your detailed feedback here...&#10;&#10;Consider including:&#10;- What they're doing well&#10;- Areas for improvement&#10;- Specific actionable recommendations&#10;- Risk management observations"
-                        required
-                    >{{ old('content') }}</textarea>
-                    
-                    @error('content')
-                        <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
-                   @enderror
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column: The Form -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Confidence Rating -->
+                <div class="bg-slate-800/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
+                    <label class="block text-lg font-semibold text-white mb-4">Confidence Rating (1-10)</label>
+                    <div class="flex items-center gap-4">
+                        <input type="range" name="confidence_rating" min="1" max="10" value="5" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500" oninput="document.getElementById('rating-val').innerText = this.value">
+                        <span id="rating-val" class="text-2xl font-bold text-blue-400">5</span>
+                    </div>
+                    <p class="text-sm text-slate-400 mt-2">How confident are you that this feedback addresses the trader's core issues?</p>
+                </div>
 
-                    <div class="mt-4 flex items-center justify-between">
-                        <p class="text-sm text-slate-400">
-                            <span id="char-count">0</span> characters
-                        </p>
-                        <button type="submit" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
-                            Submit Feedback
+                <!-- Strengths -->
+                <div class="bg-slate-800/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-green-400">💪 Strengths</h2>
+                        <button type="button" onclick="addField('strengths-container', 'strengths[]')" class="text-sm px-3 py-1.5 bg-green-500/10 text-green-400 hover:bg-green-500/20 rounded-lg transition-colors border border-green-500/30">
+                            + Add Item
                         </button>
+                    </div>
+                    <div id="strengths-container" class="space-y-3">
+                        <div class="flex gap-2">
+                            <input type="text" name="strengths[]" class="flex-1 px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-green-500" placeholder="e.g. Excellent discipline in waiting for setups" required>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Recent Feedback History -->
-                @if($recentFeedback->count() > 0)
-                    <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
-                        <h3 class="text-lg font-semibold text-white mb-4">Recent Feedback History</h3>
-                        <div class="space-y-3 max-h-96 overflow-y-auto">
-                            @foreach($recentFeedback->take(5) as $feedback)
-                                <div class="p-3 bg-white/5 rounded-lg border border-slate-700">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="text-sm font-medium text-slate-300">{{ $feedback->analyst->name }}</span>
-                                        <span class="text-xs text-slate-400">{{ $feedback->submitted_at->format('M d, Y') }}</span>
-                                    </div>
-                                    <p class="text-sm text-slate-400 line-clamp-3">{{ $feedback->content }}</p>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-            </div>
-
-            <!-- Right Column: AI Suggestions Panel -->
-            <div class="space-y-6">
-                <div class="bg-gradient-to-br from-blue-800/20 to-indigo-900/20 backdrop-blur-xl rounded-xl p-6 border border-blue-700/30 sticky top-4">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-xl font-semibold text-white flex items-center gap-2">
-                            <span>🤖</span> AI-Generated Insights
-                        </h2>
-                        <button type="button" onclick="insertAISuggestions()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
-                            Insert All
+                <!-- Weaknesses -->
+                <div class="bg-slate-800/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-red-400">⚠️ Weaknesses</h2>
+                        <button type="button" onclick="addField('weaknesses-container', 'weaknesses[]')" class="text-sm px-3 py-1.5 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/30">
+                            + Add Item
                         </button>
                     </div>
-
-                    <div class="space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto pr-2">
-                        <!-- Performance Summary -->
-                        <div class="p-4 bg-white/5 rounded-lg border border-blue-500/30">
-                            <h3 class="font-semibold text-blue-300 mb-2 flex items-center gap-2">
-                                📊 Overall Assessment
-                            </h3>
-                            <p class="text-sm text-slate-300 mb-2">{{ $aiSuggestions['summary']['overall_assessment'] }}</p>
-                            @if(count($aiSuggestions['summary']['strengths']) > 0)
-                                <p class="text-sm text-green-400 font-medium mt-2">Strengths:</p>
-                                <ul class="list-disc list-inside text-sm text-slate-300 space-y-1">
-                                    @foreach($aiSuggestions['summary']['strengths'] as $strength)
-                                        <li>{{ $strength }}</li>
-                                    @endforeach
-                                </ul>
-                            @endif
-                            @if(count($aiSuggestions['summary']['weaknesses']) > 0)
-                                <p class="text-sm text-red-400 font-medium mt-2">Weaknesses:</p>
-                                <ul class="list-disc list-inside text-sm text-slate-300 space-y-1">
-                                    @foreach($aiSuggestions['summary']['weaknesses'] as $weakness)
-                                        <li>{{ $weakness }}</li>
-                                    @endforeach
-                                </ul>
-                            @endif
+                    <div id="weaknesses-container" class="space-y-3">
+                        <div class="flex gap-2">
+                            <input type="text" name="weaknesses[]" class="flex-1 px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-red-500" placeholder="e.g. Moving stop loss to breakeven too early" required>
                         </div>
-
-                        <!-- Win Rate Analysis -->
-                        <div class="p-4 bg-white/5 rounded-lg border border-{{ $aiSuggestions['win_rate_analysis']['severity'] === 'critical' ? 'red' : ($aiSuggestions['win_rate_analysis']['severity'] === 'warning' ? 'yellow' : 'green') }}-500/30">
-                            <h3 class="font-semibold text-blue-300 mb-2 flex items-center gap-2">
-                                {{ $aiSuggestions['win_rate_analysis']['icon'] }} {{ $aiSuggestions['win_rate_analysis']['metric'] }}
-                            </h3>
-                            <p class="text-lg font-bold text-white mb-1">{{ $aiSuggestions['win_rate_analysis']['value'] }}</p>
-                            <p class="text-sm text-slate-300">{{ $aiSuggestions['win_rate_analysis']['suggestion'] }}</p>
-                        </div>
-
-                        <!-- Risk-Reward Analysis -->
-                        <div class="p-4 bg-white/5 rounded-lg border border-{{ $aiSuggestions['risk_reward_analysis']['severity'] === 'critical' ? 'red' : ($aiSuggestions['risk_reward_analysis']['severity'] === 'warning' ? 'yellow' : 'green') }}-500/30">
-                            <h3 class="font-semibold text-blue-300 mb-2 flex items-center gap-2">
-                                {{ $aiSuggestions['risk_reward_analysis']['icon'] }} {{ $aiSuggestions['risk_reward_analysis']['metric'] }}
-                            </h3>
-                            <p class="text-lg font-bold text-white mb-1">{{ $aiSuggestions['risk_reward_analysis']['value'] }}</p>
-                            <p class="text-sm text-slate-300">{{ $aiSuggestions['risk_reward_analysis']['suggestion'] }}</p>
-                        </div>
-
-                        <!-- Drawdown Analysis -->
-                        <div class="p-4 bg-white/5 rounded-lg border border-{{ $aiSuggestions['drawdown_analysis']['severity'] === 'critical' ? 'red' : ($aiSuggestions['drawdown_analysis']['severity'] === 'warning' ? 'yellow' : 'green') }}-500/30">
-                            <h3 class="font-semibold text-blue-300 mb-2 flex items-center gap-2">
-                                {{ $aiSuggestions['drawdown_analysis']['icon'] }} {{ $aiSuggestions['drawdown_analysis']['metric'] }}
-                            </h3>
-                            <p class="text-lg font-bold text-white mb-1">{{ $aiSuggestions['drawdown_analysis']['value'] }}</p>
-                            <p class="text-sm text-slate-300">{{ $aiSuggestions['drawdown_analysis']['suggestion'] }}</p>
-                        </div>
-
-                        <!-- Behavioral Patterns -->
-                        @if(count($aiSuggestions['behavioral_pattern_analysis']) > 0)
-                            <div class="p-4 bg-red-900/20 rounded-lg border border-red-500/30">
-                                <h3 class="font-semibold text-red-300 mb-3">⚠️ Behavioral Warnings</h3>
-                                @foreach($aiSuggestions['behavioral_pattern_analysis'] as $pattern)
-                                    <div class="mb-3 last:mb-0">
-                                        <p class="text-sm font-medium text-red-400">
-                                            {{ $pattern['pattern'] }}
-                                            @if(isset($pattern['occurrences']))
-                                                ({{ $pattern['occurrences'] }} occurrences)
-                                            @endif
-                                        </p>
-                                        <p class="text-sm text-slate-300">{{ $pattern['suggestion'] }}</p>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
-
-                        <!-- Strategy Analysis -->
-                        @if(count($aiSuggestions['strategy_analysis']) > 0)
-                            <div class="p-4 bg-white/5 rounded-lg border border-purple-500/30">
-                                <h3 class="font-semibold text-purple-300 mb-3">📋 Strategy Performance</h3>
-                                @foreach($aiSuggestions['strategy_analysis'] as $strategy)
-                                    <div class="mb-3 last:mb-0 p-3 bg-white/5 rounded">
-                                        <p class="text-sm font-medium text-white">{{ $strategy['strategy'] }}</p>
-                                        <p class="text-xs text-slate-400 mb-1">{{ $strategy['trades'] }} trades | Win Rate: {{ $strategy['win_rate'] }} | P/L: {{ $strategy['profit_loss'] }}</p>
-                                        <p class="text-sm text-slate-300">{{ $strategy['suggestion'] }}</p>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
-
-                        <!-- Session Analysis -->
-                        @if(count($aiSuggestions['session_analysis']) > 0)
-                            <div class="p-4 bg-white/5 rounded-lg border border-yellow-500/30">
-                                <h3 class="font-semibold text-yellow-300 mb-3">🕐 Session Insights</h3>
-                                @foreach($aiSuggestions['session_analysis'] as $session)
-                                    <div class="mb-2 last:mb-0">
-                                        <p class="text-sm text-slate-300">{{ $session['suggestion'] }}</p>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
                     </div>
+                </div>
 
-                    <div class="mt-6 p-4 bg-blue-500/10 rounded-lg border border-blue-500/30">
-                        <p class="text-sm text-blue-300">
-                            <strong>💡 Note:</strong> These are AI-generated suggestions based on rule-based analysis. Use them as guidance and apply your professional judgment when writing final feedback.
-                        </p>
+                <!-- Recommendations -->
+                <div class="bg-slate-800/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-blue-400">💡 Actionable Recommendations</h2>
+                        <button type="button" onclick="addField('recommendations-container', 'recommendations[]')" class="text-sm px-3 py-1.5 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors border border-blue-500/30">
+                            + Add Item
+                        </button>
+                    </div>
+                    <div id="recommendations-container" class="space-y-3">
+                        <div class="flex gap-2">
+                            <input type="text" name="recommendations[]" class="flex-1 px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500" placeholder="e.g. Only move SL after price hits 1R" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Overall Summary -->
+                <div class="bg-slate-800/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
+                    <h2 class="text-xl font-semibold text-white mb-4">Overall Summary / Additional Notes</h2>
+                    <textarea 
+                        name="content" 
+                        rows="5"
+                        class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Any additional context or summary..."
+                        required
+                    >{{ old('content') }}</textarea>
+                </div>
+
+                <div class="flex justify-end pt-4">
+                    <button type="submit" class="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-600/20">
+                        Submit Structured Feedback
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column: AI Suggestions Panel (Helper) -->
+            <div class="space-y-6">
+                <div class="bg-slate-800/30 backdrop-blur-xl rounded-xl p-6 border border-slate-700/30 sticky top-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold text-white flex items-center gap-2">
+                            <span>🤖</span> Analysis Insights
+                        </h2>
+                        <button type="button" id="generate-btn" onclick="generateDraft()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2 shadow-lg shadow-blue-600/20">
+                            <span>✨</span> Generate AI Draft
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-4 max-h-[80vh] overflow-y-auto pr-2 custom-scrollbar">
+                         <!-- Rule-based AI suggestions -->
+                         <!-- Win Rate -->
+                        <div class="p-4 bg-slate-900/50 rounded-lg border border-slate-700">
+                             <div class="flex justify-between mb-1">
+                                <span class="text-slate-400">Win Rate</span>
+                                <span class="{{ $aiSuggestions['win_rate_analysis']['severity'] === 'critical' ? 'text-red-400' : 'text-green-400' }} font-bold">{{ $aiSuggestions['win_rate_analysis']['value'] }}</span>
+                             </div>
+                             <p class="text-xs text-slate-500">{{ $aiSuggestions['win_rate_analysis']['suggestion'] }}</p>
+                        </div>
+
+                        <!-- Risk Reward -->
+                        <div class="p-4 bg-slate-900/50 rounded-lg border border-slate-700">
+                             <div class="flex justify-between mb-1">
+                                <span class="text-slate-400">Risk:Reward</span>
+                                <span class="text-white font-bold">{{ $aiSuggestions['risk_reward_analysis']['value'] }}</span>
+                             </div>
+                             <p class="text-xs text-slate-500">{{ $aiSuggestions['risk_reward_analysis']['suggestion'] }}</p>
+                        </div>
+
+                         <!-- Behavioral -->
+                        @if(count($aiSuggestions['behavioral_pattern_analysis']) > 0)
+                            <div class="p-4 bg-red-900/10 rounded-lg border border-red-500/20">
+                                <span class="text-red-400 font-bold text-sm mb-2 block">Detection</span>
+                                @foreach($aiSuggestions['behavioral_pattern_analysis'] as $pattern)
+                                    <p class="text-xs text-slate-300 mb-2">• {{ $pattern['pattern'] }}</p>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        <div class="mt-4 p-3 bg-blue-500/10 rounded border border-blue-500/20">
+                            <p class="text-xs text-blue-300">Click "Generate AI Draft" to auto-fill the form based on these metrics.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </form>
 
-    @push('scripts')
     <script>
-        // Character counter
-        const textarea = document.getElementById('feedback-content');
-        const charCount = document.getElementById('char-count');
-        
-        textarea.addEventListener('input', function() {
-            charCount.textContent = this.value.length;
-        });
+        function addField(containerId, inputName, value = '') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = 'flex gap-2';
+            div.innerHTML = `
+                <input type="text" name="${inputName}" value="${value}" class="flex-1 px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500" required>
+                <button type="button" onclick="this.parentElement.remove()" class="px-3 py-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg border border-red-500/30">✕</button>
+            `;
+            container.appendChild(div);
+        }
 
-        // Initialize count
-        charCount.textContent = textarea.value.length;
+        async function generateDraft() {
+            const btn = document.getElementById('generate-btn');
+            const originalText = btn.innerHTML;
+            
+            // Set Loading State
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Generating...`;
 
-        // Insert AI Suggestions
-        function insertAISuggestions() {
-            const suggestions = {!! json_encode($aiSuggestions) !!};
-            
-            let feedbackText = `Performance Feedback for ${!! json_encode($trader->name) !!}\n\n`;
-            
-            feedbackText += `OVERALL ASSESSMENT:\n${suggestions.summary.overall_assessment}\n\n`;
-            
-            if (suggestions.summary.strengths.length > 0) {
-                feedbackText += `STRENGTHS:\n`;
-                suggestions.summary.strengths.forEach(s => feedbackText += `- ${s}\n`);
-                feedbackText += `\n`;
-            }
-            
-            if (suggestions.summary.weaknesses.length > 0) {
-                feedbackText += `AREAS FOR IMPROVEMENT:\n`;
-                suggestions.summary.weaknesses.forEach(w => feedbackText += `- ${w}\n`);
-                feedbackText += `\n`;
-            }
-            
-            feedbackText += `KEY METRICS:\n`;
-            feedbackText += `- ${suggestions.win_rate_analysis.metric}: ${suggestions.win_rate_analysis.value}\n  ${suggestions.win_rate_analysis.suggestion}\n\n`;
-            feedbackText += `- ${suggestions.risk_reward_analysis.metric}: ${suggestions.risk_reward_analysis.value}\n  ${suggestions.risk_reward_analysis.suggestion}\n\n`;
-            feedbackText += `- ${suggestions.drawdown_analysis.metric}: ${suggestions.drawdown_analysis.value}\n  ${suggestions.drawdown_analysis.suggestion}\n\n`;
-            
-            if (suggestions.behavioral_pattern_analysis.length > 0) {
-                feedbackText += `BEHAVIORAL PATTERNS DETECTED:\n`;
-                suggestions.behavioral_pattern_analysis.forEach(p => {
-                    feedbackText += `- ${p.pattern}: ${p.suggestion}\n`;
+            try {
+                const response = await fetch("{{ route('analyst.feedback.generate-draft', $trader->id) }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    body: JSON.stringify({
+                        @if($trade) trade_id: {{ $trade->id }} @endif
+                    })
                 });
-                feedbackText += `\n`;
+
+                if (!response.ok) throw new Error('Failed to generate draft');
+
+                const data = await response.json();
+
+                // Clear existing lists
+                document.getElementById('strengths-container').innerHTML = '';
+                document.getElementById('weaknesses-container').innerHTML = '';
+                document.getElementById('recommendations-container').innerHTML = '';
+
+                // Populate arrays
+                if (data.strengths) data.strengths.forEach(s => addField('strengths-container', 'strengths[]', s));
+                if (data.weaknesses) data.weaknesses.forEach(w => addField('weaknesses-container', 'weaknesses[]', w));
+                if (data.recommendations) data.recommendations.forEach(r => addField('recommendations-container', 'recommendations[]', r));
+
+                // Populate scalar fields
+                if (data.content) document.querySelector('textarea[name="content"]').value = data.content;
+                if (data.confidence_rating) {
+                    const slider = document.querySelector('input[name="confidence_rating"]');
+                    slider.value = data.confidence_rating;
+                    document.getElementById('rating-val').innerText = data.confidence_rating;
+                }
+
+                // Source Validation Indicator
+                if (data.source) {
+                    const btn = document.getElementById('generate-btn');
+                    // Create temporary toast/badge next to button
+                    const badge = document.createElement('span');
+                    badge.className = 'ml-3 text-xs font-medium text-green-400 bg-green-900/30 px-2 py-1 rounded border border-green-500/30 animate-fade-in-up';
+                    badge.innerHTML = `✓ Generated by ${data.source}`;
+                    btn.parentNode.appendChild(badge);
+                    
+                    // Remove after 5 seconds
+                    setTimeout(() => badge.remove(), 5000);
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to generate draft. Please try again.');
+            } finally {
+                // Reset Button
+                btn.disabled = false;
+                btn.innerHTML = originalText;
             }
-            
-            feedbackText += `RECOMMENDATIONS:\n`;
-            feedbackText += `[Add your specific recommendations based on the analysis above]\n\n`;
-            
-            textarea.value = feedbackText;
-            charCount.textContent = feedbackText.length;
-            textarea.focus();
         }
     </script>
-    @endpush
 @endsection

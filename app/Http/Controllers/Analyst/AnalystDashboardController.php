@@ -118,6 +118,35 @@ class AnalystDashboardController extends Controller
             ->latest()
             ->get();
 
+        // Progress Tracking: Compare performance before/after last feedback
+        $comparisonMetrics = null;
+        $lastFeedback = $feedbackHistory->first();
+
+        if ($lastFeedback) {
+            $feedbackDate = $lastFeedback->submitted_at ?? $lastFeedback->created_at;
+            
+            // Before Metrics (Last 30 days before feedback or all time before)
+            // We'll compare generally against the period before
+            $beforeFilters = ['date_to' => $feedbackDate];
+            $afterFilters = ['date_from' => $feedbackDate];
+
+            $comparisonMetrics = [
+                'feedback_date' => $feedbackDate,
+                'before' => [
+                    'win_rate' => $this->analyticsService->getWinRate($trader, $beforeFilters),
+                    'profit_factor' => $this->analyticsService->getProfitFactor($trader, $beforeFilters),
+                    'total_trades' => $this->analyticsService->getTotalTrades($trader, $beforeFilters),
+                    'avg_rr' => $this->analyticsService->getAverageRiskReward($trader, $beforeFilters),
+                ],
+                'after' => [
+                    'win_rate' => $this->analyticsService->getWinRate($trader, $afterFilters),
+                    'profit_factor' => $this->analyticsService->getProfitFactor($trader, $afterFilters),
+                    'total_trades' => $this->analyticsService->getTotalTrades($trader, $afterFilters),
+                    'avg_rr' => $this->analyticsService->getAverageRiskReward($trader, $afterFilters),
+                ]
+            ];
+        }
+
         return view('analyst.trader-profile', compact(
             'trader',
             'metrics',
@@ -128,7 +157,8 @@ class AnalystDashboardController extends Controller
             'bestWorstPairs',
             'streaks',
             'trades',
-            'feedbackHistory'
+            'feedbackHistory',
+            'comparisonMetrics'
         ));
     }
 }

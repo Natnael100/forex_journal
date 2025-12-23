@@ -11,6 +11,20 @@ use App\Http\Controllers\Trader\TraderDashboardController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
+
+
+
 // Guest Routes (Public)
 Route::middleware('guest')->group(function () {
     // Registration
@@ -52,8 +66,8 @@ Route::middleware('auth')->group(function () {
 
     // Notification Routes (Authenticated Users)
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
-    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
+    Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
 
     // Profile Routes (Authenticated Users)
     Route::get('/settings/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
@@ -117,18 +131,17 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Analyst\AnalystDashboardController::class, 'index'])->name('dashboard');
         Route::get('/traders/{trader}', [\App\Http\Controllers\Analyst\AnalystDashboardController::class, 'traderProfile'])->name('trader.profile');
         
-        // Feedback Management
+        // Feedback Management (Using POST for creation because of complex form, but conventionally GET create)
         Route::get('/feedback/create/{trader}/{trade?}', [\App\Http\Controllers\Analyst\FeedbackController::class, 'create'])->name('feedback.create');
         Route::post('/feedback', [\App\Http\Controllers\Analyst\FeedbackController::class, 'store'])->name('feedback.store');
+        
+        // AI Draft Generation
+        Route::post('/feedback/{trader}/generate-draft', [\App\Http\Controllers\Analyst\FeedbackController::class, 'generateDraft'])->name('feedback.generate-draft');
+        
         Route::get('/feedback/{feedback}/edit', [\App\Http\Controllers\Analyst\FeedbackController::class, 'edit'])->name('feedback.edit');
         Route::put('/feedback/{feedback}', [\App\Http\Controllers\Analyst\FeedbackController::class, 'update'])->name('feedback.update');
         Route::delete('/feedback/{feedback}', [\App\Http\Controllers\Analyst\FeedbackController::class, 'destroy'])->name('feedback.destroy');
     });
-
-    // Notification Routes (for all authenticated users)
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
 
     // Trader Routes (requires verification)
     Route::middleware(['role:trader', \App\Http\Middleware\EnsureVerified::class])->prefix('trader')->name('trader.')->group(function () {
@@ -147,11 +160,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/feedback/{feedback}', [\App\Http\Controllers\Trader\FeedbackController::class, 'show'])->name('feedback.show');
     });
 
-    // Analyst Routes
-    Route::middleware(['role:analyst'])->prefix('analyst')->name('analyst.')->group(function () {
-        Route::get('/dashboard', [AnalystDashboardController::class, 'index'])->name('dashboard');
-        // Additional analyst routes will be added in future phases
-    });
 });
 
 // Welcome page (redirect to login)

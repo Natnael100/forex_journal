@@ -67,18 +67,83 @@
         ])
     </div>
 
+    @if(isset($comparisonMetrics) && $comparisonMetrics)
+    <div class="mb-8 bg-gradient-to-br from-indigo-900/20 to-blue-900/20 backdrop-blur-xl rounded-xl p-6 border border-indigo-500/30">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                <span>🚀</span> Impact of Last Feedback
+                <span class="text-sm font-normal text-slate-400">({{ $comparisonMetrics['feedback_date']->format('M d, Y') }})</span>
+            </h3>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <!-- Win Rate Comparison -->
+             <div class="p-4 bg-slate-900/50 rounded-lg border border-slate-700">
+                <p class="text-sm text-slate-400 mb-1">Win Rate</p>
+                <div class="flex items-end gap-2">
+                    <span class="text-2xl font-bold text-white">{{ $comparisonMetrics['after']['win_rate'] }}%</span>
+                    @php $diff = $comparisonMetrics['after']['win_rate'] - $comparisonMetrics['before']['win_rate']; @endphp
+                    <span class="text-sm font-medium {{ $diff >= 0 ? 'text-green-400' : 'text-red-400' }}">
+                        {{ $diff >= 0 ? '+' : '' }}{{ number_format($diff, 1) }}%
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1">Prev: {{ $comparisonMetrics['before']['win_rate'] }}%</p>
+             </div>
+             
+             <!-- Profit Factor Comparison -->
+             <div class="p-4 bg-slate-900/50 rounded-lg border border-slate-700">
+                <p class="text-sm text-slate-400 mb-1">Profit Factor</p>
+                <div class="flex items-end gap-2">
+                    <span class="text-2xl font-bold text-white">{{ $comparisonMetrics['after']['profit_factor'] }}</span>
+                     @php $diff = $comparisonMetrics['after']['profit_factor'] - $comparisonMetrics['before']['profit_factor']; @endphp
+                    <span class="text-sm font-medium {{ $diff >= 0 ? 'text-green-400' : 'text-red-400' }}">
+                        {{ $diff >= 0 ? '+' : '' }}{{ number_format($diff, 2) }}
+                    </span>
+                </div>
+                 <p class="text-xs text-slate-500 mt-1">Prev: {{ $comparisonMetrics['before']['profit_factor'] }}</p>
+             </div>
+             
+             <!-- Avg R:R Comparison -->
+             <div class="p-4 bg-slate-900/50 rounded-lg border border-slate-700">
+                <p class="text-sm text-slate-400 mb-1">Avg R:R</p>
+                <div class="flex items-end gap-2">
+                    <span class="text-2xl font-bold text-white">{{ $comparisonMetrics['after']['avg_rr'] }}</span>
+                     @php $diff = $comparisonMetrics['after']['avg_rr'] - $comparisonMetrics['before']['avg_rr']; @endphp
+                    <span class="text-sm font-medium {{ $diff >= 0 ? 'text-green-400' : 'text-red-400' }}">
+                        {{ $diff >= 0 ? '+' : '' }}{{ number_format($diff, 2) }}
+                    </span>
+                </div>
+                 <p class="text-xs text-slate-500 mt-1">Prev: {{ $comparisonMetrics['before']['avg_rr'] }}</p>
+             </div>
+
+             <!-- Trade Volume -->
+             <div class="p-4 bg-slate-900/50 rounded-lg border border-slate-700">
+                <p class="text-sm text-slate-400 mb-1">Trades Since Feedback</p>
+                <div class="flex items-end gap-2">
+                    <span class="text-2xl font-bold text-white">{{ $comparisonMetrics['after']['total_trades'] }}</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1">Analysing new data</p>
+             </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Charts Row 1 -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <!-- Equity Curve -->
         <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
             <h3 class="text-lg font-semibold text-white mb-4">Equity Curve</h3>
-            <canvas id="equityChart" height="250"></canvas>
+            <div class="relative h-80 w-full">
+                <canvas id="equityChart"></canvas>
+            </div>
         </div>
 
         <!-- Monthly P/L -->
         <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
             <h3 class="text-lg font-semibold text-white mb-4">Monthly P/L ({{ now()->year }})</h3>
-            <canvas id="monthlyChart" height="250"></canvas>
+            <div class="relative h-80 w-full">
+                <canvas id="monthlyChart"></canvas>
+            </div>
         </div>
     </div>
 
@@ -87,13 +152,17 @@
         <!-- Session Performance -->
         <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
             <h3 class="text-lg font-semibold text-white mb-4">Session Performance</h3>
-            <canvas id="sessionChart" height="250"></canvas>
+            <div class="relative h-80 w-full">
+                <canvas id="sessionChart"></canvas>
+            </div>
         </div>
 
         <!-- Win/Loss Distribution -->
         <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
             <h3 class="text-lg font-semibold text-white mb-4">Win/Loss Distribution</h3>
-            <canvas id="winLossChart" height="250"></canvas>
+            <div class="relative h-80 w-full">
+                <canvas id="winLossChart"></canvas>
+            </div>
         </div>
     </div>
 
@@ -156,25 +225,103 @@
         <h3 class="text-lg font-semibold text-white mb-4">Feedback History</h3>
         
         @if($feedbackHistory->count() > 0)
-            <div class="space-y-4">
+            <div class="space-y-6">
                 @foreach($feedbackHistory as $feedback)
-                    <div class="bg-white/5 rounded-lg p-4 border border-slate-700/50">
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center gap-2">
-                                <span class="font-semibold text-white">{{ $feedback->analyst->name }}</span>
-                                <span class="text-slate-400 text-sm">{{ $feedback->created_at->diffForHumans() }}</span>
+                    <div class="bg-white/5 rounded-lg p-6 border border-slate-700/50">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+                                    {{ substr($feedback->analyst->name, 0, 1) }}
+                                </div>
+                                <div>
+                                    <span class="font-semibold text-white block">{{ $feedback->analyst->name }}</span>
+                                    <span class="text-slate-400 text-sm">{{ $feedback->submitted_at ? $feedback->submitted_at->format('M d, Y h:i A') : $feedback->created_at->format('M d, Y') }}</span>
+                                </div>
                             </div>
-                            @if($feedback->rating)
-                                <div class="flex items-center gap-1">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        <svg class="w-4 h-4 {{ $i <= $feedback->rating ? 'text-yellow-400' : 'text-slate-600' }}" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                        </svg>
-                                    @endfor
+                            
+                            @if($feedback->confidence_rating)
+                                <div class="flex flex-col items-end">
+                                    <span class="text-xs text-slate-400">Confidence</span>
+                                    <div class="flex items-center gap-1">
+                                        <span class="text-xl font-bold text-blue-400">{{ $feedback->confidence_rating }}</span>
+                                        <span class="text-sm text-slate-500">/10</span>
+                                    </div>
                                 </div>
                             @endif
                         </div>
-                        <p class="text-slate-300">{{ $feedback->message }}</p>
+
+                        <!-- Structured Data -->
+                        @if($feedback->strengths || $feedback->weaknesses || $feedback->recommendations)
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <!-- Strengths -->
+                                @if(is_array($feedback->strengths) && count($feedback->strengths) > 0)
+                                    <div class="p-4 bg-green-500/5 rounded-lg border border-green-500/10">
+                                        <h4 class="text-green-400 font-semibold mb-2 flex items-center gap-2">
+                                            <span>💪</span> Strengths
+                                        </h4>
+                                        <ul class="space-y-1">
+                                            @foreach($feedback->strengths as $item)
+                                                <li class="text-sm text-slate-300 flex items-start gap-2">
+                                                    <span class="text-green-500/50 mt-1">•</span>
+                                                    <span>{{ $item }}</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+
+                                <!-- Weaknesses -->
+                                @if(is_array($feedback->weaknesses) && count($feedback->weaknesses) > 0)
+                                    <div class="p-4 bg-red-500/5 rounded-lg border border-red-500/10">
+                                        <h4 class="text-red-400 font-semibold mb-2 flex items-center gap-2">
+                                            <span>⚠️</span> Weaknesses
+                                        </h4>
+                                        <ul class="space-y-1">
+                                            @foreach($feedback->weaknesses as $item)
+                                                <li class="text-sm text-slate-300 flex items-start gap-2">
+                                                    <span class="text-red-500/50 mt-1">•</span>
+                                                    <span>{{ $item }}</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+
+                                <!-- Recommendations -->
+                                @if(is_array($feedback->recommendations) && count($feedback->recommendations) > 0)
+                                    <div class="p-4 bg-blue-500/5 rounded-lg border border-blue-500/10">
+                                        <h4 class="text-blue-400 font-semibold mb-2 flex items-center gap-2">
+                                            <span>💡</span> Recommendations
+                                        </h4>
+                                        <ul class="space-y-1">
+                                            @foreach($feedback->recommendations as $item)
+                                                <li class="text-sm text-slate-300 flex items-start gap-2">
+                                                    <span class="text-blue-500/50 mt-1">•</span>
+                                                    <span>{{ $item }}</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
+
+                        <!-- Main Content -->
+                        <div class="text-slate-300 whitespace-pre-wrap pl-1 border-l-2 border-slate-700">
+                            {{ $feedback->content }}
+                        </div>
+
+                        <!-- Actions -->
+                        @if(auth()->id() === $feedback->analyst_id && $feedback->isEditable())
+                            <div class="mt-4 flex justify-end">
+                                <a href="{{ route('analyst.feedback.edit', $feedback->id) }}" class="text-sm text-slate-400 hover:text-white flex items-center gap-1 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                    Edit Feedback
+                                </a>
+                            </div>
+                        @endif
                     </div>
                 @endforeach
             </div>

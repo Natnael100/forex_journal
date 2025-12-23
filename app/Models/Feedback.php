@@ -23,12 +23,20 @@ class Feedback extends Model
         'status',
         'submitted_at',
         'locked_at',
+        'strengths',
+        'weaknesses',
+        'recommendations',
+        'confidence_rating',
     ];
 
     protected $casts = [
         'ai_suggestions' => 'array',
         'submitted_at' => 'datetime',
         'locked_at' => 'datetime',
+        'strengths' => 'array',
+        'weaknesses' => 'array',
+        'recommendations' => 'array',
+        'confidence_rating' => 'integer',
     ];
 
     /**

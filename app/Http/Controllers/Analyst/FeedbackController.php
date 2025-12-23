@@ -15,11 +15,16 @@ class FeedbackController extends Controller
 {
     protected $performanceAnalysis;
     protected $notificationService;
+    protected $aiCoachingService;
 
-    public function __construct(PerformanceAnalysisService $performanceAnalysis, NotificationService $notificationService)
-    {
+    public function __construct(
+        PerformanceAnalysisService $performanceAnalysis, 
+        NotificationService $notificationService,
+        \App\Services\AiCoachingService $aiCoachingService
+    ) {
         $this->performanceAnalysis = $performanceAnalysis;
         $this->notificationService = $notificationService;
+        $this->aiCoachingService = $aiCoachingService;
     }
 
     /**
@@ -50,6 +55,28 @@ class FeedbackController extends Controller
     }
 
     /**
+     * Generate an AI draft for feedback
+     */
+    public function generateDraft(Request $request, $traderId)
+    {
+        $trader = User::findOrFail($traderId);
+        $analyst = Auth::user();
+
+        if (!$analyst->tradersAssigned()->where('trader_id', $trader->id)->exists() && !$analyst->hasRole('admin')) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $trade = null;
+        if ($request->has('trade_id')) {
+            $trade = Trade::where('user_id', $trader->id)->find($request->trade_id);
+        }
+
+        $draft = $this->aiCoachingService->generateFeedbackDraft($trader, $trade);
+
+        return response()->json($draft);
+    }
+
+    /**
      * Store feedback
      */
     public function store(Request $request)
@@ -58,6 +85,13 @@ class FeedbackController extends Controller
             'trader_id' => 'required|exists:users,id',
             'trade_id' => 'nullable|exists:trades,id',
             'content' => 'required|string|min:20',
+            'strengths' => 'required|array|min:1',
+            'strengths.*' => 'required|string|min:5',
+            'weaknesses' => 'required|array|min:1',
+            'weaknesses.*' => 'required|string|min:5',
+            'recommendations' => 'required|array|min:1',
+            'recommendations.*' => 'required|string|min:5',
+            'confidence_rating' => 'required|integer|min:1|max:10',
         ]);
 
         $analyst = Auth::user();
@@ -76,6 +110,10 @@ class FeedbackController extends Controller
             'analyst_id' => $analyst->id,
             'trade_id' => $validated['trade_id'] ?? null,
             'content' => $validated['content'],
+            'strengths' => $validated['strengths'],
+            'weaknesses' => $validated['weaknesses'],
+            'recommendations' => $validated['recommendations'],
+            'confidence_rating' => $validated['confidence_rating'],
             'ai_suggestions' => $aiSuggestions,
             'status' => 'submitted',
             'submitted_at' => now(),
@@ -127,9 +165,22 @@ class FeedbackController extends Controller
 
         $validated = $request->validate([
             'content' => 'required|string|min:20',
+            'strengths' => 'required|array|min:1',
+            'strengths.*' => 'required|string|min:5',
+            'weaknesses' => 'required|array|min:1',
+            'weaknesses.*' => 'required|string|min:5',
+            'recommendations' => 'required|array|min:1',
+            'recommendations.*' => 'required|string|min:5',
+            'confidence_rating' => 'required|integer|min:1|max:10',
         ]);
 
-        $feedback->update(['content' => $validated['content']]);
+        $feedback->update([
+            'content' => $validated['content'],
+            'strengths' => $validated['strengths'],
+            'weaknesses' => $validated['weaknesses'],
+            'recommendations' => $validated['recommendations'],
+            'confidence_rating' => $validated['confidence_rating'],
+        ]);
 
         // Notify trader of edit
         $this->notificationService->notifyFeedbackEdited($feedback->trader, $feedback);

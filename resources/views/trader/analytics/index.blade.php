@@ -114,25 +114,33 @@
         <!-- Equity Curve -->
         <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
             <h3 class="text-lg font-semibold text-white mb-4">Equity Curve</h3>
-            <canvas id="equityCurveChart"></canvas>
+            <div class="relative h-80 w-full">
+                <canvas id="equityCurveChart"></canvas>
+            </div>
         </div>
 
         <!-- Monthly P&L -->
         <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
             <h3 class="text-lg font-semibold text-white mb-4">Monthly P&L ({{ now()->year }})</h3>
-            <canvas id="monthlyPLChart"></canvas>
+            <div class="relative h-80 w-full">
+                <canvas id="monthlyPLChart"></canvas>
+            </div>
         </div>
 
         <!-- Session Performance -->
         <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
             <h3 class="text-lg font-semibold text-white mb-4">Session Performance</h3>
-            <canvas id="sessionChart"></canvas>
+            <div class="relative h-80 w-full">
+                <canvas id="sessionChart"></canvas>
+            </div>
         </div>
 
         <!-- Win/Loss Distribution -->
         <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
             <h3 class="text-lg font-semibold text-white mb-4">Outcome Distribution</h3>
-            <canvas id="distributionChart"></canvas>
+            <div class="relative h-80 w-full">
+                <canvas id="distributionChart"></canvas>
+            </div>
         </div>
     </div>
 
@@ -211,6 +219,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
                         tooltip: {
@@ -247,6 +256,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
                         tooltip: {
@@ -283,6 +293,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     indexAxis: 'y',
                     plugins: {
                         legend: { display: false },
@@ -323,6 +334,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             position: 'bottom',

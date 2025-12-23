@@ -14,10 +14,10 @@
     <!-- Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100 antialiased">
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100 antialiased font-sans">
     <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <aside class="hidden lg:flex lg:flex-col w-64 bg-slate-900/50 backdrop-blur-xl border-r border-slate-800/50">
+        <aside class="hidden lg:flex lg:flex-col w-64 h-screen sticky top-0 bg-slate-900/50 backdrop-blur-xl border-r border-slate-800/50 flex-shrink-0">
             <!-- Logo -->
             <div class="p-6 border-b border-slate-800/50">
                 <h1 class="text-2xl font-bold text-white flex items-center gap-2">
@@ -56,7 +56,7 @@
         <!-- Main Content -->
         <div class="flex-1 flex flex-col min-w-0">
             <!-- Mobile Header -->
-            <header class="lg:hidden sticky top-0 z-10 bg-slate-900/95 backdrop-blur-xl border-b border-slate-800/50">
+            <header class="lg:hidden sticky top-0 z-10 bg-slate-900/95 backdrop-blur-xl border-b border-slate-800/50 flex-shrink-0">
                 <div class="flex items-center justify-between px-4 py-3">
                     <h1 class="text-xl font-bold text-white flex items-center gap-2">
                         <span>📊</span>
@@ -71,8 +71,8 @@
             </header>
 
             <!-- Page Content -->
-            <main class="flex-1 overflow-y-auto">
-                <div class="container mx-auto px-4 py-8 max-w-7xl">
+            <main class="flex-1">
+                <div class="container mx-auto px-4 py-8 pb-32 max-w-7xl">
                     @yield('content')
                 </div>
             </main>
