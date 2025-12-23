@@ -124,6 +124,16 @@ class User extends Authenticatable
         return $this->hasMany(\App\Models\AnalystAssignment::class, 'analyst_id');
     }
 
+    public function tradeAccounts()
+    {
+        return $this->hasMany(\App\Models\TradeAccount::class);
+    }
+
+    public function strategies()
+    {
+        return $this->hasMany(\App\Models\Strategy::class);
+    }
+
     /**
      * Profile methods
      */
@@ -197,5 +207,100 @@ class User extends Authenticatable
                     ->log('Profile updated: ' . implode(', ', $changes));
             }
         });
+    }
+
+    /**
+     * Achievements relationship
+     */
+    public function achievements()
+    {
+        return $this->belongsToMany(\App\Models\Achievement::class, 'user_achievements')
+            ->withPivot('unlocked_at')
+            ->withTimestamps();
+    }
+
+    /**
+     * Check if user has unlocked an achievement
+     */
+    public function hasAchievement(string $slug): bool
+    {
+        return $this->achievements()->where('slug', $slug)->exists();
+    }
+
+    /**
+     * Add XP to user and level up if needed
+     */
+    public function addXp(int $amount): void
+    {
+        $this->xp += $amount;
+        $this->level = $this->calculateLevel();
+        $this->save();
+    }
+
+    /**
+     * Calculate level based on XP
+     * Level formula: 100 XP per level, exponential scaling
+     */
+    public function calculateLevel(): int
+    {
+        $xp = $this->xp;
+        $level = 1;
+        $xpNeeded = 100;
+        
+        while ($xp >= $xpNeeded) {
+            $xp -= $xpNeeded;
+            $level++;
+            $xpNeeded = (int) ($xpNeeded * 1.2); // 20% more XP per level
+        }
+        
+        return $level;
+    }
+
+    /**
+     * Get XP needed for next level
+     */
+    public function getXpForNextLevel(): int
+    {
+        $xp = $this->xp;
+        $xpNeeded = 100;
+        
+        for ($i = 1; $i < $this->level; $i++) {
+            $xpNeeded = (int) ($xpNeeded * 1.2);
+        }
+        
+        return $xpNeeded;
+    }
+
+    /**
+     * Get XP progress to next level (0-100%)
+     */
+    public function getXpProgress(): int
+    {
+        $currentLevelXp = 0;
+        $xpNeeded = 100;
+        
+        for ($i = 1; $i < $this->level; $i++) {
+            $currentLevelXp += $xpNeeded;
+            $xpNeeded = (int) ($xpNeeded * 1.2);
+        }
+        
+        $xpInCurrentLevel = $this->xp - $currentLevelXp;
+        return min(100, (int) (($xpInCurrentLevel / $xpNeeded) * 100));
+    }
+
+    /**
+     * Get level title
+     */
+    public function getLevelTitle(): string
+    {
+        return match(true) {
+            $this->level >= 50 => 'Legendary Trader',
+            $this->level >= 40 => 'Master Trader',
+            $this->level >= 30 => 'Expert Trader',
+            $this->level >= 20 => 'Advanced Trader',
+            $this->level >= 10 => 'Intermediate Trader',
+            $this->level >= 5 => 'Apprentice Trader',
+            default => 'Novice Trader',
+        };
     }
 }

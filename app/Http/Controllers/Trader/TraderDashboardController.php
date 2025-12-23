@@ -4,6 +4,12 @@ namespace App\Http\Controllers\Trader;
 
 use App\Http\Controllers\Controller;
 use App\Services\TradeAnalyticsService;
+use App\Models\Strategy;
+use App\Enums\TradeDirection;
+use App\Enums\MarketSession;
+use App\Enums\TradeOutcome;
+use App\Enums\TradeEmotion;
+use App\Enums\PostTradeEmotion;
 use Illuminate\Support\Facades\Auth;
 
 class TraderDashboardController extends Controller
@@ -42,6 +48,16 @@ class TraderDashboardController extends Controller
         // Recent trades
         $recentTrades = $user->trades()->latest()->take(5)->get();
 
-        return view('trader.dashboard', compact('stats', 'equityCurve', 'streaks', 'recentTrades'));
+        // Form Data for Modal
+        $pairs = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF', 'AUD/USD', 'USD/CAD', 'NZD/USD', 'XAU/USD', 'BTC/USD', 'ETH/USD', 'NAS100', 'US30', 'SPX500'];
+        $directions = TradeDirection::cases();
+        $sessions = MarketSession::cases();
+        $outcomes = TradeOutcome::cases();
+        $emotions = TradeEmotion::cases();
+        $postEmotions = PostTradeEmotion::cases();
+        $accounts = $user->tradeAccounts()->get();
+        $strategies = Strategy::where('user_id', $user->id)->get();
+
+        return view('trader.dashboard', compact('stats', 'equityCurve', 'streaks', 'recentTrades', 'pairs', 'directions', 'sessions', 'outcomes', 'emotions', 'postEmotions', 'accounts', 'strategies'));
     }
 }

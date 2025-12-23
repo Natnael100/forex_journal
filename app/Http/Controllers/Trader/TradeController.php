@@ -5,11 +5,16 @@ namespace App\Http\Controllers\Trader;
 use App\Enums\MarketSession;
 use App\Enums\TradeDirection;
 use App\Enums\TradeOutcome;
+use App\Enums\TradeEmotion;
+use App\Enums\PostTradeEmotion;
 use App\Http\Controllers\Controller;
 use App\Models\Trade;
+use App\Models\Strategy;
+use App\Services\AchievementService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Carbon\Carbon;
 
 class TradeController extends Controller
 {
@@ -22,17 +27,18 @@ class TradeController extends Controller
         return view('trader.trades.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $pairs = $this->getCommonPairs();
         $directions = TradeDirection::cases();
         $sessions = MarketSession::cases();
         $outcomes = TradeOutcome::cases();
+        $emotions = TradeEmotion::cases();
+        $postEmotions = PostTradeEmotion::cases();
+        $accounts = Auth::user()->tradeAccounts()->get();
+        $strategies = Strategy::where('user_id', Auth::id())->get();
 
-        return view('trader.trades.create', compact('pairs', 'directions', 'sessions', 'outcomes'));
+        return view('trader.trades.create', compact('pairs', 'directions', 'sessions', 'outcomes', 'emotions', 'postEmotions', 'accounts', 'strategies'));
     }
 
     /**
@@ -41,30 +47,48 @@ class TradeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'trade_account_id' => 'required|exists:trade_accounts,id',
             'pair' => 'required|string|max:255',
             'direction' => 'required|in:buy,sell',
             'entry_date' => 'required|date',
             'exit_date' => 'nullable|date|after:entry_date',
-            'strategy' => 'nullable|string|max:255',
-            'session' => 'required|in:london,newyork,asia,sydney',
-            'emotion' => 'nullable|string|max:255',
-            'risk_reward_ratio' => 'nullable|numeric|min:0',
-            'outcome' => 'required|in:win,loss,breakeven',
-            'pips' => 'nullable|numeric',
-            'profit_loss' => 'required|numeric',
-            'tradingview_link' => 'nullable|url',
+            'entry_price' => 'required|numeric|gt:0',
+            'exit_price' => 'required|numeric|gt:0',
+            'stop_loss' => 'nullable|numeric|gt:0',
+            'take_profit' => 'nullable|numeric|gt:0',
+            'lot_size' => 'required|numeric|gt:0',
+            'risk_percentage' => 'nullable|numeric|min:0|max:100',
+            'strategy_id' => 'nullable|exists:strategies,id',
+            'trade_type' => 'nullable|string|max:50',
+            'session' => 'nullable|string',
+            'pre_trade_emotion' => 'nullable|string|max:255',
+            'post_trade_emotion' => 'nullable|string|max:255',
+            'followed_plan' => 'nullable|boolean',
+            'setup_notes' => 'nullable|string',
+            'mistakes_lessons' => 'nullable|string',
+            'chart_link' => 'nullable|url',
             'notes' => 'nullable|string',
         ]);
 
-        $trade = Auth::user()->trades()->create($validated);
-
-        // Add strategy tag if provided
-        if ($request->strategy) {
-            $trade->attachTag($request->strategy, 'strategy');
+        // Auto-detect session if missing
+        if (empty($validated['session'])) {
+            $validated['session'] = $this->determineSession($validated['entry_date']);
         }
 
+        // Calculate and Set Derived Metrics
+        $calc = $this->calculateMetrics($validated);
+        $validated['pips'] = $calc['pips'];
+        $validated['profit_loss'] = $calc['profit_loss'];
+        $validated['risk_reward_ratio'] = $calc['rr'];
+        $validated['outcome'] = $calc['outcome'];
+
+        $trade = Auth::user()->trades()->create($validated);
+
+        // Award XP and check achievements
+        app(AchievementService::class)->awardTradeXp(Auth::user());
+
         return redirect()->route('trader.trades.index')
-            ->with('success', 'Trade logged successfully!');
+            ->with('success', 'Trade logged successfully! +10 XP');
     }
 
     /**
@@ -90,8 +114,12 @@ class TradeController extends Controller
         $directions = TradeDirection::cases();
         $sessions = MarketSession::cases();
         $outcomes = TradeOutcome::cases();
+        $emotions = TradeEmotion::cases();
+        $postEmotions = PostTradeEmotion::cases();
+        $accounts = Auth::user()->tradeAccounts()->get();
+        $strategies = Strategy::where('user_id', Auth::id())->get();
 
-        return view('trader.trades.edit', compact('trade', 'pairs', 'directions', 'sessions', 'outcomes'));
+        return view('trader.trades.edit', compact('trade', 'pairs', 'directions', 'sessions', 'outcomes', 'emotions', 'postEmotions', 'accounts', 'strategies'));
     }
 
     /**
@@ -107,25 +135,37 @@ class TradeController extends Controller
             'direction' => 'required|in:buy,sell',
             'entry_date' => 'required|date',
             'exit_date' => 'nullable|date|after:entry_date',
-            'strategy' => 'nullable|string|max:255',
-            'session' => 'required|in:london,newyork,asia,sydney',
-            'emotion' => 'nullable|string|max:255',
-            'risk_reward_ratio' => 'nullable|numeric|min:0',
-            'outcome' => 'required|in:win,loss,breakeven',
-            'pips' => 'nullable|numeric',
-            'profit_loss' => 'required|numeric',
-            'tradingview_link' => 'nullable|url',
+            'entry_price' => 'required|numeric|gt:0',
+            'exit_price' => 'required|numeric|gt:0',
+            'stop_loss' => 'nullable|numeric|gt:0',
+            'take_profit' => 'nullable|numeric|gt:0',
+            'lot_size' => 'required|numeric|gt:0',
+            'risk_percentage' => 'nullable|numeric|min:0|max:100',
+            'strategy_id' => 'nullable|exists:strategies,id',
+            'trade_type' => 'nullable|string|max:50',
+            'session' => 'nullable|string',
+            'pre_trade_emotion' => 'nullable|string|max:255',
+            'post_trade_emotion' => 'nullable|string|max:255',
+            'followed_plan' => 'nullable|boolean',
+            'setup_notes' => 'nullable|string',
+            'mistakes_lessons' => 'nullable|string',
+            'chart_link' => 'nullable|url',
             'notes' => 'nullable|string',
         ]);
 
-        $trade->update($validated);
-
-        // Sync strategy tag
-        if ($request->strategy) {
-            $trade->syncTagsWithType([$request->strategy], 'strategy');
-        } else {
-            $trade->detachTags($trade->tagsWithType('strategy'));
+        // Auto-detect session if missing
+        if (empty($validated['session'])) {
+            $validated['session'] = $this->determineSession($validated['entry_date']);
         }
+
+        // Calculate Metrics
+        $calc = $this->calculateMetrics($validated);
+        $validated['pips'] = $calc['pips'];
+        $validated['profit_loss'] = $calc['profit_loss'];
+        $validated['risk_reward_ratio'] = $calc['rr'];
+        $validated['outcome'] = $calc['outcome'];
+
+        $trade->update($validated);
 
         return redirect()->route('trader.trades.show', $trade)
             ->with('success', 'Trade updated successfully!');
@@ -154,7 +194,71 @@ class TradeController extends Controller
             'EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF', 'AUD/USD', 'USD/CAD', 'NZD/USD',
             'EUR/GBP', 'EUR/JPY', 'GBP/JPY', 'EUR/CHF', 'EUR/AUD', 'EUR/CAD', 'EUR/NZD',
             'GBP/CHF', 'GBP/AUD', 'GBP/CAD', 'GBP/NZD', 'AUD/JPY', 'AUD/NZD', 'AUD/CAD',
-            'CAD/JPY', 'CHF/JPY', 'NZD/JPY', 'GBP/ZAR', 'GBP/TRY',
+            'CAD/JPY', 'CHF/JPY', 'NZD/JPY', 'GBP/ZAR', 'GBP/TRY', 'XAU/USD', 'BTC/USD',
+        ];
+    }
+
+    /**
+     * Determine trading session from time (UTC)
+     */
+    private function determineSession($date): string
+    {
+        $hour = Carbon::parse($date)->hour;
+        
+        if ($hour >= 8 && $hour < 16) return MarketSession::LONDON->value;
+        if ($hour >= 13 && $hour < 21) return MarketSession::NEWYORK->value;
+        if ($hour >= 21 || $hour < 5) return MarketSession::SYDNEY->value;
+        return MarketSession::ASIA->value;
+    }
+
+    /**
+     * Calculate derived metrics
+     */
+    private function calculateMetrics(array $data): array
+    {
+        $entry = $data['entry_price'];
+        $exit = $data['exit_price'];
+        $direction = $data['direction']; 
+        $lot = $data['lot_size'];
+
+        // Pip Multiplier
+        $pair = strtoupper($data['pair'] ?? '');
+        $isJpy = str_contains($pair, 'JPY');
+        $multiplier = $isJpy ? 100 : 10000;
+        
+        // Pips
+        if ($direction === 'buy') {
+            $diff = $exit - $entry;
+        } else {
+            $diff = $entry - $exit;
+        }
+        $pips = $diff * $multiplier;
+        
+        // Approx Profit ($10 per pip per lot standard)
+        // For JPY pairs, calculation differs ($1000 per lot per 1 movement?)
+        // Standard: 1 lot = $10/pip.
+        $pl = $pips * $lot * 10; 
+        
+        // Outcome
+        if ($pips > 0) $outcome = TradeOutcome::WIN->value;
+        elseif ($pips < 0) $outcome = TradeOutcome::LOSS->value;
+        else $outcome = TradeOutcome::BREAKEVEN->value;
+
+        // RR
+        $rr = 0;
+        if (!empty($data['stop_loss']) && !empty($data['take_profit'])) {
+             $risk = abs($entry - $data['stop_loss']);
+             $reward = abs($entry - $data['take_profit']);
+             if ($risk > 0) {
+                 $rr = $reward / $risk;
+             }
+        }
+
+        return [
+            'pips' => round($pips, 2),
+            'profit_loss' => round($pl, 2),
+            'rr' => round($rr, 2),
+            'outcome' => $outcome
         ];
     }
 }

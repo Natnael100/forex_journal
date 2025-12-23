@@ -11,7 +11,29 @@
 
     <!-- Filters -->
     <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50 mb-8">
-        <form method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-300 mb-2">Account</label>
+                <select name="trade_account_id" class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <option value="">All Accounts</option>
+                    @foreach($accounts as $account)
+                        <option value="{{ $account->id }}" {{ ($filters['trade_account_id'] ?? '') == $account->id ? 'selected' : '' }}>
+                            {{ $account->account_name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-300 mb-2">Period</label>
+                <select name="period" class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" onchange="this.form.submit()">
+                    <option value="">Custom</option>
+                    <option value="this_week" {{ request('period') == 'this_week' ? 'selected' : '' }}>This Week</option>
+                    <option value="last_week" {{ request('period') == 'last_week' ? 'selected' : '' }}>Last Week</option>
+                    <option value="this_month" {{ request('period') == 'this_month' ? 'selected' : '' }}>This Month</option>
+                    <option value="last_month" {{ request('period') == 'last_month' ? 'selected' : '' }}>Last Month</option>
+                    <option value="this_year" {{ request('period') == 'this_year' ? 'selected' : '' }}>This Year</option>
+                </select>
+            </div>
             <div>
                 <label class="block text-sm font-medium text-slate-300 mb-2">From Date</label>
                 <input type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}" class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">

@@ -9,12 +9,12 @@
             <h1 class="text-3xl font-bold text-white mb-2">Welcome Back, {{ auth()->user()->name }}! 👋</h1>
             <p class="text-slate-400">Track and improve your trading performance</p>
         </div>
-        <a href="{{ route('trader.trades.create') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-lg shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 transition-all duration-200 transform hover:-translate-y-0.5">
+        <button onclick="openTradeModal()" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-lg shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 transition-all duration-200 transform hover:-translate-y-0.5">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
             </svg>
             <span>New Trade</span>
-        </a>
+        </button>
     </div>
 
     <!-- Stats Grid -->
@@ -159,7 +159,7 @@
         <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50">
             <h2 class="text-xl font-bold text-white mb-4">Quick Actions</h2>
             <div class="space-y-3">
-                <a href="{{ route('trader.trades.create') }}" class="flex items-center gap-4 p-4 bg-slate-800/50 rounded-lg hover:bg-slate-700/50 transition-colors group">
+                <button onclick="openTradeModal()" class="w-full flex items-center gap-4 p-4 bg-slate-800/50 rounded-lg hover:bg-slate-700/50 transition-colors group text-left">
                     <div class="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                         <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -169,7 +169,7 @@
                         <p class="font-medium text-white">Log New Trade</p>
                         <p class="text-sm text-slate-400">Record your latest trade</p>
                     </div>
-                </a>
+                </button>
                 <a href="{{ route('trader.analytics.index') }}" class="flex items-center gap-4 p-4 bg-slate-800/50 rounded-lg hover:bg-slate-700/50 transition-colors group">
                     <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                         <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -195,4 +195,6 @@
             </div>
         </div>
     </div>
+
+    @include('trader.trades.create-modal')
 @endsection

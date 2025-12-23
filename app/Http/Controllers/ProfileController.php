@@ -41,14 +41,22 @@ class ProfileController extends Controller
         
         // Get recent trades if trader
         $recentTrades = null;
+        $leaderboardRank = null;
         if ($user->hasRole('trader')) {
             $recentTrades = $user->trades()
                 ->latest()
                 ->take(5)
                 ->get();
+            
+            // Calculate leaderboard rank
+            if ($user->xp > 0) {
+                $leaderboardRank = User::role('trader')
+                    ->where('xp', '>', $user->xp)
+                    ->count() + 1;
+            }
         }
         
-        return view('profile.show', compact('user', 'completion', 'recentTrades'));
+        return view('profile.show', compact('user', 'completion', 'recentTrades', 'leaderboardRank'));
     }
 
     /**

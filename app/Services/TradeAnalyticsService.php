@@ -177,11 +177,15 @@ class TradeAnalyticsService
     /**
      * Get monthly P&L data for chart
      */
-    public function getMonthlyPLData(User $user, int $year): array
+    public function getMonthlyPLData(User $user, int $year, ?int $tradeAccountId = null): array
     {
-        $data = $user->trades()
-            ->whereYear('entry_date', $year)
-            ->selectRaw("CAST(strftime('%m', entry_date) AS INTEGER) as month, SUM(profit_loss) as total")
+        $query = $user->trades()->whereYear('entry_date', $year);
+
+        if ($tradeAccountId) {
+            $query->where('trade_account_id', $tradeAccountId);
+        }
+
+        $data = $query->selectRaw("CAST(strftime('%m', entry_date) AS INTEGER) as month, SUM(profit_loss) as total")
             ->groupBy('month')
             ->orderBy('month')
             ->get()
@@ -220,12 +224,63 @@ class TradeAnalyticsService
     }
 
     /**
+     * Get strategy performance data
+     */
+    public function getStrategyPerformance(User $user, ?array $filters = []): array
+    {
+        $query = $this->applyFilters($user->trades(), $filters);
+        
+        // Join with strategies table to get strategy names
+        // Note: strategy_id column name in trades table, id in strategies table
+        return $query->whereNotNull('strategy_id')
+            ->join('strategies', 'trades.strategy_id', '=', 'strategies.id')
+            ->selectRaw('strategies.name as strategy_name, strategies.id as strategy_id, COUNT(*) as trades, SUM(profit_loss) as profit, AVG(profit_loss) as avg_profit')
+            ->groupBy('strategies.id', 'strategies.name')
+            ->get()
+            ->map(function ($item) use ($user, $filters) {
+                 // Calculate WR per strategy
+                // Since raw query is complex for joined WR, we might do separate simple queries or subqueries
+                // For simplicity/performance balance, let's fetch basic stats here
+                // Note: Win Rate calculation per group in SQL is doable but tricky with SQLite/MySQL diffs.
+                // Let's do a quick separate count for wins for each strategy found in the loop
+                 
+                 $total = $item->trades;
+                 $wins = $user->trades()
+                    ->where('strategy_id', $item->strategy_id)
+                    ->where('outcome', 'win')
+                    ->when(isset($filters['date_from']), fn($q) => $q->where('entry_date', '>=', $filters['date_from']))
+                    ->when(isset($filters['date_to']), fn($q) => $q->where('entry_date', '<=', $filters['date_to']))
+                     ->when(isset($filters['trade_account_id']), fn($q) => $q->where('trade_account_id', $filters['trade_account_id']))
+                    ->count();
+
+                 $winRate = $total > 0 ? round(($wins / $total) * 100, 1) : 0;
+
+                return [
+                    'id' => $item->strategy_id,
+                    'name' => $item->strategy_name,
+                    'trades' => $item->trades,
+                    'profit' => round($item->profit, 2),
+                    'win_rate' => $winRate,
+                    'avg_profit' => round($item->avg_profit, 2),
+                ];
+            })
+            ->sortByDesc('profit') // specific sorting
+            ->values()
+            ->toArray();
+    }
+
+    /**
      * Get best and worst performing pairs
      */
-    public function getBestWorstPairs(User $user, int $limit = 5): array
+    public function getBestWorstPairs(User $user, int $limit = 5, ?int $tradeAccountId = null): array
     {
-        $pairStats = $user->trades()
-            ->selectRaw('pair, COUNT(*) as trades, SUM(profit_loss) as profit')
+        $query = $user->trades();
+
+        if ($tradeAccountId) {
+            $query->where('trade_account_id', $tradeAccountId);
+        }
+
+        $pairStats = $query->selectRaw('pair, COUNT(*) as trades, SUM(profit_loss) as profit')
             ->groupBy('pair')
             ->having('trades', '>=', 3) // At least 3 trades
             ->orderBy('profit', 'desc')
@@ -382,6 +437,14 @@ class TradeAnalyticsService
 
         if (isset($filters['outcome'])) {
             $query->where('outcome', $filters['outcome']);
+        }
+
+        if (isset($filters['trade_account_id'])) {
+            $query->where('trade_account_id', $filters['trade_account_id']);
+        }
+
+        if (isset($filters['strategy_id'])) {
+            $query->where('strategy_id', $filters['strategy_id']);
         }
 
         return $query;

@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 
 
 
+
 // Guest Routes (Public)
 Route::middleware('guest')->group(function () {
     // Registration
@@ -150,6 +151,14 @@ Route::middleware('auth')->group(function () {
         // Trade Management
         Route::resource('trades', \App\Http\Controllers\Trader\TradeController::class);
         
+        // Strategies
+        Route::resource('strategies', \App\Http\Controllers\Trader\StrategyController::class);
+        
+        // Trade Accounts
+        Route::resource('accounts', \App\Http\Controllers\Trader\TradeAccountController::class);
+        Route::post('/accounts/{account}/transaction', [\App\Http\Controllers\Trader\TradeAccountController::class, 'addTransaction'])
+            ->name('accounts.transaction');
+        
         // Analytics
         Route::get('/analytics', [\App\Http\Controllers\Trader\AnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/analytics/review', [\App\Http\Controllers\Trader\AnalyticsController::class, 'review'])->name('analytics.review');
@@ -158,6 +167,17 @@ Route::middleware('auth')->group(function () {
         // Feedback
         Route::get('/feedback', [\App\Http\Controllers\Trader\FeedbackController::class, 'index'])->name('feedback.index');
         Route::get('/feedback/{feedback}', [\App\Http\Controllers\Trader\FeedbackController::class, 'show'])->name('feedback.show');
+        
+        // Trading Tools
+        Route::get('/tools', function () {
+            return view('trader.tools.index');
+        })->name('tools.index');
+        
+        // Achievements
+        Route::get('/achievements', [\App\Http\Controllers\Trader\AchievementController::class, 'index'])->name('achievements.index');
+        
+        // Leaderboard
+        Route::get('/leaderboard', [\App\Http\Controllers\Trader\LeaderboardController::class, 'index'])->name('leaderboard.index');
     });
 
 });

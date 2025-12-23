@@ -24,18 +24,33 @@ class Trade extends Model
      */
     protected $fillable = [
         'user_id',
+        'trade_account_id',
+        'strategy_id',
         'pair',
         'direction',
+        'trade_type',
         'entry_date',
         'exit_date',
-        'strategy',
-        'session',
-        'emotion',
+        'entry_price',
+        'exit_price',
+        'stop_loss',
+        'take_profit',
+        'lot_size',
+        'risk_percentage',
         'risk_reward_ratio',
-        'outcome',
         'pips',
         'profit_loss',
-        'tradingview_link',
+        'session',
+        'pre_trade_emotion',
+        'post_trade_emotion',
+        'followed_plan',
+        'mistakes_lessons',
+        'setup_notes',
+        'chart_link',
+        'strategy', // Legacy
+        'emotion', // Legacy
+        'outcome',
+        'tradingview_link', // Legacy
         'notes',
         'has_feedback',
     ];
@@ -56,6 +71,7 @@ class Trade extends Model
             'risk_reward_ratio' => 'decimal:2',
             'pips' => 'decimal:2',
             'profit_loss' => 'decimal:2',
+            'followed_plan' => 'boolean',
             'has_feedback' => 'boolean',
         ];
     }
@@ -77,6 +93,30 @@ class Trade extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the trade account this trade belongs to
+     */
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(TradeAccount::class, 'trade_account_id');
+    }
+
+    /**
+     * Alias for account() to match controller expectation
+     */
+    public function tradeAccount(): BelongsTo
+    {
+        return $this->account();
+    }
+
+    /**
+     * Get the strategy used for this trade
+     */
+    public function strategyModel(): BelongsTo
+    {
+        return $this->belongsTo(Strategy::class, 'strategy_id');
     }
 
     /**

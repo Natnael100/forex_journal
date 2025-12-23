@@ -65,6 +65,34 @@
                             </div>
                         </div>
                     @endif
+
+                    <!-- XP & Level Badge -->
+                    @if($user->hasRole('trader'))
+                        <div class="mt-6 p-4 bg-gradient-to-br from-indigo-600/20 to-purple-600/20 rounded-lg border border-indigo-500/30">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-lg font-bold text-white shadow-lg">
+                                    {{ $user->level }}
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-xs text-gray-400">{{ $user->getLevelTitle() }}</p>
+                                    <p class="text-sm font-bold text-white">Level {{ $user->level }}</p>
+                                    <div class="mt-1 w-full h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                                        <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-500" style="width: {{ $user->getXpProgress() }}%"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-0.5">{{ number_format($user->xp) }} XP</p>
+                                </div>
+                            </div>
+                            
+                            @if(isset($leaderboardRank) && $leaderboardRank)
+                                <div class="mt-3 pt-3 border-t border-indigo-500/20 flex items-center justify-between">
+                                    <span class="text-xs text-gray-400">Leaderboard Rank</span>
+                                    <a href="{{ route('trader.leaderboard.index') }}" class="flex items-center gap-1 text-sm font-bold text-amber-400 hover:text-amber-300 transition-colors">
+                                        🏅 #{{ $leaderboardRank }}
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
                 </div>
             </div>
 

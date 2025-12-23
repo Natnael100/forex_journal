@@ -36,6 +36,53 @@
         </x-profile-card>
     </div>
 
+    <!-- Filters -->
+    <div class="mb-8 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+        <form method="GET" class="flex flex-wrap gap-4 items-end">
+            <div class="flex-1 min-w-[200px]">
+                <label class="block text-sm font-medium text-slate-300 mb-2">Account</label>
+                <select name="trade_account_id" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">All Accounts</option>
+                    @foreach($accounts as $account)
+                        <option value="{{ $account->id }}" {{ request('trade_account_id') == $account->id ? 'selected' : '' }}>
+                            {{ $account->account_name }} ({{ $account->currency }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="flex-1 min-w-[200px]">
+                <label class="block text-sm font-medium text-slate-300 mb-2">Strategy</label>
+                <select name="strategy_id" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">All Strategies</option>
+                    @foreach($strategies as $strategy)
+                        <option value="{{ $strategy->id }}" {{ request('strategy_id') == $strategy->id ? 'selected' : '' }}>
+                            {{ $strategy->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="flex-1 min-w-[200px]">
+                <label class="block text-sm font-medium text-slate-300 mb-2">Period</label>
+                <select name="period" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Custom</option>
+                    <option value="this_week" {{ request('period') == 'this_week' ? 'selected' : '' }}>This Week</option>
+                    <option value="last_week" {{ request('period') == 'last_week' ? 'selected' : '' }}>Last Week</option>
+                    <option value="this_month" {{ request('period') == 'this_month' ? 'selected' : '' }}>This Month</option>
+                    <option value="last_month" {{ request('period') == 'last_month' ? 'selected' : '' }}>Last Month</option>
+                    <option value="this_year" {{ request('period') == 'this_year' ? 'selected' : '' }}>This Year</option>
+                </select>
+            </div>
+            <div>
+                <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-lg shadow-blue-900/20">
+                    Filter View
+                </button>
+                <a href="{{ request()->url() }}" class="ml-2 px-4 py-2 text-slate-400 hover:text-white transition-colors">
+                    Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
     <!-- Metrics Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         @include('components.stat-card', [
@@ -165,6 +212,47 @@
             </div>
         </div>
     </div>
+
+    <!-- Strategy Performance -->
+    @if(count($strategyPerformance) > 0)
+    <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50 mb-6">
+        <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <span>📘</span> Strategy Breakdown
+        </h3>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-slate-700">
+                        <th class="text-left py-3 px-4 text-slate-300 font-semibold">Strategy</th>
+                        <th class="text-center py-3 px-4 text-slate-300 font-semibold">Trades</th>
+                        <th class="text-center py-3 px-4 text-slate-300 font-semibold">Win Rate</th>
+                        <th class="text-right py-3 px-4 text-slate-300 font-semibold">P/L</th>
+                        <th class="text-right py-3 px-4 text-slate-300 font-semibold">Avg P/L</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($strategyPerformance as $strat)
+                        <tr class="border-b border-slate-800 hover:bg-white/5">
+                            <td class="py-3 px-4 text-white font-medium">{{ $strat['name'] }}</td>
+                            <td class="py-3 px-4 text-center text-slate-300">{{ $strat['trades'] }}</td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="px-2 py-1 rounded text-sm {{ $strat['win_rate'] >= 50 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400' }}">
+                                    {{ $strat['win_rate'] }}%
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-right font-semibold {{ $strat['profit'] >= 0 ? 'text-emerald-400' : 'text-red-400' }}">
+                                ${{ number_format($strat['profit'], 2) }}
+                            </td>
+                            <td class="py-3 px-4 text-right text-slate-300">
+                                ${{ number_format($strat['avg_profit'], 2) }}
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
 
     <!-- Recent Trades -->
     <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50 mb-6">
