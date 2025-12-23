@@ -36,6 +36,88 @@
         </x-profile-card>
     </div>
 
+    <!-- Analyst Governance Section (Phase 6) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Focus Area Manager -->
+        <div class="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+            <h3 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <span>🎯</span> Coaching Focus
+            </h3>
+            <p class="text-sm text-slate-400 mb-4">Set the trader's journaling priority. This changes their trade entry form.</p>
+            
+            <form action="{{ route('analyst.trader.update-focus', $trader->id) }}" method="POST" class="flex gap-4">
+                @csrf
+                <select name="current_focus_area" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500">
+                    <option value="standard" {{ ($assignment->current_focus_area ?? 'standard') === 'standard' ? 'selected' : '' }}>Standard Journaling</option>
+                    <option value="psychology" {{ ($assignment->current_focus_area ?? '') === 'psychology' ? 'selected' : '' }}>Psychology (Stress & Distractions)</option>
+                    <option value="execution" {{ ($assignment->current_focus_area ?? '') === 'execution' ? 'selected' : '' }}>Execution (Slippage & Timing)</option>
+                    <option value="risk" {{ ($assignment->current_focus_area ?? '') === 'risk' ? 'selected' : '' }}>Risk Management (Confluence)</option>
+                </select>
+                <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg">
+                    Update
+                </button>
+            </form>
+        </div>
+
+        <!-- Risk Governor -->
+        <div class="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-white flex items-center gap-2">
+                    <span>🛡️</span> Risk Rules
+                </h3>
+                <span class="text-xs text-slate-400">Active Rules: {{ count($riskRules ?? []) }}</span>
+            </div>
+
+            <!-- Existing Rules List -->
+            <div class="space-y-3 mb-4 max-h-40 overflow-y-auto">
+                @forelse($riskRules ?? [] as $rule)
+                    <div class="flex justify-between items-center p-3 bg-slate-900/50 rounded-lg border border-slate-700">
+                        <div>
+                            <div class="text-sm font-medium text-white">
+                                {{ ucfirst(str_replace('_', ' ', $rule->rule_type)) }}
+                                @if($rule->value)
+                                    <span class="text-blue-400">: {{ $rule->value }}</span>
+                                @endif
+                            </div>
+                            <div class="text-xs text-slate-500">
+                                {{ $rule->is_hard_stop ? 'Hard Stop (Block)' : 'Soft Warning' }}
+                            </div>
+                        </div>
+                        <form action="{{ route('analyst.rules.destroy', $rule->id) }}" method="POST" onsubmit="return confirm('Remove rule?');">
+                            @csrf
+                            @method('DELETE')
+                            <button class="text-slate-400 hover:text-red-400 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </form>
+                    </div>
+                @empty
+                    <p class="text-sm text-slate-500 italic">No risk rules active.</p>
+                @endforelse
+            </div>
+
+            <!-- Add New Rule Form -->
+            <form action="{{ route('analyst.trader.rules.store', $trader->id) }}" method="POST" class="grid grid-cols-2 gap-2">
+                @csrf
+                <select name="rule_type" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white text-sm">
+                    <option value="max_risk_percent">Max Risk %</option>
+                    <option value="max_lot_size">Max Lot Size</option>
+                    <option value="restricted_session">Block Session</option>
+                    <option value="restricted_pair">Block Pair</option>
+                </select>
+                <input type="text" name="value" placeholder="Value (e.g. 2.0)" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white text-sm">
+                <input type="text" name="parameters" placeholder="Param (e.g. Asia)" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white text-sm">
+                <select name="is_hard_stop" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white text-sm">
+                    <option value="0">Warning Only</option>
+                    <option value="1">Block Trade</option>
+                </select>
+                <button type="submit" class="col-span-2 mt-2 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold uppercase rounded-lg">
+                    + Add Rule
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Filters -->
     <div class="mb-8 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
         <form method="GET" class="flex flex-wrap gap-4 items-end">
@@ -113,6 +195,127 @@
             'accentColor' => $metrics['profit_factor'] >= 1.5 ? 'green' : 'red'
         ])
     </div>
+
+    <!-- Shadow Simulator (Phase 6) -->
+    <div class="mb-8 bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <span>🔮</span> Shadow Portfolio Simulator
+                </h3>
+                <p class="text-sm text-slate-400">Run "What-If" scenarios to see performance impact.</p>
+            </div>
+            <button onclick="document.getElementById('simulation-panel').classList.toggle('hidden')" class="text-blue-400 hover:text-white text-sm">
+                Toggle Simulator
+            </button>
+        </div>
+
+        <div id="simulation-panel" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Controls -->
+                <div class="lg:col-span-1 space-y-4">
+                    <div class="p-4 bg-slate-900/50 rounded-lg border border-slate-700">
+                        <label class="block text-sm font-medium text-slate-300 mb-3">Exclude Sessions</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2"><input type="checkbox" class="sim-filter" value="asia" data-type="session"> <span class="text-sm text-slate-400">Asia</span></label>
+                            <label class="flex items-center gap-2"><input type="checkbox" class="sim-filter" value="london" data-type="session"> <span class="text-sm text-slate-400">London</span></label>
+                            <label class="flex items-center gap-2"><input type="checkbox" class="sim-filter" value="newyork" data-type="session"> <span class="text-sm text-slate-400">New York</span></label>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 bg-slate-900/50 rounded-lg border border-slate-700">
+                        <label class="block text-sm font-medium text-slate-300 mb-3">Exclude Directions</label>
+                         <div class="flex gap-4">
+                            <label class="flex items-center gap-2"><input type="radio" name="sim_dir" class="sim-filter" value="buy" data-type="direction"> <span class="text-sm text-slate-400">Longs</span></label>
+                            <label class="flex items-center gap-2"><input type="radio" name="sim_dir" class="sim-filter" value="sell" data-type="direction"> <span class="text-sm text-slate-400">Shorts</span></label>
+                         </div>
+                    </div>
+
+                    <button id="run-sim-btn" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-bold">
+                        Run Simulation
+                    </button>
+                </div>
+
+                <!-- Results -->
+                <div class="lg:col-span-2 p-6 bg-slate-900/80 rounded-lg border border-slate-700 flex items-center justify-center min-h-[200px]" id="sim-results">
+                    <p class="text-slate-500">Select filters and run simulation to see impact.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('run-sim-btn').addEventListener('click', function() {
+            const btn = this;
+            const resultsDiv = document.getElementById('sim-results');
+            
+            // Gather filters
+            const sessions = Array.from(document.querySelectorAll('.sim-filter[data-type="session"]:checked')).map(cb => cb.value);
+            const direction = document.querySelector('input[name="sim_dir"]:checked')?.value;
+            
+            btn.disabled = true;
+            btn.innerText = 'Calculating...';
+            
+            fetch("{{ route('analyst.trader.simulate', $trader->id) }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    exclude_sessions: sessions,
+                    exclude_direction: direction
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const actual = data.actual;
+                const shadow = data.shadow;
+                
+                // Diff Helper
+                const diffHtml = (curr, prev, isPerc = false, reverse = false) => {
+                    let diff = curr - prev;
+                    if (Math.abs(diff) < 0.01) return '';
+                    let color = (diff > 0 && !reverse) || (diff < 0 && reverse) ? 'text-green-400' : 'text-red-400';
+                    return `<span class="text-xs ${color} ml-1">(${diff > 0 ? '+' : ''}${diff.toFixed(isPerc ? 1 : 2)}${isPerc ? '%' : ''})</span>`;
+                };
+
+                resultsDiv.innerHTML = `
+                    <div class="w-full">
+                        <h4 class="text-lg font-bold text-white mb-4">Simulation Results</h4>
+                        <div class="grid grid-cols-3 gap-4 mb-4">
+                            <div class="text-center p-3 bg-slate-800 rounded">
+                                <p class="text-xs text-slate-400">Win Rate</p>
+                                <p class="text-xl font-bold text-white">${shadow.win_rate}% ${diffHtml(shadow.win_rate, actual.win_rate, true)}</p>
+                                <p class="text-xs text-slate-500">Actual: ${actual.win_rate}%</p>
+                            </div>
+                            <div class="text-center p-3 bg-slate-800 rounded">
+                                <p class="text-xs text-slate-400">Profit Factor</p>
+                                <p class="text-xl font-bold text-white">${shadow.profit_factor} ${diffHtml(shadow.profit_factor, actual.profit_factor)}</p>
+                                <p class="text-xs text-slate-500">Actual: ${actual.profit_factor}</p>
+                            </div>
+                            <div class="text-center p-3 bg-slate-800 rounded">
+                                <p class="text-xs text-slate-400">Net Profit</p>
+                                <p class="text-xl font-bold text-white">$${shadow.net_profit} ${diffHtml(shadow.net_profit, actual.net_profit)}</p>
+                                <p class="text-xs text-slate-500">Actual: $${actual.net_profit}</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-center text-slate-400">
+                            Removed ${data.excluded_count} trades based on filters.
+                        </p>
+                    </div>
+                `;
+                btn.disabled = false;
+                btn.innerText = 'Run Simulation';
+            })
+            .catch(err => {
+                console.error(err);
+                resultsDiv.innerHTML = '<p class="text-red-400">Error running simulation.</p>';
+                btn.disabled = false;
+                btn.innerText = 'Run Simulation';
+            });
+        });
+    </script>
 
     @if(isset($comparisonMetrics) && $comparisonMetrics)
     <div class="mb-8 bg-gradient-to-br from-indigo-900/20 to-blue-900/20 backdrop-blur-xl rounded-xl p-6 border border-indigo-500/30">

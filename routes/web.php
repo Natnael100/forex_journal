@@ -131,6 +131,12 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['role:analyst', \App\Http\Middleware\EnsureVerified::class])->prefix('analyst')->name('analyst.')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Analyst\AnalystDashboardController::class, 'index'])->name('dashboard');
         Route::get('/traders/{trader}', [\App\Http\Controllers\Analyst\AnalystDashboardController::class, 'traderProfile'])->name('trader.profile');
+        Route::post('/traders/{trader}/simulate', [\App\Http\Controllers\Analyst\AnalystDashboardController::class, 'simulate'])->name('trader.simulate');
+        
+        // Governance (Phase 6)
+        Route::post('/traders/{trader}/focus', [\App\Http\Controllers\Analyst\AnalystDashboardController::class, 'updateFocus'])->name('trader.update-focus');
+        Route::post('/traders/{trader}/rules', [\App\Http\Controllers\Analyst\AnalystDashboardController::class, 'storeRule'])->name('trader.rules.store');
+        Route::delete('/rules/{rule}', [\App\Http\Controllers\Analyst\AnalystDashboardController::class, 'deleteRule'])->name('rules.destroy');
         
         // Feedback Management (Using POST for creation because of complex form, but conventionally GET create)
         Route::get('/feedback/create/{trader}/{trade?}', [\App\Http\Controllers\Analyst\FeedbackController::class, 'create'])->name('feedback.create');
@@ -142,6 +148,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/feedback/{feedback}/edit', [\App\Http\Controllers\Analyst\FeedbackController::class, 'edit'])->name('feedback.edit');
         Route::put('/feedback/{feedback}', [\App\Http\Controllers\Analyst\FeedbackController::class, 'update'])->name('feedback.update');
         Route::delete('/feedback/{feedback}', [\App\Http\Controllers\Analyst\FeedbackController::class, 'destroy'])->name('feedback.destroy');
+        
+        // Feedback Templates
+        Route::resource('templates', \App\Http\Controllers\Analyst\FeedbackTemplateController::class);
     });
 
     // Trader Routes (requires verification)
@@ -186,3 +195,4 @@ Route::middleware('auth')->group(function () {
 Route::get('/', function () {
     return redirect()->route('login');
 });
+

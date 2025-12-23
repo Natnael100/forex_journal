@@ -53,6 +53,9 @@ class Trade extends Model
         'tradingview_link', // Legacy
         'notes',
         'has_feedback',
+        'focus_data',
+        'is_compliant',
+        'violation_reason',
     ];
 
     /**
@@ -73,6 +76,8 @@ class Trade extends Model
             'profit_loss' => 'decimal:2',
             'followed_plan' => 'boolean',
             'has_feedback' => 'boolean',
+            'focus_data' => 'array',
+            'is_compliant' => 'boolean',
         ];
     }
 

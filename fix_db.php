@@ -1,62 +1,76 @@
 <?php
-
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-
-require __DIR__ . '/vendor/autoload.php';
-$app = require_once __DIR__ . '/bootstrap/app.php';
+require __DIR__.'/vendor/autoload.php';
+$app = require __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
-echo "Starting fix...\n";
-file_put_contents('fix_log.txt', "Starting fix...\n");
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
 
-try {
-    // 1. Strategies Table
-    if (!Schema::hasTable('strategies')) {
-        file_put_contents('fix_log.txt', "Creating strategies table...\n", FILE_APPEND);
-        Schema::create('strategies', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
-        });
-        file_put_contents('fix_log.txt', "strategies table created.\n", FILE_APPEND);
-    } else {
-        file_put_contents('fix_log.txt', "strategies table already exists.\n", FILE_APPEND);
-    }
+echo "Checking Schema status...\n";
 
-    // 2. Trades Table Columns
+// 1. Risk Rules
+if (!Schema::hasTable('risk_rules')) {
+    echo "Creating risk_rules table...\n";
+    Schema::create('risk_rules', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('analyst_id')->constrained('users')->onDelete('cascade');
+        $table->foreignId('trader_id')->constrained('users')->onDelete('cascade');
+        $table->string('rule_type');
+        $table->decimal('value', 10, 2)->nullable();
+        $table->string('parameters')->nullable();
+        $table->boolean('is_hard_stop')->default(false);
+        $table->boolean('is_active')->default(true);
+        $table->timestamps();
+        $table->index(['trader_id', 'is_active']);
+    });
+    echo "risk_rules created.\n";
+} else {
+    echo "risk_rules table already exists.\n";
+}
+
+// 2. Feedback Templates
+if (!Schema::hasTable('feedback_templates')) {
+    echo "Creating feedback_templates...\n";
+    Schema::create('feedback_templates', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('analyst_id')->constrained('users')->onDelete('cascade');
+        $table->string('category');
+        $table->string('title');
+        $table->text('content');
+        $table->timestamps();
+    });
+     echo "feedback_templates created.\n";
+} else {
+    echo "feedback_templates table already exists.\n";
+}
+
+// 3. Trades Columns
+if (Schema::hasTable('trades')) {
     Schema::table('trades', function (Blueprint $table) {
-        $columns = [
-            'strategy_id' => fn() => $table->foreignId('strategy_id')->nullable()->constrained('strategies')->nullOnDelete(),
-            'trade_type' => fn() => $table->string('trade_type')->nullable(),
-            'entry_price' => fn() => $table->decimal('entry_price', 16, 8)->nullable(),
-            'exit_price' => fn() => $table->decimal('exit_price', 16, 8)->nullable(),
-            'stop_loss' => fn() => $table->decimal('stop_loss', 16, 8)->nullable(),
-            'take_profit' => fn() => $table->decimal('take_profit', 16, 8)->nullable(),
-            'lot_size' => fn() => $table->decimal('lot_size', 8, 2)->nullable(),
-            'risk_percentage' => fn() => $table->decimal('risk_percentage', 5, 2)->nullable(),
-            'pre_trade_emotion' => fn() => $table->string('pre_trade_emotion')->nullable(),
-            'post_trade_emotion' => fn() => $table->string('post_trade_emotion')->nullable(),
-            'followed_plan' => fn() => $table->boolean('followed_plan')->nullable(),
-            'mistakes_lessons' => fn() => $table->text('mistakes_lessons')->nullable(),
-            'setup_notes' => fn() => $table->text('setup_notes')->nullable(),
-            'chart_link' => fn() => $table->string('chart_link')->nullable(),
-        ];
-
-        foreach ($columns as $name => $def) {
-            if (!Schema::hasColumn('trades', $name)) {
-                file_put_contents('fix_log.txt', "Adding column $name...\n", FILE_APPEND);
-                $def();
-            }
+        if (!Schema::hasColumn('trades', 'is_compliant')) {
+             $table->boolean('is_compliant')->default(true)->nullable(); // Nullable for safety on existing rows
+             echo "Added is_compliant to trades.\n";
+        }
+        if (!Schema::hasColumn('trades', 'violation_reason')) {
+             $table->string('violation_reason')->nullable();
+             echo "Added violation_reason to trades.\n";
+        }
+        if (!Schema::hasColumn('trades', 'focus_data')) {
+             $table->json('focus_data')->nullable();
+             echo "Added focus_data to trades.\n";
         }
     });
-
-    file_put_contents('fix_log.txt', "Fix Complete.\n", FILE_APPEND);
-
-} catch (\Exception $e) {
-    file_put_contents('fix_log.txt', "Error: " . $e->getMessage() . "\n" . $e->getTraceAsString(), FILE_APPEND);
 }
+
+// 4. Assignments Columns
+if (Schema::hasTable('analyst_assignments')) {
+    Schema::table('analyst_assignments', function (Blueprint $table) {
+        if (!Schema::hasColumn('analyst_assignments', 'current_focus_area')) {
+             $table->string('current_focus_area')->default('standard');
+             echo "Added current_focus_area to assignments.\n";
+        }
+    });
+}
+
+echo "Database Fix Complete.\n";

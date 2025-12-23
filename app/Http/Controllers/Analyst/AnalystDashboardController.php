@@ -11,13 +11,19 @@ use Illuminate\Support\Facades\Auth;
 
 class AnalystDashboardController extends Controller
 {
-    protected $analyticsService;
-    protected $performanceAnalysis;
+    protected $simulationService;
+    protected $notificationService;
 
-    public function __construct(TradeAnalyticsService $analyticsService, PerformanceAnalysisService $performanceAnalysis)
-    {
+    public function __construct(
+        TradeAnalyticsService $analyticsService, 
+        PerformanceAnalysisService $performanceAnalysis,
+        \App\Services\SimulationService $simulationService,
+        \App\Services\NotificationService $notificationService
+    ) {
         $this->analyticsService = $analyticsService;
         $this->performanceAnalysis = $performanceAnalysis;
+        $this->simulationService = $simulationService;
+        $this->notificationService = $notificationService;
     }
 
     /**
@@ -202,6 +208,18 @@ class AnalystDashboardController extends Controller
             ];
         }
 
+        // Get Assignment for Focus Area
+        $assignment = null;
+        $riskRules = [];
+        
+        try {
+            $assignment = $analyst->tradersAssigned()->where('trader_id', $traderId)->first();
+            $riskRules = $trader->riskRules()->where('analyst_id', $analyst->id)->get();
+        } catch (\Exception $e) {
+            // Log::error('Analyst schema error: ' . $e->getMessage());
+            // Fail gracefully if tables don't exist yet
+        }
+
         return view('analyst.trader-profile', compact(
             'trader',
             'accounts',
@@ -216,7 +234,123 @@ class AnalystDashboardController extends Controller
             'strategyPerformance',
             'trades',
             'feedbackHistory',
-            'comparisonMetrics'
+            'comparisonMetrics',
+            'assignment',
+            'riskRules'
         ));
+    }
+    /**
+     * Run "What-If" Simulation
+     */
+    public function simulate(Request $request, $traderId)
+    {
+        $analyst = Auth::user();
+        $trader = User::findOrFail($traderId);
+
+        // Verify assignment
+        if (!$analyst->tradersAssigned()->where('trader_id', $traderId)->exists() && !$analyst->hasRole('admin')) {
+            abort(403);
+        }
+
+        $filters = $request->validate([
+            'exclude_sessions' => 'nullable|array',
+            'exclude_sessions.*' => 'string',
+            'exclude_pairs' => 'nullable|array',
+            'exclude_pairs.*' => 'string',
+            'exclude_direction' => 'nullable|string|in:buy,sell',
+            'exclude_large_losses' => 'nullable|boolean',
+        ]);
+
+        $results = $this->simulationService->runSimulation($trader, $filters);
+
+        return response()->json($results);
+    }
+
+    /**
+     * Update Focus Area
+     */
+    public function updateFocus(Request $request, $traderId)
+    {
+        try {
+            $analyst = Auth::user();
+            
+            $assignment = $analyst->tradersAssigned()->where('trader_id', $traderId)->firstOrFail();
+            
+            $validated = $request->validate([
+                'current_focus_area' => 'required|string|in:standard,psychology,execution,risk'
+            ]);
+            
+            $assignment->update([
+                'current_focus_area' => $validated['current_focus_area']
+            ]);
+            
+            // Notify Trader
+            $this->notificationService->notifyFocusUpdated($assignment->trader, $assignment);
+            
+            return back()->with('success', 'Focus area updated successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Unable to update focus area. Please restart server to apply database updates.');
+        }
+    }
+
+    /**
+     * Store Risk Rule
+     */
+    public function storeRule(Request $request, $traderId)
+    {
+        try {
+            $analyst = Auth::user();
+            $trader = \App\Models\User::findOrFail($traderId);
+            
+            // Ensure assignment
+            if (!$analyst->tradersAssigned()->where('trader_id', $traderId)->exists()) {
+                 abort(403);
+            }
+            
+            $validated = $request->validate([
+                'rule_type' => 'required|string',
+                'value' => 'nullable|numeric',
+                'parameters' => 'nullable|string',
+                'is_hard_stop' => 'boolean'
+            ]);
+            
+            $rule = \App\Models\RiskRule::create([
+                'analyst_id' => $analyst->id,
+                'trader_id' => $traderId,
+                'rule_type' => $validated['rule_type'],
+                'value' => $validated['value'],
+                'parameters' => $validated['parameters'],
+                'is_hard_stop' => $validated['is_hard_stop'] ?? false,
+                'is_active' => true
+            ]);
+            
+            // Notify Trader
+            $this->notificationService->notifyRiskRuleAdded($trader, $rule);
+            
+            return back()->with('success', 'Risk rule added.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Database error: Unable to add rule. Restart server to fix.');
+        }
+    }
+
+    /**
+     * Delete Risk Rule
+     */
+    public function deleteRule($ruleId)
+    {
+        try {
+            $analyst = Auth::user();
+            $rule = \App\Models\RiskRule::findOrFail($ruleId);
+            
+            if ($rule->analyst_id !== $analyst->id) {
+                abort(403);
+            }
+            
+            $rule->delete();
+            
+            return back()->with('success', 'Risk rule removed.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Database error: Unable to remove rule.');
+        }
     }
 }

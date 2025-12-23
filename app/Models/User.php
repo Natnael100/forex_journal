@@ -134,6 +134,16 @@ class User extends Authenticatable
         return $this->hasMany(\App\Models\Strategy::class);
     }
 
+    public function riskRules()
+    {
+        return $this->hasMany(\App\Models\RiskRule::class, 'trader_id');
+    }
+
+    public function feedbackTemplates()
+    {
+        return $this->hasMany(\App\Models\FeedbackTemplate::class, 'analyst_id');
+    }
+
     /**
      * Profile methods
      */

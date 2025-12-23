@@ -11,6 +11,10 @@ use App\Mail\VerificationRejected;
 use App\Mail\FeedbackReceived;
 use App\Mail\AnalystAssigned;
 use App\Mail\TraderAssignedAnalyst;
+use App\Mail\RiskRuleAdded;
+use App\Mail\FocusAreaUpdated;
+use App\Models\RiskRule;
+use App\Models\AnalystAssignment;
 
 class NotificationService
 {
@@ -172,5 +176,47 @@ class NotificationService
     public function getRecentNotifications(User $user, int $limit = 10): \Illuminate\Database\Eloquent\Collection
     {
         return $user->notifications()->latest()->limit($limit)->get();
+    }
+
+    /**
+     * Notify trader when a risk rule is added
+     */
+    public function notifyRiskRuleAdded(User $trader, RiskRule $rule): void
+    {
+        Notification::create([
+            'user_id' => $trader->id,
+            'type' => 'risk_rule',
+            'data' => [
+                'title' => 'Risk Rule Added',
+                'message' => "New " . str_replace('_', ' ', $rule->rule_type) . " rule assigned.",
+                'url' => route('trader.dashboard'),
+                'timestamp' => now()->toDateTimeString(),
+            ],
+        ]);
+
+        if ($trader->email) {
+            Mail::to($trader->email)->send(new RiskRuleAdded($trader, $rule));
+        }
+    }
+
+    /**
+     * Notify trader when focus area changes
+     */
+    public function notifyFocusUpdated(User $trader, AnalystAssignment $assignment): void
+    {
+        Notification::create([
+            'user_id' => $trader->id,
+            'type' => 'focus_area',
+            'data' => [
+                'title' => 'Focus Area Updated',
+                'message' => "Your coaching focus is now: " . ucfirst($assignment->current_focus_area),
+                'url' => route('trader.trades.create'),
+                'timestamp' => now()->toDateTimeString(),
+            ],
+        ]);
+
+        if ($trader->email) {
+            Mail::to($trader->email)->send(new FocusAreaUpdated($trader, $assignment));
+        }
     }
 }

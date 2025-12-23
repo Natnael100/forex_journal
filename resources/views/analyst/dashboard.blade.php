@@ -33,6 +33,22 @@
         ])
     </div>
 
+    <!-- Productivity Tools -->
+    <div class="mb-8 p-4 bg-gradient-to-r from-indigo-900/40 to-indigo-800/40 border border-indigo-500/30 rounded-xl flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <div class="p-3 bg-indigo-500/20 rounded-lg text-indigo-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white">Feedback Templates</h3>
+                <p class="text-sm text-indigo-200">Manage your reusable coaching snippets.</p>
+            </div>
+        </div>
+        <a href="{{ route('analyst.templates.index') }}" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors">
+            Manage Templates
+        </a>
+    </div>
+
     <!-- Traders Table -->
     <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50 mb-8">
         <h2 class="text-xl font-semibold text-white mb-6">Assigned Traders</h2>

@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Trade;
 use App\Models\Strategy;
 use App\Services\AchievementService;
+use App\Services\RiskComplianceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -37,8 +38,15 @@ class TradeController extends Controller
         $postEmotions = PostTradeEmotion::cases();
         $accounts = Auth::user()->tradeAccounts()->get();
         $strategies = Strategy::where('user_id', Auth::id())->get();
+        
+        // Phase 6: Guided Journaling
+        $focusArea = 'standard';
+        $assignment = \App\Models\AnalystAssignment::where('trader_id', Auth::id())->first();
+        if ($assignment) {
+            $focusArea = $assignment->current_focus_area;
+        }
 
-        return view('trader.trades.create', compact('pairs', 'directions', 'sessions', 'outcomes', 'emotions', 'postEmotions', 'accounts', 'strategies'));
+        return view('trader.trades.create', compact('pairs', 'directions', 'sessions', 'outcomes', 'emotions', 'postEmotions', 'accounts', 'strategies', 'focusArea'));
     }
 
     /**
@@ -82,13 +90,33 @@ class TradeController extends Controller
         $validated['risk_reward_ratio'] = $calc['rr'];
         $validated['outcome'] = $calc['outcome'];
 
+        $validated['outcome'] = $calc['outcome'];
+
+        // Compliance Check (Phase 6)
+        $compliance = app(RiskComplianceService::class)->checkCompliance(Auth::user(), $validated);
+        
+        if (!$compliance['compliant']) {
+            if ($compliance['is_hard_stop']) {
+                return back()->withInput()->withErrors(['compliance' => 'Trade blocked by Risk Rule: ' . $compliance['reason']]);
+            }
+            
+            // Soft Stop: Mark as non-compliant but allow save
+            $validated['is_compliant'] = false;
+            $validated['violation_reason'] = $compliance['reason'];
+        }
+
         $trade = Auth::user()->trades()->create($validated);
+        
+        $message = 'Trade logged successfully! +10 XP';
+        if (isset($validated['is_compliant']) && !$validated['is_compliant']) {
+            $message .= ' (Warning: ' . $validated['violation_reason'] . ')';
+        }
 
         // Award XP and check achievements
         app(AchievementService::class)->awardTradeXp(Auth::user());
 
         return redirect()->route('trader.trades.index')
-            ->with('success', 'Trade logged successfully! +10 XP');
+            ->with('success', $message);
     }
 
     /**

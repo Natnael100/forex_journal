@@ -160,7 +160,79 @@
                         <p class="text-xs text-slate-500 mt-1">Will be auto-detected from entry time if not selected</p>
                     </div>
                 </div>
+                </div>
             </div>
+
+            <!-- Guided Journaling Focus Section (Phase 6) -->
+            @if(isset($focusArea) && $focusArea !== 'standard')
+                <div class="bg-indigo-600/10 rounded-xl border border-indigo-500/30 p-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-400"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                    </div>
+                    
+                    <h2 class="text-xl font-semibold text-indigo-400 mb-2 flex items-center gap-2 relative z-10">
+                        <span>🎯</span> Analyst Focus Area: {{ ucfirst($focusArea) }}
+                    </h2>
+                    <p class="text-sm text-indigo-300 mb-6 relative z-10">Your analyst wants you to focus on these specific details for this period.</p>
+
+                    <div class="grid grid-cols-1 gap-6 relative z-10">
+                        <input type="hidden" name="focus_data[focus_type]" value="{{ $focusArea }}">
+                        
+                        @if($focusArea === 'psychology')
+                            <div>
+                                <label class="block text-sm font-medium text-indigo-200 mb-2">Stress Level (1-10)</label>
+                                <input type="number" name="focus_data[stress_level]" min="1" max="10" class="w-full bg-slate-900/50 border border-indigo-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-indigo-200 mb-2">Primary Distraction (if any)</label>
+                                <input type="text" name="focus_data[distraction]" placeholder="e.g., Phone, Noise, Tiredness" class="w-full bg-slate-900/50 border border-indigo-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-indigo-200 mb-2">Mental State Notes</label>
+                                <textarea name="focus_data[mental_notes]" rows="2" placeholder="Describe your thought process..." class="w-full bg-slate-900/50 border border-indigo-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                            </div>
+                        @elseif($focusArea === 'execution')
+                            <div>
+                                <label class="block text-sm font-medium text-indigo-200 mb-2">Slippage (Pips)</label>
+                                <input type="number" step="0.1" name="focus_data[slippage]" placeholder="0.0" class="w-full bg-slate-900/50 border border-indigo-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-indigo-200 mb-2">Time Difference (Signal vs Entry)</label>
+                                <input type="text" name="focus_data[time_diff]" placeholder="e.g., Immediate, 5 mins late" class="w-full bg-slate-900/50 border border-indigo-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-indigo-200 mb-2">Execution Grade (A-F)</label>
+                                <select name="focus_data[execution_grade]" class="w-full bg-slate-900/50 border border-indigo-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option value="">Select Grade</option>
+                                    <option value="A">A - Perfect</option>
+                                    <option value="B">B - Good</option>
+                                    <option value="C">C - Hesitated/Chased</option>
+                                    <option value="D">D - Bad Entry</option>
+                                    <option value="F">F - Panic Trade</option>
+                                </select>
+                            </div>
+                        @elseif($focusArea === 'risk')
+                            <div>
+                                <label class="block text-sm font-medium text-indigo-200 mb-2">Confluence Check (List 3)</label>
+                                <textarea name="focus_data[confluences]" rows="2" placeholder="1. ... 2. ... 3. ..." class="w-full bg-slate-900/50 border border-indigo-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                            </div>
+                             <div>
+                                <label class="block text-sm font-medium text-indigo-200 mb-2">Are you willing to lose this amount?</label>
+                                <div class="flex gap-4">
+                                     <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="focus_data[risk_acceptance]" value="yes" class="peer sr-only">
+                                        <div class="px-4 py-2 rounded-lg border border-indigo-500/30 bg-slate-900/50 text-slate-400 peer-checked:bg-emerald-500/20 peer-checked:text-emerald-400 transition-all">Yes</div>
+                                     </label>
+                                     <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="focus_data[risk_acceptance]" value="no" class="peer sr-only">
+                                        <div class="px-4 py-2 rounded-lg border border-indigo-500/30 bg-slate-900/50 text-slate-400 peer-checked:bg-red-500/20 peer-checked:text-red-400 transition-all">No</div>
+                                     </label>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
 
             <!-- Psychology -->
             <div class="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
