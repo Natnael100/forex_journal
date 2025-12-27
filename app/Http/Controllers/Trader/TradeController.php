@@ -76,6 +76,7 @@ class TradeController extends Controller
             'mistakes_lessons' => 'nullable|string',
             'chart_link' => 'nullable|url',
             'notes' => 'nullable|string',
+            'focus_data' => 'nullable|array',
         ]);
 
         // Auto-detect session if missing
@@ -179,6 +180,7 @@ class TradeController extends Controller
             'mistakes_lessons' => 'nullable|string',
             'chart_link' => 'nullable|url',
             'notes' => 'nullable|string',
+            'focus_data' => 'nullable|array',
         ]);
 
         // Auto-detect session if missing

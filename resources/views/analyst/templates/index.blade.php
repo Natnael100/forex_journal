@@ -45,7 +45,7 @@
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="document.getElementById('create_modal').classList.add('hidden')"></div>
             
-            <div class="inline-block align-bottom bg-slate-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
+            <div class="inline-block align-bottom bg-slate-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full relative z-10" onclick="event.stopPropagation()">
                 <form action="{{ route('analyst.templates.store') }}" method="POST" class="p-6">
                     @csrf
                     <h3 class="text-lg font-medium text-white mb-4">Create New Template</h3>

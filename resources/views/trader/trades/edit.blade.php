@@ -72,19 +72,19 @@
                         </select>
                     </div>
 
-                    <!-- Direction -->
+            <!-- Direction -->
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-slate-300 mb-2">Direction *</label>
                         <div class="grid grid-cols-2 gap-4">
-                            <label class="cursor-pointer">
-                                <input type="radio" name="direction" value="buy" class="peer sr-only" {{ old('direction', $trade->direction?->value) == 'buy' ? 'checked' : '' }}>
-                                <div class="text-center py-3 rounded-lg border border-slate-700 bg-slate-900/50 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500 peer-checked:text-emerald-400 transition-all hover:bg-slate-800">
+                            <label class="cursor-pointer" onclick="selectRadio('direction', 'buy')">
+                                <input type="radio" name="direction" value="buy" class="hidden" {{ old('direction', $trade->direction?->value) == 'buy' ? 'checked' : '' }}>
+                                <div id="btn-direction-buy" data-group="direction" class="text-center py-3 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-400 transition-all hover:bg-slate-800 {{ old('direction', $trade->direction?->value) == 'buy' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : '' }}">
                                     BUY (Long) 📈
                                 </div>
                             </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="direction" value="sell" class="peer sr-only" {{ old('direction', $trade->direction?->value) == 'sell' ? 'checked' : '' }}>
-                                <div class="text-center py-3 rounded-lg border border-slate-700 bg-slate-900/50 peer-checked:bg-red-500/20 peer-checked:border-red-500 peer-checked:text-red-400 transition-all hover:bg-slate-800">
+                            <label class="cursor-pointer" onclick="selectRadio('direction', 'sell')">
+                                <input type="radio" name="direction" value="sell" class="hidden" {{ old('direction', $trade->direction?->value) == 'sell' ? 'checked' : '' }}>
+                                <div id="btn-direction-sell" data-group="direction" class="text-center py-3 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-400 transition-all hover:bg-slate-800 {{ old('direction', $trade->direction?->value) == 'sell' ? 'bg-red-500/20 border-red-500 text-red-400' : '' }}">
                                     SELL (Short) 📉
                                 </div>
                             </label>
@@ -188,15 +188,15 @@
                     <div class="md:col-span-2">
                          <label class="block text-sm font-medium text-slate-300 mb-2">Followed your plan?</label>
                          <div class="flex gap-4">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" name="followed_plan" value="1" class="peer sr-only" {{ old('followed_plan', $trade->followed_plan === true ? '1' : ($trade->followed_plan === false ? '0' : '')) == '1' ? 'checked' : '' }}>
-                                <div class="px-4 py-2 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-400 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500 peer-checked:text-emerald-400 transition-all">
+                            <label class="flex items-center gap-2 cursor-pointer" onclick="selectRadio('followed_plan', '1')">
+                                <input type="radio" name="followed_plan" value="1" class="hidden" {{ old('followed_plan', $trade->followed_plan === true ? '1' : ($trade->followed_plan === false ? '0' : '')) == '1' ? 'checked' : '' }}>
+                                <div id="btn-followed_plan-1" data-group="followed_plan" class="px-4 py-2 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-400 transition-all {{ old('followed_plan', $trade->followed_plan === true ? '1' : ($trade->followed_plan === false ? '0' : '')) == '1' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : '' }}">
                                     Yes, followed plan
                                 </div>
                             </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" name="followed_plan" value="0" class="peer sr-only" {{ old('followed_plan', $trade->followed_plan === true ? '1' : ($trade->followed_plan === false ? '0' : '')) === '0' ? 'checked' : '' }}>
-                                <div class="px-4 py-2 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-400 peer-checked:bg-red-500/20 peer-checked:border-red-500 peer-checked:text-red-400 transition-all">
+                            <label class="flex items-center gap-2 cursor-pointer" onclick="selectRadio('followed_plan', '0')">
+                                <input type="radio" name="followed_plan" value="0" class="hidden" {{ old('followed_plan', $trade->followed_plan === true ? '1' : ($trade->followed_plan === false ? '0' : '')) === '0' ? 'checked' : '' }}>
+                                <div id="btn-followed_plan-0" data-group="followed_plan" class="px-4 py-2 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-400 transition-all {{ old('followed_plan', $trade->followed_plan === true ? '1' : ($trade->followed_plan === false ? '0' : '')) === '0' ? 'bg-red-500/20 border-red-500 text-red-400' : '' }}">
                                     No, broke rules
                                 </div>
                             </label>
@@ -231,4 +231,43 @@
             </button>
         </form>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Init Radios (check what's already selected)
+            document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+                selectRadio(input.name, input.value);
+            });
+        });
+
+        function selectRadio(group, value) {
+            // 1. Check Input
+            const input = document.querySelector(`input[name="${group}"][value="${value}"]`);
+            if (input) input.checked = true;
+
+            // 2. Reset Visuals
+            const buttons = document.querySelectorAll(`[data-group="${group}"]`);
+            buttons.forEach(btn => {
+                // Remove Active Classes
+                btn.classList.remove('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-400', 'bg-red-500/20', 'border-red-500', 'text-red-400');
+                // Add Inactive Classes
+                btn.classList.add('bg-slate-900/50', 'border-slate-700', 'text-slate-400'); // Default styling
+            });
+
+            // 3. Set Active Visual
+            const activeBtn = document.getElementById(`btn-${group}-${value}`);
+            if (activeBtn) {
+                 activeBtn.classList.remove('bg-slate-900/50', 'border-slate-700', 'text-slate-400');
+                 
+                 // Apply Color based on value
+                 // For buy/yes -> green
+                 if (value === 'buy' || value === '1') {
+                     activeBtn.classList.add('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-400');
+                 } 
+                 // For sell/no -> red
+                 else if (value === 'sell' || value === '0') {
+                     activeBtn.classList.add('bg-red-500/20', 'border-red-500', 'text-red-400');
+                 }
+            }
+        }
+    </script>
 @endsection

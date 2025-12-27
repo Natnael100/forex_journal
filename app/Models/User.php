@@ -144,6 +144,11 @@ class User extends Authenticatable
         return $this->hasMany(\App\Models\FeedbackTemplate::class, 'analyst_id');
     }
 
+    public function analystRequests()
+    {
+        return $this->hasMany(\App\Models\AnalystRequest::class, 'trader_id');
+    }
+
     /**
      * Profile methods
      */

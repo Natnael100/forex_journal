@@ -1,15 +1,47 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminDashboardController;
-use App\Http\Controllers\Analyst\AnalystDashboardController;
-use App\Http\Controllers\Auth\EmailVerificationController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
+use Illuminate\Support\Facades\Route;
+
+// Auth
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Trader\TraderDashboardController;
+use App\Http\Controllers\Auth\EmailVerificationController;
+
+// General
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NotificationController;
-use Illuminate\Support\Facades\Route;
+
+// Admin Controllers
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Admin\VerificationController as AdminVerificationController;
+use App\Http\Controllers\Admin\AssignmentController;
+use App\Http\Controllers\Admin\AdminAnalystRequestController;
+use App\Http\Controllers\Admin\AdminAnalyticsController;
+use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\BackupController;
+use App\Http\Controllers\Admin\SystemSettingsController;
+
+// Analyst Controllers
+use App\Http\Controllers\Analyst\AnalystDashboardController;
+use App\Http\Controllers\Analyst\FeedbackController as AnalystFeedbackController;
+use App\Http\Controllers\Analyst\FeedbackTemplateController;
+
+// Trader Controllers
+use App\Http\Controllers\Trader\TraderDashboardController;
+use App\Http\Controllers\Trader\TraderAnalystRequestController;
+use App\Http\Controllers\Trader\TradeController;
+use App\Http\Controllers\Trader\StrategyController;
+use App\Http\Controllers\Trader\TradeAccountController;
+use App\Http\Controllers\Trader\AnalyticsController as TraderAnalyticsController;
+use App\Http\Controllers\Trader\FeedbackController as TraderFeedbackController;
+use App\Http\Controllers\Trader\AchievementController;
+use App\Http\Controllers\Trader\LeaderboardController;
+
+// Middleware
+use App\Http\Middleware\EnsureVerified;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,10 +53,6 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
-
-
-
 
 // Guest Routes (Public)
 Route::middleware('guest')->group(function () {
@@ -49,11 +77,17 @@ Route::get('/verification/pending', function () {
 })->middleware('auth')->name('verification.pending');
 
 // Public Profile View (accessible to all)
-Route::get('/profile/{username}', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
+Route::get('/profile/{username}', [ProfileController::class, 'show'])->name('profile.show');
 
 // Authenticated Routes
 Route::middleware('auth')->group(function () {
-    // Logout
+    // Analyst Assignment Requests
+    Route::get('/analyst/request', [TraderAnalystRequestController::class, 'create'])->name('trader.analyst-request.create');
+    Route::post('/analyst/request', [TraderAnalystRequestController::class, 'store'])->name('trader.analyst-request.store');
+    Route::delete('/analyst/request/{analystRequest}', [TraderAnalystRequestController::class, 'cancel'])->name('trader.analyst-request.cancel');
+    Route::get('/analyst/consent/{analystRequest}', [TraderAnalystRequestController::class, 'showConsent'])->name('trader.analyst-request.consent');
+    Route::post('/analyst/consent/{analystRequest}', [TraderAnalystRequestController::class, 'processConsent'])->name('trader.analyst-request.process-consent');
+
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
     // Email Verification
@@ -71,111 +105,115 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
 
     // Profile Routes (Authenticated Users)
-    Route::get('/settings/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/settings/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
-    Route::post('/settings/profile/photo', [\App\Http\Controllers\ProfileController::class, 'uploadPhoto'])->name('profile.upload-photo');
-    Route::post('/settings/profile/cover', [\App\Http\Controllers\ProfileController::class, 'uploadCover'])->name('profile.upload-cover');
-    Route::delete('/settings/profile/photo', [\App\Http\Controllers\ProfileController::class, 'deletePhoto'])->name('profile.delete-photo');
-    Route::delete('/settings/profile/cover', [\App\Http\Controllers\ProfileController::class, 'deleteCover'])->name('profile.delete-cover');
+    Route::get('/settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/settings/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/settings/profile/photo', [ProfileController::class, 'uploadPhoto'])->name('profile.upload-photo');
+    Route::post('/settings/profile/cover', [ProfileController::class, 'uploadCover'])->name('profile.upload-cover');
+    Route::delete('/settings/profile/photo', [ProfileController::class, 'deletePhoto'])->name('profile.delete-photo');
+    Route::delete('/settings/profile/cover', [ProfileController::class, 'deleteCover'])->name('profile.delete-cover');
 
     // Admin Routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         
         // User Management
-        Route::resource('users', \App\Http\Controllers\Admin\UserManagementController::class);
-        Route::post('/users/{user}/change-role', [\App\Http\Controllers\Admin\UserManagementController::class, 'changeRole'])->name('users.change-role');
-        Route::post('/users/{user}/deactivate', [\App\Http\Controllers\Admin\UserManagementController::class, 'deactivate'])->name('users.deactivate');
-        Route::post('/users/{user}/reactivate', [\App\Http\Controllers\Admin\UserManagementController::class, 'reactivate'])->name('users.reactivate');
-        Route::post('/users/{user}/reset-password', [\App\Http\Controllers\Admin\UserManagementController::class, 'resetPassword'])->name('users.reset-password');
-        Route::post('/users/{user}/reset-profile-photo', [\App\Http\Controllers\Admin\UserManagementController::class, 'resetProfilePhoto'])->name('users.reset-profile-photo');
-        Route::post('/users/{user}/reset-cover-photo', [\App\Http\Controllers\Admin\UserManagementController::class, 'resetCoverPhoto'])->name('users.reset-cover-photo');
-        Route::post('/users/{user}/update-username', [\App\Http\Controllers\Admin\UserManagementController::class, 'updateUsername'])->name('users.update-username');
-        Route::post('/users/{user}/moderate-bio', [\App\Http\Controllers\Admin\UserManagementController::class, 'moderateBio'])->name('users.moderate-bio');
-        Route::post('/users/{user}/toggle-verification', [\App\Http\Controllers\Admin\UserManagementController::class, 'toggleVerification'])->name('users.toggle-verification');
+        Route::resource('users', UserManagementController::class);
+        Route::post('/users/{user}/change-role', [UserManagementController::class, 'changeRole'])->name('users.change-role');
+        Route::post('/users/{user}/deactivate', [UserManagementController::class, 'deactivate'])->name('users.deactivate');
+        Route::post('/users/{user}/reactivate', [UserManagementController::class, 'reactivate'])->name('users.reactivate');
+        Route::post('/users/{user}/reset-password', [UserManagementController::class, 'resetPassword'])->name('users.reset-password');
+        Route::post('/users/{user}/reset-profile-photo', [UserManagementController::class, 'resetProfilePhoto'])->name('users.reset-profile-photo');
+        Route::post('/users/{user}/reset-cover-photo', [UserManagementController::class, 'resetCoverPhoto'])->name('users.reset-cover-photo');
+        Route::post('/users/{user}/update-username', [UserManagementController::class, 'updateUsername'])->name('users.update-username');
+        Route::post('/users/{user}/moderate-bio', [UserManagementController::class, 'moderateBio'])->name('users.moderate-bio');
+        Route::post('/users/{user}/toggle-verification', [UserManagementController::class, 'toggleVerification'])->name('users.toggle-verification');
         
         // Verification
-        Route::get('/verifications', [\App\Http\Controllers\Admin\VerificationController::class, 'index'])->name('verifications.index');
-        Route::get('/verifications/{user}', [\App\Http\Controllers\Admin\VerificationController::class, 'show'])->name('verifications.show');
-        Route::post('/verifications/{user}/approve', [\App\Http\Controllers\Admin\VerificationController::class, 'approve'])->name('verifications.approve');
-        Route::post('/verifications/{user}/reject', [\App\Http\Controllers\Admin\VerificationController::class, 'reject'])->name('verifications.reject');
+        Route::get('/verifications', [AdminVerificationController::class, 'index'])->name('verifications.index');
+        Route::get('/verifications/{user}', [AdminVerificationController::class, 'show'])->name('verifications.show');
+        Route::post('/verifications/{user}/approve', [AdminVerificationController::class, 'approve'])->name('verifications.approve');
+        Route::post('/verifications/{user}/reject', [AdminVerificationController::class, 'reject'])->name('verifications.reject');
         
         // Analyst Assignments
-        Route::get('/assignments', [\App\Http\Controllers\Admin\AssignmentController::class, 'index'])->name('assignments.index');
-        Route::post('/assignments/assign', [\App\Http\Controllers\Admin\AssignmentController::class, 'assign'])->name('assignments.assign');
-        Route::put('/assignments/{assignment}', [\App\Http\Controllers\Admin\AssignmentController::class, 'reassign'])->name('assignments.reassign');
-        Route::delete('/assignments/{assignment}', [\App\Http\Controllers\Admin\AssignmentController::class, 'remove'])->name('assignments.remove');
+        Route::get('/assignments', [AssignmentController::class, 'index'])->name('assignments.index');
+        Route::post('/assignments/assign', [AssignmentController::class, 'assign'])->name('assignments.assign');
+        Route::put('/assignments/{assignment}', [AssignmentController::class, 'reassign'])->name('assignments.reassign');
+        Route::delete('/assignments/{assignment}', [AssignmentController::class, 'remove'])->name('assignments.remove');
+        
+        // Analyst Assignment Requests
+        Route::get('/assignments/requests', [AdminAnalystRequestController::class, 'index'])->name('assignments.requests.index');
+        Route::put('/assignments/requests/{analystRequest}', [AdminAnalystRequestController::class, 'update'])->name('assignments.requests.update');
         
         // Analytics Oversight
-        Route::get('/analytics', [\App\Http\Controllers\Admin\AdminAnalyticsController::class, 'index'])->name('analytics.index');
-        Route::get('/analytics/trades', [\App\Http\Controllers\Admin\AdminAnalyticsController::class, 'allTrades'])->name('analytics.trades');
-        Route::get('/analytics/traders/{trader}', [\App\Http\Controllers\Admin\AdminAnalyticsController::class, 'traderAnalytics'])->name('analytics.trader');
+        Route::get('/analytics', [AdminAnalyticsController::class, 'index'])->name('analytics.index');
+        Route::get('/analytics/trades', [AdminAnalyticsController::class, 'allTrades'])->name('analytics.trades');
+        Route::get('/analytics/traders/{trader}', [AdminAnalyticsController::class, 'traderAnalytics'])->name('analytics.trader');
         
         // Activity Logs
-        Route::get('/activity-logs', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-logs.index');
-        Route::get('/activity-logs/export', [\App\Http\Controllers\Admin\ActivityLogController::class, 'export'])->name('activity-logs.export');
+        Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+        Route::get('/activity-logs/export', [ActivityLogController::class, 'export'])->name('activity-logs.export');
         
         // Backup Management
-        Route::get('/backups', [\App\Http\Controllers\Admin\BackupController::class, 'index'])->name('backups.index');
-        Route::post('/backups/create', [\App\Http\Controllers\Admin\BackupController::class, 'create'])->name('backups.create');
-        Route::get('/backups/{filename}/download', [\App\Http\Controllers\Admin\BackupController::class, 'download'])->name('backups.download');
-        Route::post('/backups/{filename}/restore', [\App\Http\Controllers\Admin\BackupController::class, 'restore'])->name('backups.restore');
-        Route::delete('/backups/{filename}', [\App\Http\Controllers\Admin\BackupController::class, 'destroy'])->name('backups.destroy');
+        Route::get('/backups', [BackupController::class, 'index'])->name('backups.index');
+        Route::post('/backups/create', [BackupController::class, 'create'])->name('backups.create');
+        Route::get('/backups/{filename}/download', [BackupController::class, 'download'])->name('backups.download');
+        Route::post('/backups/{filename}/restore', [BackupController::class, 'restore'])->name('backups.restore');
+        Route::delete('/backups/{filename}', [BackupController::class, 'destroy'])->name('backups.destroy');
         
         // System Settings
-        Route::get('/settings', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'index'])->name('settings.index');
-        Route::put('/settings', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'update'])->name('settings.update');
+        Route::get('/settings', [SystemSettingsController::class, 'index'])->name('settings.index');
+        Route::put('/settings', [SystemSettingsController::class, 'update'])->name('settings.update');
     });
 
     // Analyst Routes (requires verification)
-    Route::middleware(['role:analyst', \App\Http\Middleware\EnsureVerified::class])->prefix('analyst')->name('analyst.')->group(function () {
-        Route::get('/dashboard', [\App\Http\Controllers\Analyst\AnalystDashboardController::class, 'index'])->name('dashboard');
-        Route::get('/traders/{trader}', [\App\Http\Controllers\Analyst\AnalystDashboardController::class, 'traderProfile'])->name('trader.profile');
-        Route::post('/traders/{trader}/simulate', [\App\Http\Controllers\Analyst\AnalystDashboardController::class, 'simulate'])->name('trader.simulate');
+    Route::middleware(['role:analyst', EnsureVerified::class])->prefix('analyst')->name('analyst.')->group(function () {
+        Route::get('/dashboard', [AnalystDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/traders/{trader}', [AnalystDashboardController::class, 'traderProfile'])->name('trader.profile');
+        Route::post('/traders/{trader}/simulate', [AnalystDashboardController::class, 'simulate'])->name('trader.simulate');
         
         // Governance (Phase 6)
-        Route::post('/traders/{trader}/focus', [\App\Http\Controllers\Analyst\AnalystDashboardController::class, 'updateFocus'])->name('trader.update-focus');
-        Route::post('/traders/{trader}/rules', [\App\Http\Controllers\Analyst\AnalystDashboardController::class, 'storeRule'])->name('trader.rules.store');
-        Route::delete('/rules/{rule}', [\App\Http\Controllers\Analyst\AnalystDashboardController::class, 'deleteRule'])->name('rules.destroy');
+        Route::post('/traders/{trader}/focus', [AnalystDashboardController::class, 'updateFocus'])->name('trader.update-focus');
+        Route::post('/traders/{trader}/rules', [AnalystDashboardController::class, 'storeRule'])->name('trader.rules.store');
+        Route::delete('/rules/{rule}', [AnalystDashboardController::class, 'deleteRule'])->name('rules.destroy');
         
         // Feedback Management (Using POST for creation because of complex form, but conventionally GET create)
-        Route::get('/feedback/create/{trader}/{trade?}', [\App\Http\Controllers\Analyst\FeedbackController::class, 'create'])->name('feedback.create');
-        Route::post('/feedback', [\App\Http\Controllers\Analyst\FeedbackController::class, 'store'])->name('feedback.store');
+        Route::get('/feedback/create/{trader}/{trade?}', [AnalystFeedbackController::class, 'create'])->name('feedback.create');
+        Route::post('/feedback', [AnalystFeedbackController::class, 'store'])->name('feedback.store');
         
         // AI Draft Generation
-        Route::post('/feedback/{trader}/generate-draft', [\App\Http\Controllers\Analyst\FeedbackController::class, 'generateDraft'])->name('feedback.generate-draft');
+        Route::post('/feedback/{trader}/generate-draft', [AnalystFeedbackController::class, 'generateDraft'])->name('feedback.generate-draft');
         
-        Route::get('/feedback/{feedback}/edit', [\App\Http\Controllers\Analyst\FeedbackController::class, 'edit'])->name('feedback.edit');
-        Route::put('/feedback/{feedback}', [\App\Http\Controllers\Analyst\FeedbackController::class, 'update'])->name('feedback.update');
-        Route::delete('/feedback/{feedback}', [\App\Http\Controllers\Analyst\FeedbackController::class, 'destroy'])->name('feedback.destroy');
+        Route::get('/feedback/{feedback}/edit', [AnalystFeedbackController::class, 'edit'])->name('feedback.edit');
+        Route::put('/feedback/{feedback}', [AnalystFeedbackController::class, 'update'])->name('feedback.update');
+        Route::delete('/feedback/{feedback}', [AnalystFeedbackController::class, 'destroy'])->name('feedback.destroy');
         
         // Feedback Templates
-        Route::resource('templates', \App\Http\Controllers\Analyst\FeedbackTemplateController::class);
+        Route::resource('templates', FeedbackTemplateController::class);
     });
 
     // Trader Routes (requires verification)
-    Route::middleware(['role:trader', \App\Http\Middleware\EnsureVerified::class])->prefix('trader')->name('trader.')->group(function () {
+    Route::middleware(['role:trader', EnsureVerified::class])->prefix('trader')->name('trader.')->group(function () {
         Route::get('/dashboard', [TraderDashboardController::class, 'index'])->name('dashboard');
         
         // Trade Management
-        Route::resource('trades', \App\Http\Controllers\Trader\TradeController::class);
+        Route::resource('trades', TradeController::class);
         
         // Strategies
-        Route::resource('strategies', \App\Http\Controllers\Trader\StrategyController::class);
+        Route::resource('strategies', StrategyController::class);
         
         // Trade Accounts
-        Route::resource('accounts', \App\Http\Controllers\Trader\TradeAccountController::class);
-        Route::post('/accounts/{account}/transaction', [\App\Http\Controllers\Trader\TradeAccountController::class, 'addTransaction'])
+        Route::resource('accounts', TradeAccountController::class);
+        Route::post('/accounts/{account}/transaction', [TradeAccountController::class, 'addTransaction'])
             ->name('accounts.transaction');
         
         // Analytics
-        Route::get('/analytics', [\App\Http\Controllers\Trader\AnalyticsController::class, 'index'])->name('analytics.index');
-        Route::get('/analytics/review', [\App\Http\Controllers\Trader\AnalyticsController::class, 'review'])->name('analytics.review');
-        Route::get('/analytics/pair/{pair}', [\App\Http\Controllers\Trader\AnalyticsController::class, 'pairAnalysis'])->name('analytics.pair');
+        Route::get('/analytics', [TraderAnalyticsController::class, 'index'])->name('analytics.index');
+        Route::get('/analytics/review', [TraderAnalyticsController::class, 'review'])->name('analytics.review');
+        Route::get('/analytics/pair/{pair}', [TraderAnalyticsController::class, 'pairAnalysis'])->name('analytics.pair');
         
         // Feedback
-        Route::get('/feedback', [\App\Http\Controllers\Trader\FeedbackController::class, 'index'])->name('feedback.index');
-        Route::get('/feedback/{feedback}', [\App\Http\Controllers\Trader\FeedbackController::class, 'show'])->name('feedback.show');
+        Route::get('/feedback', [TraderFeedbackController::class, 'index'])->name('feedback.index');
+        Route::get('/feedback/{feedback}', [TraderFeedbackController::class, 'show'])->name('feedback.show');
         
         // Trading Tools
         Route::get('/tools', function () {
@@ -183,10 +221,10 @@ Route::middleware('auth')->group(function () {
         })->name('tools.index');
         
         // Achievements
-        Route::get('/achievements', [\App\Http\Controllers\Trader\AchievementController::class, 'index'])->name('achievements.index');
+        Route::get('/achievements', [AchievementController::class, 'index'])->name('achievements.index');
         
         // Leaderboard
-        Route::get('/leaderboard', [\App\Http\Controllers\Trader\LeaderboardController::class, 'index'])->name('leaderboard.index');
+        Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
     });
 
 });

@@ -77,15 +77,15 @@
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-slate-300 mb-2">Direction *</label>
                         <div class="grid grid-cols-2 gap-4">
-                            <label class="cursor-pointer">
-                                <input type="radio" name="direction" value="buy" class="peer sr-only" {{ old('direction') == 'buy' ? 'checked' : '' }}>
-                                <div class="text-center py-3 rounded-lg border border-slate-700 bg-slate-900/50 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500 peer-checked:text-emerald-400 transition-all hover:bg-slate-800">
+                            <label class="cursor-pointer" onclick="selectRadio('direction', 'buy')">
+                                <input type="radio" name="direction" value="buy" class="hidden" {{ old('direction') == 'buy' ? 'checked' : '' }}>
+                                <div id="btn-direction-buy" data-group="direction" class="text-center py-3 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-400 transition-all hover:bg-slate-800">
                                     BUY (Long) 📈
                                 </div>
                             </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="direction" value="sell" class="peer sr-only" {{ old('direction') == 'sell' ? 'checked' : '' }}>
-                                <div class="text-center py-3 rounded-lg border border-slate-700 bg-slate-900/50 peer-checked:bg-red-500/20 peer-checked:border-red-500 peer-checked:text-red-400 transition-all hover:bg-slate-800">
+                            <label class="cursor-pointer" onclick="selectRadio('direction', 'sell')">
+                                <input type="radio" name="direction" value="sell" class="hidden" {{ old('direction') == 'sell' ? 'checked' : '' }}>
+                                <div id="btn-direction-sell" data-group="direction" class="text-center py-3 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-400 transition-all hover:bg-slate-800">
                                     SELL (Short) 📉
                                 </div>
                             </label>
@@ -166,7 +166,7 @@
             <!-- Guided Journaling Focus Section (Phase 6) -->
             @if(isset($focusArea) && $focusArea !== 'standard')
                 <div class="bg-indigo-600/10 rounded-xl border border-indigo-500/30 p-6 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 p-4 opacity-10">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
                         <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-400"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
                     </div>
                     
@@ -219,13 +219,13 @@
                              <div>
                                 <label class="block text-sm font-medium text-indigo-200 mb-2">Are you willing to lose this amount?</label>
                                 <div class="flex gap-4">
-                                     <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="radio" name="focus_data[risk_acceptance]" value="yes" class="peer sr-only">
-                                        <div class="px-4 py-2 rounded-lg border border-indigo-500/30 bg-slate-900/50 text-slate-400 peer-checked:bg-emerald-500/20 peer-checked:text-emerald-400 transition-all">Yes</div>
+                                     <label class="flex items-center gap-2 cursor-pointer" onclick="selectRadio('risk', 'yes')">
+                                        <input type="radio" name="focus_data[risk_acceptance]" value="yes" class="hidden">
+                                        <div id="btn-risk-yes" data-group="risk" class="px-4 py-2 rounded-lg border border-indigo-500/30 bg-slate-900/50 text-slate-400 transition-all">Yes</div>
                                      </label>
-                                     <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="radio" name="focus_data[risk_acceptance]" value="no" class="peer sr-only">
-                                        <div class="px-4 py-2 rounded-lg border border-indigo-500/30 bg-slate-900/50 text-slate-400 peer-checked:bg-red-500/20 peer-checked:text-red-400 transition-all">No</div>
+                                     <label class="flex items-center gap-2 cursor-pointer" onclick="selectRadio('risk', 'no')">
+                                        <input type="radio" name="focus_data[risk_acceptance]" value="no" class="hidden">
+                                        <div id="btn-risk-no" data-group="risk" class="px-4 py-2 rounded-lg border border-indigo-500/30 bg-slate-900/50 text-slate-400 transition-all">No</div>
                                      </label>
                                 </div>
                             </div>
@@ -261,15 +261,15 @@
                     <div class="md:col-span-2">
                          <label class="block text-sm font-medium text-slate-300 mb-2">Followed your plan?</label>
                          <div class="flex gap-4">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" name="followed_plan" value="1" class="peer sr-only" {{ old('followed_plan') == '1' ? 'checked' : '' }}>
-                                <div class="px-4 py-2 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-400 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500 peer-checked:text-emerald-400 transition-all">
+                            <label class="flex items-center gap-2 cursor-pointer" onclick="selectRadio('followed_plan', '1')">
+                                <input type="radio" name="followed_plan" value="1" class="hidden" {{ old('followed_plan') == '1' ? 'checked' : '' }}>
+                                <div id="btn-followed_plan-1" data-group="followed_plan" class="px-4 py-2 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-400 transition-all">
                                     Yes, followed plan
                                 </div>
                             </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" name="followed_plan" value="0" class="peer sr-only" {{ old('followed_plan') === '0' ? 'checked' : '' }}>
-                                <div class="px-4 py-2 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-400 peer-checked:bg-red-500/20 peer-checked:border-red-500 peer-checked:text-red-400 transition-all">
+                            <label class="flex items-center gap-2 cursor-pointer" onclick="selectRadio('followed_plan', '0')">
+                                <input type="radio" name="followed_plan" value="0" class="hidden" {{ old('followed_plan') === '0' ? 'checked' : '' }}>
+                                <div id="btn-followed_plan-0" data-group="followed_plan" class="px-4 py-2 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-400 transition-all">
                                     No, broke rules
                                 </div>
                             </label>
@@ -304,4 +304,51 @@
             </button>
         </form>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-fill Entry Date with current time if empty
+            const entryDateInput = document.querySelector('input[name="entry_date"]');
+            if (entryDateInput && !entryDateInput.value) {
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                entryDateInput.value = now.toISOString().slice(0, 16);
+            }
+
+            // Init Radios
+            document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+                let group = input.name;
+                if(group === 'focus_data[risk_acceptance]') group = 'risk';
+                selectRadio(group, input.value);
+            });
+        });
+
+        function selectRadio(group, value) {
+            // 1. Check Input
+            const selectorName = group === 'risk' ? 'focus_data[risk_acceptance]' : group;
+            const input = document.querySelector(`input[name="${selectorName}"][value="${value}"]`);
+            if (input) input.checked = true;
+
+            // 2. Reset Visuals
+            const buttons = document.querySelectorAll(`[data-group="${group}"]`);
+            buttons.forEach(btn => {
+                // Remove Active Classes
+                btn.classList.remove('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-400', 'bg-red-500/20', 'border-red-500', 'text-red-400');
+                // Add Inactive Classes
+                btn.classList.add('bg-slate-900/50', 'border-slate-700', 'text-slate-400'); // Default styling
+            });
+
+            // 3. Set Active Visual
+            const activeBtn = document.getElementById(`btn-${group}-${value}`);
+            if (activeBtn) {
+                 activeBtn.classList.remove('bg-slate-900/50', 'border-slate-700', 'text-slate-400');
+                 
+                 // Apply Color based on value/type
+                 if (value === 'sell' || value === 'no' || value === '0') {
+                     activeBtn.classList.add('bg-red-500/20', 'border-red-500', 'text-red-400');
+                 } else {
+                     activeBtn.classList.add('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-400');
+                 }
+            }
+        }
+    </script>
 @endsection

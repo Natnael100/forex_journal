@@ -68,7 +68,7 @@ class RegisterController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'email_verified_at' => now(), // Auto-verify email
-            'verification_status' => 'pending', // Requires admin approval
+            'verification_status' => $request->role === 'trader' ? 'verified' : 'pending',
             'is_active' => true, // Active but unverified
             // Common profile fields
             'username' => $request->username,

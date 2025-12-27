@@ -79,15 +79,15 @@
                         <div>
                             <label class="block text-sm font-medium text-slate-300 mb-2">Direction *</label>
                             <div class="grid grid-cols-2 gap-4">
-                                <label class="cursor-pointer">
-                                    <input type="radio" name="direction" value="buy" class="peer sr-only">
-                                    <div class="text-center py-3 rounded-lg border border-slate-700 bg-slate-900/50 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500 peer-checked:text-emerald-400 transition-all hover:bg-slate-800">
+                                <label class="cursor-pointer" onclick="selectRadioModal('direction', 'buy')">
+                                    <input type="radio" name="direction" value="buy" class="hidden">
+                                    <div id="modal-btn-direction-buy" data-group="direction" class="text-center py-3 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-400 transition-all hover:bg-slate-800">
                                         BUY (Long) 📈
                                     </div>
                                 </label>
-                                <label class="cursor-pointer">
-                                    <input type="radio" name="direction" value="sell" class="peer sr-only">
-                                    <div class="text-center py-3 rounded-lg border border-slate-700 bg-slate-900/50 peer-checked:bg-red-500/20 peer-checked:border-red-500 peer-checked:text-red-400 transition-all hover:bg-slate-800">
+                                <label class="cursor-pointer" onclick="selectRadioModal('direction', 'sell')">
+                                    <input type="radio" name="direction" value="sell" class="hidden">
+                                    <div id="modal-btn-direction-sell" data-group="direction" class="text-center py-3 rounded-lg border border-slate-700 bg-slate-900/50 text-slate-400 transition-all hover:bg-slate-800">
                                         SELL (Short) 📉
                                     </div>
                                 </label>
@@ -198,10 +198,38 @@
         }, 300);
     }
 
+    function selectRadioModal(group, value) {
+        // 1. Check Input (Scoped to modal)
+        const modal = document.getElementById('tradeModalPanel');
+        const input = modal.querySelector(`input[name="${group}"][value="${value}"]`);
+        if (input) input.checked = true;
+
+        // 2. Reset Visuals
+        const buttons = modal.querySelectorAll(`[data-group="${group}"]`);
+        buttons.forEach(btn => {
+            btn.classList.remove('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-400', 'bg-red-500/20', 'border-red-500', 'text-red-400', 'bg-slate-900/50', 'text-slate-400');
+            btn.classList.add('bg-slate-900/50', 'border-slate-700', 'text-slate-400');
+        });
+
+        // 3. Set Active Visual
+        const activeBtn = document.getElementById(`modal-btn-${group}-${value}`);
+        if (activeBtn) {
+             activeBtn.classList.remove('bg-slate-900/50', 'border-slate-700', 'text-slate-400');
+             if (value === 'sell') {
+                 activeBtn.classList.add('bg-red-500/20', 'border-red-500', 'text-red-400');
+             } else {
+                 activeBtn.classList.add('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-400');
+             }
+        }
+    }
+
     // Auto-open if validation errors exist
     @if($errors->any())
         document.addEventListener('DOMContentLoaded', function() {
             openTradeModal();
+            // Re-init selection if old exists
+            const oldDir = "{{ old('direction') }}";
+            if(oldDir) selectRadioModal('direction', oldDir);
         });
     @endif
 </script>

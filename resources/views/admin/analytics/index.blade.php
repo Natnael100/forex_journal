@@ -99,13 +99,28 @@
             @foreach($sessionStats as $session)
                 <div class="p-4 bg-white/5 rounded-lg text-center">
                     <p class="text-2xl mb-2">
-                        @if($session->session === 'london') 🇬🇧
-                        @elseif($session->session === 'new_york') 🇺🇸
-                        @elseif($session->session === 'tokyo') 🇯🇵
+                        @php 
+                            $rawSession = $session->session;
+                            $enum = null;
+                            if ($rawSession instanceof \App\Enums\MarketSession) {
+                                $enum = $rawSession;
+                            } elseif (is_string($rawSession)) {
+                                $enum = \App\Enums\MarketSession::tryFrom($rawSession);
+                            }
+                            
+                            $sessionValue = $enum?->value ?? (is_scalar($rawSession) ? $rawSession : '');
+                        @endphp
+                        
+                        @if($enum === \App\Enums\MarketSession::LONDON || $sessionValue === 'london') 🇬🇧
+                        @elseif($enum === \App\Enums\MarketSession::NEWYORK || $sessionValue === 'newyork') 🇺🇸
+                        @elseif($enum === \App\Enums\MarketSession::ASIA || $sessionValue === 'asia') 🇯🇵
+                        @elseif($enum === \App\Enums\MarketSession::SYDNEY || $sessionValue === 'sydney') 🇦🇺
                         @else 🌏
                         @endif
                     </p>
-                    <p class="text-slate-400 text-sm mb-1">{{ ucfirst(str_replace('_', ' ', $session->session)) }}</p>
+                    <p class="text-slate-400 text-sm mb-1">
+                        {{ $enum?->label() ?? ucfirst(str_replace('_', ' ', $sessionValue)) }}
+                    </p>
                     <p class="text-2xl font-bold text-white">{{ $session->count }}</p>
                     <p class="text-xs text-slate-500">trades</p>
                 </div>
