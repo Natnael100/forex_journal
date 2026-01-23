@@ -33,14 +33,20 @@ class AnalystDashboardController extends Controller
     {
         $analyst = Auth::user();
         
-        // Get all traders assigned to this analyst
+        // Get all traders assigned to this analyst (includes subscribers)
         $traderIds = $analyst->tradersAssigned()->pluck('trader_id');
         
         $traders = User::role('trader')
             ->whereIn('id', $traderIds)
             ->withCount('trades')
             ->get()
-            ->map(function ($trader) {
+            ->map(function ($trader) use ($analyst) {
+                // Get active subscription for this trader with this analyst
+                $subscription = $analyst->subscriptionsAsAnalyst()
+                    ->where('trader_id', $trader->id)
+                    ->where('status', 'active')
+                    ->first();
+
                 return [
                     'id' => $trader->id,
                     'name' => $trader->name,
@@ -50,6 +56,11 @@ class AnalystDashboardController extends Controller
                     'profit_factor' => $this->analyticsService->getProfitFactor($trader),
                     'total_pl' => $trader->trades->sum('profit_loss'),
                     'last_trade' => $trader->trades()->latest('entry_date')->first()?->entry_date,
+                    // Subscription info
+                    'subscription_plan' => $subscription?->plan,
+                    'subscription_price' => $subscription?->price,
+                    'subscription_status' => $subscription?->status,
+                    'subscribed_at' => $subscription?->created_at,
                 ];
             });
 
@@ -65,6 +76,8 @@ class AnalystDashboardController extends Controller
             'total_traders' => $traders->count(),
             'total_feedback' => $analyst->feedbackGiven()->count(),
             'recent_feedback_count' => $analyst->feedbackGiven()->where('created_at', '>=', now()->subWeek())->count(),
+            'active_subscriptions' => $analyst->subscriptionsAsAnalyst()->active()->count(),
+            'monthly_revenue' => $analyst->subscriptionsAsAnalyst()->active()->sum('price'),
         ];
 
         return view('analyst.dashboard', compact('traders', 'recentFeedback', 'stats'));
@@ -220,6 +233,12 @@ class AnalystDashboardController extends Controller
             // Fail gracefully if tables don't exist yet
         }
 
+        // Get Active Subscription with Plan Details
+        $subscription = $analyst->subscriptionsAsAnalyst()
+            ->where('trader_id', $traderId)
+            ->where('status', 'active')
+            ->first();
+
         return view('analyst.trader-profile', compact(
             'trader',
             'accounts',
@@ -236,7 +255,8 @@ class AnalystDashboardController extends Controller
             'feedbackHistory',
             'comparisonMetrics',
             'assignment',
-            'riskRules'
+            'riskRules',
+            'subscription'
         ));
     }
     /**
@@ -352,5 +372,49 @@ class AnalystDashboardController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Database error: Unable to remove rule.');
         }
+    }
+
+    /**
+     * Phase 1: Analyst Revenue Dashboard
+     */
+    public function revenue()
+    {
+        $analyst = Auth::user();
+
+        // Revenue Stats
+        $stats = [
+            'active_subscriptions' => $analyst->subscriptionsAsAnalyst()->active()->count(),
+            'monthly_revenue' => $analyst->subscriptionsAsAnalyst()->active()->sum('price'),
+            'total_earned' => $analyst->payouts()->completed()->sum('amount'),
+            'pending_payout' => $analyst->getPendingEarnings(),
+            'average_rating' => $analyst->getAverageRating(),
+            'total_reviews' => $analyst->reviewsReceived()->approved()->count(),
+        ];
+
+        // Recent Subscriptions
+        $recentSubscriptions = $analyst->subscriptionsAsAnalyst()
+            ->with('trader')
+            ->latest()
+            ->take(10)
+            ->get();
+
+        // Payout History
+        $payoutHistory = $analyst->payouts()
+            ->latest()
+            ->paginate(20);
+
+        // Revenue by Plan
+        $revenueByPlan = $analyst->subscriptionsAsAnalyst()
+            ->active()
+            ->selectRaw('plan, COUNT(*) as count, SUM(price) as total')
+            ->groupBy('plan')
+            ->get();
+
+        return view('analyst.revenue', compact(
+            'stats',
+            'recentSubscriptions',
+            'payoutHistory',
+            'revenueByPlan'
+        ));
     }
 }

@@ -78,38 +78,79 @@
                 </div>
 
                 <!-- Quick Actions -->
+                <!-- Quick Actions -->
                 <div class="mt-6 space-y-2">
-                    @if($user->verification_status === 'pending')
-                        <form action="{{ route('admin.verifications.approve', $user->id) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
-                                ✓ Approve Verification
-                            </button>
-                        </form>
-                    @endif
-                    
-                    @if($user->is_active)
-                        <form action="{{ route('admin.users.deactivate', $user->id) }}" method="POST" onsubmit="return confirm('Deactivate this user?')">
-                            @csrf
-                            <button type="submit" class="w-full px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white font-medium rounded-lg transition-colors">
-                                Deactivate User
-                            </button>
-                        </form>
+                    @if($user->banned_at)
+                        <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-lg mb-4">
+                            <h4 class="text-red-400 font-bold flex items-center gap-2 mb-2">
+                                🚫 Account Banned
+                            </h4>
+                            <p class="text-slate-300 text-sm mb-1"><strong>Reason:</strong> {{ $user->ban_reason }}</p>
+                            <p class="text-slate-400 text-xs mb-3">Banned on: {{ $user->banned_at->format('M d, Y H:i') }}</p>
+                            
+                            <form action="{{ route('admin.users.unban', $user->id) }}" method="POST" onsubmit="return confirm('Unban this user?')">
+                                @csrf
+                                <button type="submit" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors border border-slate-600">
+                                    Restore Access (Unban)
+                                </button>
+                            </form>
+                        </div>
                     @else
-                        <form action="{{ route('admin.users.reactivate', $user->id) }}" method="POST">
+                        <!-- Ban Button & Form -->
+                        <div x-data="{ showBanForm: false }" class="mb-2">
+                            <button x-show="!showBanForm" @click="showBanForm = true" type="button" class="w-full px-4 py-2 bg-red-900/50 hover:bg-red-900/80 border border-red-500/30 text-red-200 font-medium rounded-lg transition-colors">
+                                🚫 Ban User
+                            </button>
+                            
+                            <form x-show="showBanForm" action="{{ route('admin.users.ban', $user->id) }}" method="POST" class="p-3 bg-red-900/10 border border-red-500/20 rounded-lg">
+                                @csrf
+                                <div class="mb-2">
+                                    <label class="block text-xs font-semibold text-red-300 mb-1">Reason for Ban (Required)</label>
+                                    <textarea name="reason" rows="2" class="w-full bg-slate-900/50 border border-red-500/30 rounded p-2 text-white text-sm focus:border-red-500 focus:outline-none" required placeholder="Violation of terms..."></textarea>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button type="submit" class="flex-1 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded transition-colors">
+                                        Confirm Ban
+                                    </button>
+                                    <button @click="showBanForm = false" type="button" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-xs font-medium rounded transition-colors">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    
+                        @if($user->verification_status === 'pending')
+                            <form action="{{ route('admin.verifications.approve', $user->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
+                                    ✓ Approve Verification
+                                </button>
+                            </form>
+                        @endif
+                        
+                        @if($user->is_active)
+                            <form action="{{ route('admin.users.deactivate', $user->id) }}" method="POST" onsubmit="return confirm('Deactivate this user?')">
+                                @csrf
+                                <button type="submit" class="w-full px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white font-medium rounded-lg transition-colors">
+                                    Deactivate User
+                                </button>
+                            </form>
+                        @else
+                            <form action="{{ route('admin.users.reactivate', $user->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
+                                    Reactivate User
+                                </button>
+                            </form>
+                        @endif
+
+                        <form action="{{ route('admin.users.reset-password', $user->id) }}" method="POST" onsubmit="return confirm('Send password reset email?')">
                             @csrf
-                            <button type="submit" class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
-                                Reactivate User
+                            <button type="submit" class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+                                Reset Password
                             </button>
                         </form>
                     @endif
-
-                    <form action="{{ route('admin.users.reset-password', $user->id) }}" method="POST" onsubmit="return confirm('Send password reset email?')">
-                        @csrf
-                        <button type="submit" class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
-                            Reset Password
-                        </button>
-                    </form>
                 </div>
             </div>
 

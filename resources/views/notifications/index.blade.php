@@ -22,7 +22,12 @@
     <!-- Notifications List -->
     <div class="space-y-3">
         @forelse($notifications as $notification)
-            <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border border-slate-700/50 {{ $notification->isUnread() ? 'border-blue-500/30' : '' }}">
+            <div id="notification-card-{{ $notification->id }}" 
+                 onclick="toggleNotification('{{ $notification->id }}')"
+                 class="group bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl p-6 border transition-all duration-200 cursor-pointer hover:bg-slate-800/80
+                 {{ $notification->isUnread() ? 'border-blue-500/30 shadow-[0_0_15px_-3px_rgba(59,130,246,0.1)]' : 'border-slate-700/50' }}"
+                 data-unread="{{ $notification->isUnread() ? 'true' : 'false' }}">
+                
                 <div class="flex items-start gap-4">
                     <!-- Icon -->
                     <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-2xl
@@ -41,37 +46,36 @@
                     <!-- Content -->
                     <div class="flex-1">
                         <div class="flex items-start justify-between mb-2">
-                            <h3 class="text-lg font-semibold text-white">
+                            <h3 class="text-lg font-semibold text-white group-hover:text-blue-400 transition-colors">
                                 {{ $notification->data['title'] ?? 'Notification' }}
                             </h3>
-                            @if($notification->isUnread())
-                                <span class="px-2 py-1 text-xs font-medium bg-blue-500/20 text-blue-400 rounded-full">
-                                    New
+                            
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm text-slate-400">
+                                    {{ $notification->created_at->diffForHumans() }}
                                 </span>
-                            @endif
+                                @if($notification->isUnread())
+                                    <span id="badge-{{ $notification->id }}" class="px-2 py-1 text-xs font-medium bg-blue-500/20 text-blue-400 rounded-full animate-pulse">
+                                        New
+                                    </span>
+                                @endif
+                                <!-- Chevron -->
+                                <svg id="chevron-{{ $notification->id }}" class="w-5 h-5 text-slate-500 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
                         </div>
                         
-                        <p class="text-slate-300 mb-3">{{ $notification->data['message'] ?? '' }}</p>
-                        
-                        <div class="flex items-center gap-4">
-                            <p class="text-sm text-slate-400">
-                                {{ $notification->created_at->format('M d, Y h:i A') }}
-                                ({{ $notification->created_at->diffForHumans() }})
-                            </p>
+                        <!-- Collapsible Message -->
+                        <div id="message-{{ $notification->id }}" class="hidden">
+                            <p class="text-slate-300 mb-4 leading-relaxed">{{ $notification->data['message'] ?? '' }}</p>
                             
                             @if(isset($notification->data['url']))
-                                <a href="{{ $notification->data['url'] }}" class="text-sm text-blue-400 hover:text-blue-300">
-                                    View →
+                                <a href="{{ $notification->data['url'] }}" 
+                                   onclick="event.stopPropagation()" 
+                                   class="inline-flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium rounded-lg transition-colors">
+                                    View Details →
                                 </a>
-                            @endif
-                            
-                            @if($notification->isUnread())
-                                <form action="{{ route('notifications.read', $notification->id) }}" method="POST" class="inline">
-                                    @csrf
-                                    <button type="submit" class="text-sm text-slate-400 hover:text-white">
-                                        Mark as Read
-                                    </button>
-                                </form>
                             @endif
                         </div>
                     </div>
@@ -92,4 +96,76 @@
             {{ $notifications->links() }}
         </div>
     @endif
+
+<script>
+    async function toggleNotification(id) {
+        const message = document.getElementById('message-' + id);
+        const chevron = document.getElementById('chevron-' + id);
+        const card = document.getElementById('notification-card-' + id);
+        const isUnread = card.getAttribute('data-unread') === 'true';
+
+        // Toggle Visibility
+        if (message.classList.contains('hidden')) {
+            message.classList.remove('hidden');
+            chevron.classList.add('rotate-180');
+            
+            // Mark as Read Logic
+            if (isUnread) {
+                try {
+                    // Optimistic UI Updates
+                    updateUIAsRead(id);
+
+                    // Send Request
+                    const response = await fetch(`/notifications/${id}/mark-as-read`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                } catch (error) {
+                    console.error('Error marking notification as read:', error);
+                    // Revert UI if needed (optional, but keep it read for UX usually)
+                }
+            }
+        } else {
+            message.classList.add('hidden');
+            chevron.classList.remove('rotate-180');
+        }
+    }
+
+    function updateUIAsRead(id) {
+        const card = document.getElementById('notification-card-' + id);
+        const badge = document.getElementById('badge-' + id);
+        
+        // Update Card Styles
+        if (card.getAttribute('data-unread') === 'true') {
+            card.classList.remove('border-blue-500/30', 'shadow-[0_0_15px_-3px_rgba(59,130,246,0.1)]');
+            card.classList.add('border-slate-700/50');
+            card.setAttribute('data-unread', 'false');
+            
+            // Remove "New" Badge
+            if (badge) badge.remove();
+
+            // Decrement Global Badge
+            const globalBadges = document.querySelectorAll('.notification-badge-count');
+            globalBadges.forEach(badge => {
+                let count = parseInt(badge.textContent);
+                if (count > 0) {
+                    count--;
+                    if (count === 0) {
+                        badge.style.display = 'none'; // Or remove it
+                    } else {
+                        badge.textContent = count > 9 ? '9+' : count;
+                    }
+                }
+            });
+        }
+    }
+</script>
 @endsection

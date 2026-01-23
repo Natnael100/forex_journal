@@ -5,115 +5,105 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Trade;
-use App\Models\Feedback;
-use App\Models\AnalystAssignment;
+use App\Models\AnalystApplication;
 use Illuminate\Support\Facades\DB;
-use Spatie\Activitylog\Models\Activity;
 
 class AdminDashboardController extends Controller
 {
     /**
-     * Display the enhanced admin dashboard with system overview
+     * Display admin dashboard with platform statistics
      */
     public function index()
     {
-        // Comprehensive system stats (with graceful fallback for missing Phase 6/7 tables)
+        // Core User Statistics
         $stats = [
             'total_users' => User::count(),
             'total_traders' => User::role('trader')->count(),
             'total_analysts' => User::role('analyst')->count(),
             'total_admins' => User::role('admin')->count(),
-            'pending_verifications' => 0,
-            'assigned_traders' => 0,
-            'unassigned_traders' => 0,
+            
+            // Analyst Verification Stats
+            'verified_analysts' => User::role('analyst')
+                ->where('analyst_verification_status', 'verified')
+                ->count(),
+            'pending_analyst_applications' => 0,
+            'approved_applications_this_month' => 0,
+            
+            // Subscription Stats (will be 0 if subscriptions table doesn't exist)
+            'active_subscriptions' => 0,
+            'total_revenue_this_month' => 0,
+            
+            // Activity Stats
             'total_trades' => Trade::count(),
-            'total_feedback' => 0,
-            'recent_activity_count' => 0,
-            'active_users' => User::count(),
-            'inactive_users' => 0,
+            'active_users_last_7_days' => 0,
+            'new_users_this_week' => User::where('created_at', '>=', now()->subDays(7))->count(),
+            'banned_users' => 0,
         ];
 
-        // Try to get verification stats (Phase 7 feature)
+        // Try to get analyst application stats
         try {
-            $stats['pending_verifications'] = User::where('verification_status', 'pending')->count();
-            $stats['active_users'] = User::where('is_active', true)->count();
-            $stats['inactive_users'] = User::where('is_active', false)->count();
+            $stats['pending_analyst_applications'] = AnalystApplication::where('status', 'pending')->count();
+            $stats['approved_applications_this_month'] = AnalystApplication::where('status', 'approved')
+                ->whereMonth('created_at', now()->month)
+                ->count();
         } catch (\Exception $e) {
-            // Verification columns don't exist yet
+            // analyst_applications table doesn't exist yet
         }
 
-        // Try to get assignment stats (Phase 6 feature)
+        // Try to get subscription stats (Phase 1 feature)
         try {
-            $stats['assigned_traders'] = AnalystAssignment::distinct('trader_id')->count();
-            $stats['unassigned_traders'] = User::role('trader')
-                                        ->where('verification_status', 'verified')
-                                        ->whereNotIn('id', AnalystAssignment::pluck('trader_id'))
-                                        ->count();
+            $subscriptionModel = app('App\Models\Subscription');
+            $stats['active_subscriptions'] = $subscriptionModel::where('status', 'active')->count();
+            $stats['total_revenue_this_month'] = $subscriptionModel::where('status', 'active')
+                ->whereMonth('created_at', now()->month)
+                ->sum(DB::raw('CAST(amount as DECIMAL(10,2))'));
         } catch (\Exception $e) {
-            // analyst_assignments table doesn't exist yet
+            // subscriptions table doesn't exist or model not found
         }
 
-        // Try to get feedback stats (Phase 6 feature)
+        // Try to get last login stats
         try {
-            $stats['total_feedback'] = Feedback::count();
+            $stats['active_users_last_7_days'] = User::where('last_login_at', '>=', now()->subDays(7))->count();
         } catch (\Exception $e) {
-            // feedback table doesn't exist yet
+            // last_login_at column doesn't exist
         }
 
-        // Try to get activity stats (Phase 6 feature)
+        // Try to get ban stats
         try {
-            $stats['recent_activity_count'] = Activity::where('created_at', '>=', now()->subWeek())->count();
+            $stats['banned_users'] = User::whereNotNull('banned_at')->count();
         } catch (\Exception $e) {
-            // activity_log table might not exist
+            // banned_at column doesn't exist yet
         }
 
-        // Pending verifications (show first 5) - Phase 7 feature
-        $pendingVerifications = collect([]);
+        // Recent analyst applications (last 5 pending)
+        $pendingApplications = collect([]);
         try {
-            $pendingVerifications = User::where('verification_status', 'pending')
-                ->with('roles')
+            $pendingApplications = AnalystApplication::where('status', 'pending')
                 ->latest()
                 ->take(5)
                 ->get();
         } catch (\Exception $e) {
-            // Verification columns don't exist yet
+            // analyst_applications table doesn't exist
         }
 
-        // Recent activity (last 10) - Phase 6 feature
-        $recentActivity = collect([]);
-        try {
-            $recentActivity = Activity::with('causer')
-                ->latest()
-                ->take(10)
-                ->get();
-        } catch (\Exception $e) {
-            // activity_log table doesn't exist yet
-        }
-
-        // Recent users
+        // Recent users (last 10 registrations)
         $recentUsers = User::with('roles')
             ->latest()
-            ->take(5)
+            ->take(10)
             ->get();
 
-        // Unassigned traders count by role - Phase 6/7 feature
-        $unassignedTradersList = collect([]);
-        try {
-            $unassignedTradersList = User::role('trader')
-                ->where('verification_status', 'verified')
-                ->whereNotIn('id', AnalystAssignment::pluck('trader_id'))
-                ->take(5)
-                ->get();
-        } catch (\Exception $e) {
-            // analyst_assignments or verification_status doesn't exist yet
-        }
+        // Platform health indicators
+        $healthIndicators = [
+            'analyst_response_rate' => 0, // TODO: Calculate from feedback system
+            'average_subscription_duration' => 0, // TODO: Calculate from subscriptions
+            'user_retention_rate' => 0, // TODO: Calculate from login activity
+        ];
 
         return view('admin.dashboard', compact(
             'stats',
-            'pendingVerifications',
-            'recentActivity',
+            'pendingApplications',
             'recentUsers',
-            'unassignedTradersList'
+            'healthIndicators'
         ));
     }
 }

@@ -58,6 +58,13 @@ class TraderDashboardController extends Controller
         $accounts = $user->tradeAccounts()->get();
         $strategies = Strategy::where('user_id', $user->id)->get();
 
-        return view('trader.dashboard', compact('stats', 'equityCurve', 'streaks', 'recentTrades', 'pairs', 'directions', 'sessions', 'outcomes', 'emotions', 'postEmotions', 'accounts', 'strategies'));
+        // Active Subscriptions
+        $activeSubscriptions = \App\Models\Subscription::where('trader_id', $user->id)
+            ->whereIn('status', ['active', 'past_due', 'trialling'])
+            ->with('analyst')
+            ->latest()
+            ->get();
+
+        return view('trader.dashboard', compact('stats', 'equityCurve', 'streaks', 'recentTrades', 'pairs', 'directions', 'sessions', 'outcomes', 'emotions', 'postEmotions', 'accounts', 'strategies', 'activeSubscriptions'));
     }
 }

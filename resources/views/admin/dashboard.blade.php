@@ -9,7 +9,7 @@
         <p class="text-slate-400">Complete system overview and management</p>
     </div>
 
-    <!-- Stats Grid - Expanded for Phase 6/7 -->
+    <!-- Stats Grid - Governance Focused -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Total Users -->
         @include('components.stat-card', [
@@ -19,30 +19,29 @@
             'accentColor' => 'blue'
         ])
 
-        <!-- Pending Verifications -->
+        <!-- Analyst Applications -->
         @include('components.stat-card', [
-            'icon' => '⏳',
-            'value' => $stats['pending_verifications'],
-            'label' => 'Pending Verifications',
-            'accentColor' => $stats['pending_verifications'] > 0 ? 'yellow' : 'green',
-            'linkRoute' => 'admin.verifications.index'
+            'icon' => '📝',
+            'value' => $stats['pending_analyst_applications'] ?? 0,
+            'label' => 'Pending Applications',
+            'accentColor' => ($stats['pending_analyst_applications'] ?? 0) > 0 ? 'yellow' : 'green',
+            'linkRoute' => 'admin.analyst-applications.index'
         ])
 
-        <!-- Assigned Traders -->
+        <!-- Verified Analysts -->
         @include('components.stat-card', [
-            'icon' => '🔗',
-            'value' => $stats['assigned_traders'],
-            'label' => 'Assigned Traders',
+            'icon' => '✅',
+            'value' => $stats['verified_analysts'] ?? 0,
+            'label' => 'Verified Analysts',
             'accentColor' => 'purple'
         ])
 
-        <!-- Unassigned Traders -->
+        <!-- Active Subscriptions -->
         @include('components.stat-card', [
-            'icon' => '⚠️',
-            'value' => $stats['unassigned_traders'],
-            'label' => 'Unassigned Traders',
-            'accentColor' => $stats['unassigned_traders'] > 0 ? 'red' : 'green',
-            'linkRoute' => 'admin.assignments.index'
+            'icon' => '💼',
+            'value' => $stats['active_subscriptions'] ?? 0,
+            'label' => 'Active Subscriptions',
+            'accentColor' => 'emerald'
         ])
 
         <!-- Total Trades -->
@@ -50,15 +49,7 @@
             'icon' => '📈',
             'value' => $stats['total_trades'],
             'label' => 'Total Trades',
-            'accentColor' => 'emerald'
-        ])
-
-        <!-- Total Feedback -->
-        @include('components.stat-card', [
-            'icon' => '💬',
-            'value' => $stats['total_feedback'],
-            'label' => 'Total Feedback',
-            'accentColor' => 'indigo'
+            'accentColor' => 'cyan'
         ])
 
         <!-- Traders -->
@@ -74,116 +65,132 @@
             'icon' => '🔍',
             'value' => $stats['total_analysts'],
             'label' => 'Analysts',
-            'accentColor' => 'cyan'
+            'accentColor' => 'indigo'
+        ])
+
+        <!-- Banned Users -->
+        @include('components.stat-card', [
+            'icon' => '🚫',
+            'value' => $stats['banned_users'] ?? 0,
+            'label' => 'Banned Users',
+            'accentColor' => $stats['banned_users'] > 0 ? 'red' : 'slate'
         ])
     </div>
 
     <!-- Quick Actions & Alerts -->
-    @if($stats['pending_verifications'] > 0 || $stats['unassigned_traders'] > 0)
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            @if($stats['pending_verifications'] > 0)
-                <div class="bg-gradient-to-br from-yellow-900/20 to-orange-900/20 backdrop-blur-xl rounded-xl p-6 border border-yellow-700/50">
-                    <div class="flex items-start justify-between mb-4">
-                        <div>
-                            <h3 class="text-lg font-semibold text-yellow-400 mb-1">⏳ Pending Verifications</h3>
-                            <p class="text-sm text-slate-400">{{ $stats['pending_verifications'] }} user(s) waiting for approval</p>
-                        </div>
+    @if(($stats['pending_analyst_applications'] ?? 0) > 0)
+        <div class="mb-8">
+            <div class="bg-gradient-to-br from-purple-900/20 to-indigo-900/20 backdrop-blur-xl rounded-xl p-6 border border-purple-700/50">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <h3 class="text-lg font-semibold text-purple-400 mb-1">📝 Analyst Applications</h3>
+                        <p class="text-sm text-slate-400">{{ $stats['pending_analyst_applications'] }} application(s) waiting for review</p>
                     </div>
-                    <a href="{{ route('admin.verifications.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-sm font-medium rounded-lg transition-colors">
-                        Review Now
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </a>
                 </div>
-            @endif
-
-            @if($stats['unassigned_traders'] > 0)
-                <div class="bg-gradient-to-br from-red-900/20 to-pink-900/20 backdrop-blur-xl rounded-xl p-6 border border-red-700/50">
-                    <div class="flex items-start justify-between mb-4">
-                        <div>
-                            <h3 class="text-lg font-semibold text-red-400 mb-1">⚠️ Unassigned Traders</h3>
-                            <p class="text-sm text-slate-400">{{ $stats['unassigned_traders'] }} trader(s) need analyst assignment</p>
-                        </div>
-                    </div>
-                    <a href="{{ route('admin.assignments.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
-                        Assign Now
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </a>
-                </div>
-            @endif
+                <a href="{{ route('admin.analyst-applications.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    Review Applications
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
         </div>
     @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <!-- Pending Verifications Panel -->
+        <!-- Pending Analyst Applications Panel -->
         <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl border border-slate-700/50">
             <div class="p-6 border-b border-slate-700/50 flex items-center justify-between">
-                <h2 class="text-xl font-bold text-white">Pending Verifications</h2>
-                <a href="{{ route('admin.verifications.index') }}" class="text-sm text-blue-400 hover:text-blue-300">View All →</a>
+                <h2 class="text-xl font-bold text-white">Pending Analyst Applications</h2>
+                <a href="{{ route('admin.analyst-applications.index') }}" class="text-sm text-blue-400 hover:text-blue-300">View All →</a>
             </div>
             <div class="p-6">
-                @forelse($pendingVerifications as $user)
-                    <div class="mb-4 last:mb-0 p-4 bg-white/5 rounded-lg border border-slate-700 hover:border-blue-500/30 transition-colors">
+                @forelse($pendingApplications as $application)
+                    <div class="mb-4 last:mb-0 p-4 bg-white/5 rounded-lg border border-slate-700 hover:border-purple-500/30 transition-colors">
                         <div class="flex items-start justify-between mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-                                    {{ substr($user->name, 0, 1) }}
-                                </div>
-                                <div>
-                                    <p class="font-semibold text-white">{{ $user->name }}</p>
-                                    <p class="text-sm text-slate-400">{{ $user->email }}</p>
-                                </div>
+                            <div>
+                                <p class="font-semibold text-white">{{ $application->name }}</p>
+                                <p class="text-sm text-slate-400">{{ $application->email }}</p>
+                                <p class="text-xs text-slate-500 mt-1">Applied {{ $application->created_at->diffForHumans() }}</p>
                             </div>
-                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-{{ $user->roles->first()?->name === 'analyst' ? 'purple' : 'emerald' }}-500/20 text-{{ $user->roles->first()?->name === 'analyst' ? 'purple' : 'emerald' }}-400">
-                                {{ $user->roles->first()?->name ?? 'User' }}
+                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-500/20 text-yellow-400">
+                                Pending
                             </span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <form action="{{ route('admin.verifications.approve', $user->id) }}" method="POST" class="inline">
-                                @csrf
-                                <button type="submit" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded transition-colors">
-                                    ✓ Approve
-                                </button>
-                            </form>
-                            <button onclick="showRejectModal({{ $user->id }}, '{{ $user->name }}')" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded transition-colors">
-                                ✗ Reject
-                            </button>
+                            <a href="{{ route('admin.analyst-applications.show', $application->id) }}" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded transition-colors">
+                                Review
+                            </a>
                         </div>
                     </div>
                 @empty
                     <div class="text-center py-8">
-                        <p class="text-slate-400">✅ No pending verifications</p>
-                        <p class="text-sm text-slate-500 mt-1">All users are verified</p>
+                        <p class="text-slate-400">✅ No pending applications</p>
+                        <p class="text-sm text-slate-500 mt-1">All applications have been processed</p>
                     </div>
                 @endforelse
             </div>
         </div>
 
-        <!-- Recent Activity Feed -->
+        <!-- System Health Panel -->
         <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl border border-slate-700/50">
             <div class="p-6 border-b border-slate-700/50">
-                <h2 class="text-xl font-bold text-white">Recent Activity</h2>
+                <h2 class="text-xl font-bold text-white">System Health</h2>
             </div>
-            <div class="p-6 max-h-96 overflow-y-auto">
-                @forelse($recentActivity as $activity)
-                    <div class="mb-4 last:mb-0 flex items-start gap-3">
-                        <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                        <div class="flex-1">
-                            <p class="text-sm text-white">
-                                <span class="font-semibold">{{ $activity->causer?->name ?? 'System' }}</span>
-                                {{ $activity->description }}
-                            </p>
-                            <p class="text-xs text-slate-400 mt-1">{{ $activity->created_at->diffForHumans() }}</p>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                                <span class="text-green-400">✓</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-white">Active Subscriptions</p>
+                                <p class="text-xs text-slate-400">Marketplace operational</p>
+                            </div>
                         </div>
+                        <span class="text-lg font-bold text-green-400">{{ $stats['active_subscriptions'] ?? 0 }}</span>
                     </div>
-                @empty
-                    <div class="text-center py-8">
-                        <p class="text-slate-400">No recent activity</p>
+
+                    <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center">
+                                <span class="text-purple-400">✓</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-white">Verified Analysts</p>
+                                <p class="text-xs text-slate-400">Providing coaching</p>
+                            </div>
+                        </div>
+                        <span class="text-lg font-bold text-purple-400">{{ $stats['verified_analysts'] ?? 0 }}</span>
                     </div>
-                @endforelse
+
+                    <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-{{ $stats['banned_users'] > 0 ? 'red' : 'slate' }}-500/20 rounded-full flex items-center justify-center">
+                                <span class="text-{{ $stats['banned_users'] > 0 ? 'red' : 'slate' }}-400">{{ $stats['banned_users'] > 0 ? '!' : '✓' }}</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-white">Banned Users</p>
+                                <p class="text-xs text-slate-400">Moderation status</p>
+                            </div>
+                        </div>
+                        <span class="text-lg font-bold text-{{ $stats['banned_users'] > 0 ? 'red' : 'slate' }}-400">{{ $stats['banned_users'] ?? 0 }}</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
+                                <span class="text-blue-400">📈</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-white">New Users (7 days)</p>
+                                <p class="text-xs text-slate-400">Growth rate</p>
+                            </div>
+                        </div>
+                        <span class="text-lg font-bold text-blue-400">{{ $stats['new_users_this_week'] ?? 0 }}</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

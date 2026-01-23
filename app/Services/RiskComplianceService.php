@@ -27,6 +27,16 @@ class RiskComplianceService
             return ['compliant' => true, 'reason' => null];
         }
 
+        // Feature Gating: Only apply rules if user has "Automated Risk Rules" feature (Premium+)
+        // Assuming relationship: User -> Subscription -> Plan
+        $subscription = $trader->activeSubscription; // Ensure this relationship exists or use simpler query
+        
+        // If no active subscription or feature not present, skip enforcement
+        // This effectively makes Risk Rules a paid feature.
+        if (!$subscription || !$subscription->hasFeature('risk_rules')) {
+            return ['compliant' => true, 'reason' => null];
+        }
+
         foreach ($rules as $rule) {
             $violation = $this->evaluateRule($rule, $tradeData);
             

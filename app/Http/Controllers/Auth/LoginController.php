@@ -28,11 +28,27 @@ class LoginController extends Controller
         ]);
 
         if (Auth::attempt($request->only('email', 'password'), $request->filled('remember'))) {
+            $user = Auth::user();
+
+            // Check if user is banned
+            if ($user->banned_at) {
+                Auth::logout();
+                throw ValidationException::withMessages([
+                    'email' => "Your account has been banned. Reason: {$user->ban_reason}",
+                ]);
+            }
+
+            // Check if user is deactivated
+            if (!$user->is_active) {
+                Auth::logout();
+                throw ValidationException::withMessages([
+                    'email' => 'Your account is deactivated. Please contact support.',
+                ]);
+            }
+
             $request->session()->regenerate();
 
             // Redirect to role-specific dashboard
-            $user = Auth::user();
-            
             if ($user->hasRole('admin')) {
                 return redirect()->intended(route('admin.dashboard'));
             } elseif ($user->hasRole('analyst')) {

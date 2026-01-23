@@ -147,6 +147,78 @@ class UserManagementController extends Controller
     }
 
     /**
+     * Ban a user
+     */
+    public function ban(Request $request, $userId)
+    {
+        $user = User::findOrFail($userId);
+
+        // Prevent banning yourself
+        if ($user->id === auth()->id()) {
+            return redirect()
+                ->back()
+                ->withErrors(['error' => 'You cannot ban yourself!']);
+        }
+
+        // Prevent banning admins
+        if ($user->hasRole('admin')) {
+            return redirect()
+                ->back()
+                ->withErrors(['error' => 'Admin accounts cannot be banned!']);
+        }
+
+        $validated = $request->validate([
+            'reason' => 'required|string|max:500',
+        ]);
+
+        try {
+            $user->update([
+                'banned_at' => now(),
+                'ban_reason' => $validated['reason'],
+            ]);
+
+            activity()
+                ->performedOn($user)
+                ->log('User banned. Reason: ' . $validated['reason']);
+
+            return redirect()
+                ->route('admin.users.show', $user->id)
+                ->with('success', 'User has been banned successfully!');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->withErrors(['error' => 'Ban feature not available. Run migrations first.']);
+        }
+    }
+
+    /**
+     * Unban a user
+     */
+    public function unban($userId)
+    {
+        $user = User::findOrFail($userId);
+
+        try {
+            $user->update([
+                'banned_at' => null,
+                'ban_reason' => null,
+            ]);
+
+            activity()
+                ->performedOn($user)
+                ->log('User unbanned');
+
+            return redirect()
+                ->route('admin.users.show', $user->id)
+                ->with('success', 'User has been unbanned successfully!');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->withErrors(['error' => 'Unban feature not available. Run migrations first.']);
+        }
+    }
+
+    /**
      * Send password reset email
      */
     public function resetPassword($userId)

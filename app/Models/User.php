@@ -38,6 +38,8 @@ class User extends Authenticatable
         'trading_style',
         'preferred_sessions',
         'favorite_pairs',
+        'primary_goal',
+        'biggest_challenge',
         'profile_tags',
         'social_links',
         'profile_visibility',
@@ -50,29 +52,31 @@ class User extends Authenticatable
         'psychology_focus_areas',
         'feedback_style',
         'max_traders_assigned',
+        // Phase 1: Analyst Enhancement
+        'specializations',
+        'certifications',
+        'years_experience',
+        'hourly_rate',
+        'stripe_account_id',
+        'stripe_onboarding_complete',
+        'offering_details',
+        // Analyst verification
+        'analyst_verification_status',
+        'application_id',
+        // Admin Ban System
+        'banned_at',
+        'ban_reason',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    // ...
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'verified_at' => 'datetime',
+            'banned_at' => 'datetime',
             // Profile casts
             'preferred_sessions' => 'array',
             'favorite_pairs' => 'array',
@@ -83,6 +87,12 @@ class User extends Authenticatable
             'profile_completed_at' => 'datetime',
             // Analyst casts
             'psychology_focus_areas' => 'array',
+            // Phase 1: Analyst Enhancement
+            'specializations' => 'array',
+            'offering_details' => 'array',
+            'certifications' => 'array',
+            'hourly_rate' => 'decimal:2',
+            'stripe_onboarding_complete' => 'boolean',
         ];
     }
 
@@ -129,6 +139,25 @@ class User extends Authenticatable
         return $this->hasMany(\App\Models\TradeAccount::class);
     }
 
+    /**
+     * Get the analyst's subscription plans.
+     */
+    public function plans()
+    {
+        return $this->hasMany(\App\Models\AnalystPlan::class, 'analyst_id');
+    }
+
+    /**
+     * Get a specific plan by tier.
+     */
+    public function getPlan(string $tier)
+    {
+        return $this->plans->where('tier', $tier)->first();
+    }
+
+
+
+
     public function strategies()
     {
         return $this->hasMany(\App\Models\Strategy::class);
@@ -147,6 +176,61 @@ class User extends Authenticatable
     public function analystRequests()
     {
         return $this->hasMany(\App\Models\AnalystRequest::class, 'trader_id');
+    }
+
+    // Phase 1: Analyst Enhancement Relationships
+    public function subscriptionsAsAnalyst()
+    {
+        return $this->hasMany(\App\Models\Subscription::class, 'analyst_id');
+    }
+
+    public function subscriptionsAsTrader()
+    {
+        return $this->hasMany(\App\Models\Subscription::class, 'trader_id');
+    }
+
+    public function payouts()
+    {
+        return $this->hasMany(\App\Models\AnalystPayout::class, 'analyst_id');
+    }
+
+    public function reviewsGiven()
+    {
+        return $this->hasMany(\App\Models\AnalystReview::class, 'trader_id');
+    }
+
+    public function reviewsReceived()
+    {
+        return $this->hasMany(\App\Models\AnalystReview::class, 'analyst_id');
+    }
+    
+    public function analystApplication()
+    {
+        return $this->belongsTo(\App\Models\AnalystApplication::class, 'application_id');
+    }
+    
+    /**
+     * Check if user is a verified analyst
+     */
+    public function isVerifiedAnalyst()
+    {
+        return $this->hasRole('analyst') && 
+               $this->analyst_verification_status === 'verified';
+    }
+
+    // Helper: Get pending earnings
+    public function getPendingEarnings(): float
+    {
+        return $this->subscriptionsAsAnalyst()
+            ->active()
+            ->get()
+            ->sum(fn($sub) => $sub->getAnalystEarnings());
+    }
+
+    // Helper: Get average rating
+    public function getAverageRating(): float
+    {
+        return $this->reviewsReceived()->approved()->avg('rating') ?? 0.0;
     }
 
     /**
@@ -317,5 +401,34 @@ class User extends Authenticatable
             $this->level >= 5 => 'Apprentice Trader',
             default => 'Novice Trader',
         };
+    }
+
+
+    /**
+     * Check if trader has access to a specific feature with an analyst.
+     */
+    public function canAccessFeature(int $analystId, string $featureKey): bool
+    {
+        $subscription = $this->subscriptionsAsTrader()
+            ->where('analyst_id', $analystId)
+            ->where('status', 'active')
+            ->first();
+
+        if (!$subscription) {
+            return false;
+        }
+
+        return $subscription->hasFeature($featureKey);
+    }
+
+    /**
+     * Get active subscription with a specific analyst.
+     */
+    public function getActiveSubscription(int $analystId)
+    {
+        return $this->subscriptionsAsTrader()
+            ->where('analyst_id', $analystId)
+            ->where('status', 'active')
+            ->first();
     }
 }

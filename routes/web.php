@@ -9,6 +9,9 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 
+// Analyst Application
+use App\Http\Controllers\AnalystApplicationController;
+
 // General
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NotificationController;
@@ -28,6 +31,13 @@ use App\Http\Controllers\Admin\SystemSettingsController;
 use App\Http\Controllers\Analyst\AnalystDashboardController;
 use App\Http\Controllers\Analyst\FeedbackController as AnalystFeedbackController;
 use App\Http\Controllers\Analyst\FeedbackTemplateController;
+use App\Http\Controllers\Analyst\AnalystPayoutController;
+use App\Http\Controllers\Analyst\AnalystProfileController;
+use App\Http\Controllers\Analyst\AnalystReviewController;
+
+// Phase 1: Subscription Controllers
+use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\StripeWebhookController;
 
 // Trader Controllers
 use App\Http\Controllers\Trader\TraderDashboardController;
@@ -71,6 +81,94 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 });
 
+// Analyst Application (Public - No Auth Required)
+Route::get('/apply/analyst', [AnalystApplicationController::class, 'create'])
+    ->name('analyst-application.create');
+Route::post('/apply/analyst', [AnalystApplicationController::class, 'store'])
+    ->name('analyst-application.store');
+Route::get('/apply/analyst/success', [AnalystApplicationController::class, 'success'])
+    ->name('analyst-application.success');
+
+// EMERGENCY DB FIX ROUTE
+Route::get('/debug-db-fix', function() {
+    try {
+        Illuminate\Support\Facades\DB::statement("
+            CREATE TABLE IF NOT EXISTS analyst_applications (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                name VARCHAR NOT NULL,
+                email VARCHAR NOT NULL UNIQUE,
+                country VARCHAR NULL,
+                timezone VARCHAR NULL,
+                phone VARCHAR NULL,
+                years_experience VARCHAR NOT NULL,
+                certifications TEXT NULL,
+                certificate_files TEXT NULL,
+                methodology TEXT NULL,
+                specializations TEXT NULL,
+                coaching_experience VARCHAR NOT NULL,
+                clients_coached VARCHAR NOT NULL,
+                coaching_style VARCHAR NULL,
+                track_record_url VARCHAR NULL,
+                linkedin_url VARCHAR NULL,
+                twitter_handle VARCHAR NULL,
+                youtube_url VARCHAR NULL,
+                website_url VARCHAR NULL,
+                why_join TEXT NOT NULL,
+                unique_value TEXT NOT NULL,
+                max_clients VARCHAR NOT NULL,
+                communication_methods TEXT NULL,
+                status VARCHAR DEFAULT 'pending' CHECK(status IN ('pending', 'approved', 'rejected')) NOT NULL,
+                rejection_reason TEXT NULL,
+                reviewed_by INTEGER NULL,
+                reviewed_at DATETIME NULL,
+                created_at DATETIME NULL,
+                updated_at DATETIME NULL,
+                FOREIGN KEY(reviewed_by) REFERENCES users(id) ON DELETE SET NULL
+            )
+        ");
+        
+        // DIAGNOSTIC FIX
+        $log = [];
+        $log[] = "1. Checking 'users' table columns...";
+        
+        $columns = array_map(function($c) { return $c->name; }, Illuminate\Support\Facades\DB::select("PRAGMA table_info(users)"));
+        $log[] = "   Found columns: " . implode(', ', $columns);
+        
+        $missing = [];
+        $required = [
+            'analyst_verification_status' => "ALTER TABLE users ADD COLUMN analyst_verification_status VARCHAR DEFAULT 'pending'",
+            'verified_at' => "ALTER TABLE users ADD COLUMN verified_at DATETIME NULL",
+            'verified_by' => "ALTER TABLE users ADD COLUMN verified_by INTEGER NULL",
+            'application_id' => "ALTER TABLE users ADD COLUMN application_id INTEGER NULL",
+            'specializations' => "ALTER TABLE users ADD COLUMN specializations TEXT NULL",
+            'certifications' => "ALTER TABLE users ADD COLUMN certifications TEXT NULL"
+        ];
+        
+        foreach ($required as $col => $sql) {
+            if (!in_array($col, $columns)) {
+                $log[] = "2. Column '$col' MISSING. Attempting to add...";
+                try {
+                    Illuminate\Support\Facades\DB::statement($sql);
+                    $log[] = "   SUCCESS: Added '$col'.";
+                } catch (\Exception $e) {
+                    $log[] = "   ERROR Adding '$col': " . $e->getMessage();
+                }
+            } else {
+                $log[] = "   OK: Column '$col' exists.";
+            }
+        }
+        
+        // Re-check
+        $columnsAfter = array_map(function($c) { return $c->name; }, Illuminate\Support\Facades\DB::select("PRAGMA table_info(users)"));
+        $log[] = "3. Final column list (count=" . count($columnsAfter) . "): " . implode(', ', $columnsAfter);
+        
+        return response(implode("\n", $log))->header('Content-Type', 'text/plain');
+
+    } catch (\Exception $e) {
+        return "FATAL ERROR: " . $e->getMessage();
+    }
+});
+
 // Verification Pending (accessible to authenticated but unverified users)
 Route::get('/verification/pending', function () {
     return view('auth.verification-pending');
@@ -79,10 +177,108 @@ Route::get('/verification/pending', function () {
 // Public Profile View (accessible to all)
 Route::get('/profile/{username}', [ProfileController::class, 'show'])->name('profile.show');
 
+// Phase 1: Public Analyst Marketplace
+Route::get('/analysts', [AnalystProfileController::class, 'index'])->name('analysts.index');
+Route::get('/analysts/{username}', [AnalystProfileController::class, 'show'])->name('analysts.show');
+Route::post('/analysts/recommend', [\App\Http\Controllers\Analyst\AnalystRecommendationController::class, 'recommend'])->name('analysts.recommend');
+
+// Chapa Webhook (public, no auth required)
+Route::post('/chapa/webhook', [ChapaWebhookController::class, 'handle']);
+Route::get('/chapa/callback', [SubscriptionController::class, 'chapaCallback'])->name('chapa.callback');
+
+// CHAPA SIMULATION ROUTES (For local testing without API keys)
+/*
+Route::get('/test/chapa/checkout', function(\Illuminate\Http\Request $request) {
+    if (config('services.chapa.mode') !== 'simulation') {
+        abort(404);
+    }
+    
+    $txRef = $request->get('tx_ref');
+    $amount = $request->get('amount');
+    $meta = $request->get('meta'); // encoded json
+    
+    return view('subscriptions.test-chapa-checkout', compact('txRef', 'amount', 'meta'));
+})->name('test.chapa.checkout');
+*/
+
+/*
+Route::post('/test/chapa/pay', function(\Illuminate\Http\Request $request, \App\Services\ChapaPaymentService $chapaService) {
+    if (config('services.chapa.mode') !== 'simulation') {
+        abort(404);
+    }
+
+    $txRef = $request->tx_ref;
+    $amount = $request->amount;
+    $meta = json_decode(urldecode($request->meta), true);
+    
+    // Simulate successful payment data
+    $data = [
+        'amount' => $amount,
+        'currency' => 'ETB',
+        'tx_ref' => $txRef,
+        'reference' => 'SIM-' . uniqid(),
+        'status' => 'success',
+    ];
+    
+    // Process the payment
+    $chapaService->processPaymentSuccess($txRef, $data, $meta);
+    
+    // Redirect to success page
+    return redirect()->route('subscription.success', ['tx_ref' => $txRef]);
+})->name('test.chapa.pay');
+*/
+
+/*
+// TEMPORARY: Manual subscription creation for local testing (remove in production)
+Route::get('/test/create-subscription/{analyst}/{trader}/{plan}', function($analystId, $traderId, $plan) {
+    // Create subscription manually
+    $subscription = \App\Models\Subscription::create([
+        'analyst_id' => $analystId,
+        'trader_id' => $traderId,
+        'plan' => $plan,
+        'price' => $plan === 'elite' ? 199 : ($plan === 'premium' ? 99 : 49),
+        'status' => 'active',
+        'chapa_tx_ref' => 'test_' . uniqid(),
+        'current_period_start' => now(),
+        'current_period_end' => now()->addMonth(),
+    ]);
+
+    // Create analyst assignment
+    \App\Models\AnalystAssignment::firstOrCreate(
+        ['analyst_id' => $analystId, 'trader_id' => $traderId],
+        ['status' => 'active']
+    );
+
+    // Send notification to analyst
+    $analyst = \App\Models\User::find($analystId);
+    $trader = \App\Models\User::find($traderId);
+    
+    if ($analyst && $trader) {
+        \App\Models\Notification::create([
+            'user_id' => $analyst->id,
+            'type' => 'new_subscription',
+            'title' => 'New Subscriber!',
+            'message' => "{$trader->name} subscribed to your " . ucfirst($plan) . " plan ($" . number_format($subscription->price, 2) . "/mo)",
+            'data' => json_encode([
+                'trader_id' => $trader->id,
+                'trader_name' => $trader->name,
+                'plan' => $plan,
+                'price' => $subscription->price,
+            ]),
+        ]);
+    }
+
+    return redirect()->route('subscription.success')->with('success', 'Test subscription created!');
+})->name('test.subscription.create');
+*/
+
+
 // Authenticated Routes
 Route::middleware('auth')->group(function () {
     // Analyst Assignment Requests
-    Route::get('/analyst/request', [TraderAnalystRequestController::class, 'create'])->name('trader.analyst-request.create');
+    Route::get('/analyst/request', function() {
+        return redirect()->route('analysts.index')->with('info', 'We have moved to a self-service Marketplace! Please choose your analyst here.');
+    })->name('trader.analyst-request.create');
     Route::post('/analyst/request', [TraderAnalystRequestController::class, 'store'])->name('trader.analyst-request.store');
     Route::delete('/analyst/request/{analystRequest}', [TraderAnalystRequestController::class, 'cancel'])->name('trader.analyst-request.cancel');
     Route::get('/analyst/consent/{analystRequest}', [TraderAnalystRequestController::class, 'showConsent'])->name('trader.analyst-request.consent');
@@ -121,6 +317,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/users/{user}/change-role', [UserManagementController::class, 'changeRole'])->name('users.change-role');
         Route::post('/users/{user}/deactivate', [UserManagementController::class, 'deactivate'])->name('users.deactivate');
         Route::post('/users/{user}/reactivate', [UserManagementController::class, 'reactivate'])->name('users.reactivate');
+        Route::post('/users/{user}/ban', [UserManagementController::class, 'ban'])->name('users.ban');
+        Route::post('/users/{user}/unban', [UserManagementController::class, 'unban'])->name('users.unban');
         Route::post('/users/{user}/reset-password', [UserManagementController::class, 'resetPassword'])->name('users.reset-password');
         Route::post('/users/{user}/reset-profile-photo', [UserManagementController::class, 'resetProfilePhoto'])->name('users.reset-profile-photo');
         Route::post('/users/{user}/reset-cover-photo', [UserManagementController::class, 'resetCoverPhoto'])->name('users.reset-cover-photo');
@@ -132,7 +330,24 @@ Route::middleware('auth')->group(function () {
         Route::get('/verifications', [AdminVerificationController::class, 'index'])->name('verifications.index');
         Route::get('/verifications/{user}', [AdminVerificationController::class, 'show'])->name('verifications.show');
         Route::post('/verifications/{user}/approve', [AdminVerificationController::class, 'approve'])->name('verifications.approve');
+        Route::post('/verifications/{user}/approve', [AdminVerificationController::class, 'approve'])->name('verifications.approve');
         Route::post('/verifications/{user}/reject', [AdminVerificationController::class, 'reject'])->name('verifications.reject');
+        
+        // Analyst Applications
+        Route::get('/analyst-applications', [\App\Http\Controllers\Admin\AnalystApplicationController::class, 'index'])->name('analyst-applications.index');
+        Route::get('/analyst-applications/{application}', [\App\Http\Controllers\Admin\AnalystApplicationController::class, 'show'])->name('analyst-applications.show');
+        Route::post('/analyst-applications/{application}/approve', [\App\Http\Controllers\Admin\AnalystApplicationController::class, 'approve'])->name('analyst-applications.approve');
+        Route::post('/analyst-applications/{application}/reject', [\App\Http\Controllers\Admin\AnalystApplicationController::class, 'reject'])->name('analyst-applications.reject');
+        
+        // Subscriptions
+        Route::get('/subscriptions', [\App\Http\Controllers\Admin\SubscriptionController::class, 'index'])->name('subscriptions.index');
+        Route::get('/subscriptions/{id}', [\App\Http\Controllers\Admin\SubscriptionController::class, 'show'])->name('subscriptions.show');
+        Route::post('/subscriptions/{id}/cancel', [\App\Http\Controllers\Admin\SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
+        
+        // Disputes
+        Route::get('/disputes', [\App\Http\Controllers\Admin\DisputeController::class, 'index'])->name('disputes.index');
+        Route::get('/disputes/{id}', [\App\Http\Controllers\Admin\DisputeController::class, 'show'])->name('disputes.show');
+        Route::post('/disputes/{id}/resolve', [\App\Http\Controllers\Admin\DisputeController::class, 'resolve'])->name('disputes.resolve');
         
         // Analyst Assignments
         Route::get('/assignments', [AssignmentController::class, 'index'])->name('assignments.index');
@@ -163,6 +378,10 @@ Route::middleware('auth')->group(function () {
         // System Settings
         Route::get('/settings', [SystemSettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings', [SystemSettingsController::class, 'update'])->name('settings.update');
+        
+        // Analyst Reviews
+        Route::post('/analysts/{analyst}/reviews', [AnalystReviewController::class, 'store'])->name('analysts.review.store');
+        Route::delete('/reviews/{review}', [AnalystReviewController::class, 'destroy'])->name('analysts.review.destroy');
     });
 
     // Analyst Routes (requires verification)
@@ -225,12 +444,86 @@ Route::middleware('auth')->group(function () {
         
         // Leaderboard
         Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
+
+        // Subscription Management
+        Route::get('/subscriptions', [\App\Http\Controllers\Trader\SubscriptionController::class, 'index'])->name('subscriptions.index');
+        Route::get('/subscriptions/{id}', [\App\Http\Controllers\Trader\SubscriptionController::class, 'show'])->name('subscriptions.show');
+        Route::post('/subscriptions/{id}/cancel', [\App\Http\Controllers\Trader\SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
+        
+        // Dispute Management
+        Route::get('/subscriptions/{id}/dispute/create', [\App\Http\Controllers\Trader\DisputeController::class, 'create'])->name('disputes.create');
+        Route::post('/subscriptions/{id}/dispute', [\App\Http\Controllers\Trader\DisputeController::class, 'store'])->name('disputes.store');
+        Route::get('/disputes', [\App\Http\Controllers\Trader\DisputeController::class, 'index'])->name('disputes.index');
+        Route::get('/disputes/{id}', [\App\Http\Controllers\Trader\DisputeController::class, 'show'])->name('disputes.show');
     });
 
+    // Phase 1: Subscriptions (Available to all authenticated users)
+    Route::get('/subscribe/{analyst}', [SubscriptionController::class, 'create'])->name('subscription.create');
+    Route::post('/subscribe/{analyst}', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
+    Route::get('/subscription/success', [SubscriptionController::class, 'success'])->name('subscription.success');
+    Route::get('/subscription/cancel', [SubscriptionController::class, 'cancel'])->name('subscription.cancel');
+    Route::delete('/subscription/{subscription}', [SubscriptionController::class, 'destroy'])->name('subscription.destroy');
+    
+    // Phase 1: Reviews (Available to all authenticated users)
+    Route::post('/analysts/{analyst}/review', [AnalystReviewController::class, 'store'])->name('analysts.review.store');
+    Route::delete('/reviews/{review}', [AnalystReviewController::class, 'destroy'])->name('reviews.destroy');
+
+    // Analyst Routes
+    Route::prefix('analyst')->middleware(['role:analyst'])->group(function () {
+        // ... existing analyst routes ...
+        
+        // Phase 1: Revenue & Payouts
+        Route::get('/revenue', [AnalystDashboardController::class, 'revenue'])->name('analyst.revenue');
+        Route::get('/payouts', [AnalystPayoutController::class, 'index'])->name('analyst.payouts.index');
+        Route::post('/payouts/request', [AnalystPayoutController::class, 'request'])->name('analyst.payouts.request');
+        
+        // Phase 1: Profile Management
+        Route::get('/profile/edit', [AnalystProfileController::class, 'edit'])->name('analyst.profile.edit');
+        Route::put('/analyst/profile', [AnalystProfileController::class, 'update'])->name('analyst.profile.update');
+    Route::put('/analyst/profile/plans', [AnalystProfileController::class, 'updatePlans'])->name('analyst.profile.plans.update');
+    });
+
+    // Admin Routes (Review Moderation)
+    Route::prefix('admin')->middleware(['role:admin'])->group(function () {
+        // Phase 1: Review Moderation
+        Route::post('/reviews/{review}/approve', [AnalystReviewController::class, 'approve'])->name('admin.reviews.approve');
+    });
+
+    // Phase 2: Direct Messaging
+    Route::get('/conversations', [\App\Http\Controllers\ConversationController::class, 'index'])->name('conversations.index');
+    Route::get('/conversations/{conversation}', [\App\Http\Controllers\ConversationController::class, 'show'])->name('conversations.show');
+    Route::post('/conversations', [\App\Http\Controllers\ConversationController::class, 'store'])->name('conversations.store');
+    
+    Route::post('/conversations/{conversation}/messages', [\App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
+    Route::get('/conversations/{conversation}/messages/poll', [\App\Http\Controllers\MessageController::class, 'poll'])->name('messages.poll');
+
 });
+
+
 
 // Welcome page (redirect to login)
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+// DEBUG ROUTE - Check photo values
+Route::get('/debug-photo/{userId}', function($userId) {
+    $user = \App\Models\User::find($userId);
+    
+    if (!$user) {
+        return "User not found";
+    }
+    
+    return response()->json([
+        'id' => $user->id,
+        'name' => $user->name,
+        'username' => $user->username,
+        'profile_photo_db' => $user->profile_photo,
+        'cover_photo_db' => $user->cover_photo,
+        'profile_photo_url' => $user->getProfilePhotoUrl(),
+        'cover_photo_url' => $user->getCoverPhotoUrl(),
+        'files_in_storage' => \Illuminate\Support\Facades\Storage::disk('public')->files('profiles'),
+    ]);
+});
+
 

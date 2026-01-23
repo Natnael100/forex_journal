@@ -15,9 +15,9 @@
             <div>
                 <label class="block text-sm font-medium text-slate-300 mb-2">Account</label>
                 <select name="trade_account_id" class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                    <option value="">All Accounts</option>
+                    <option style="background-color: #0f172a; color: white;" value="">All Accounts</option>
                     @foreach($accounts as $account)
-                        <option value="{{ $account->id }}" {{ ($filters['trade_account_id'] ?? '') == $account->id ? 'selected' : '' }}>
+                        <option style="background-color: #0f172a; color: white;" value="{{ $account->id }}" {{ ($filters['trade_account_id'] ?? '') == $account->id ? 'selected' : '' }}>
                             {{ $account->account_name }}
                         </option>
                     @endforeach
@@ -26,12 +26,12 @@
             <div>
                 <label class="block text-sm font-medium text-slate-300 mb-2">Period</label>
                 <select name="period" class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" onchange="this.form.submit()">
-                    <option value="">Custom</option>
-                    <option value="this_week" {{ request('period') == 'this_week' ? 'selected' : '' }}>This Week</option>
-                    <option value="last_week" {{ request('period') == 'last_week' ? 'selected' : '' }}>Last Week</option>
-                    <option value="this_month" {{ request('period') == 'this_month' ? 'selected' : '' }}>This Month</option>
-                    <option value="last_month" {{ request('period') == 'last_month' ? 'selected' : '' }}>Last Month</option>
-                    <option value="this_year" {{ request('period') == 'this_year' ? 'selected' : '' }}>This Year</option>
+                    <option style="background-color: #0f172a; color: white;" value="">Custom</option>
+                    <option style="background-color: #0f172a; color: white;" value="this_week" {{ request('period') == 'this_week' ? 'selected' : '' }}>This Week</option>
+                    <option style="background-color: #0f172a; color: white;" value="last_week" {{ request('period') == 'last_week' ? 'selected' : '' }}>Last Week</option>
+                    <option style="background-color: #0f172a; color: white;" value="this_month" {{ request('period') == 'this_month' ? 'selected' : '' }}>This Month</option>
+                    <option style="background-color: #0f172a; color: white;" value="last_month" {{ request('period') == 'last_month' ? 'selected' : '' }}>Last Month</option>
+                    <option style="background-color: #0f172a; color: white;" value="this_year" {{ request('period') == 'this_year' ? 'selected' : '' }}>This Year</option>
                 </select>
             </div>
             <div>
@@ -45,20 +45,20 @@
             <div>
                 <label class="block text-sm font-medium text-slate-300 mb-2">Pair</label>
                 <select name="pair" class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                    <option value="">All Pairs</option>
+                    <option style="background-color: #0f172a; color: white;" value="">All Pairs</option>
                     @foreach($pairs as $pair)
-                        <option value="{{ $pair }}" {{ ($filters['pair'] ?? '') == $pair ? 'selected' : '' }}>{{ $pair }}</option>
+                        <option style="background-color: #0f172a; color: white;" value="{{ $pair }}" {{ ($filters['pair'] ?? '') == $pair ? 'selected' : '' }}>{{ $pair }}</option>
                     @endforeach
                 </select>
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-300 mb-2">Session</label>
                 <select name="session" class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                    <option value="">All Sessions</option>
-                    <option value="london" {{ ($filters['session'] ?? '') == 'london' ? 'selected' : '' }}>London</option>
-                    <option value="newyork" {{ ($filters['session'] ?? '') == 'newyork' ? 'selected' : '' }}>New York</option>
-                    <option value="asia" {{ ($filters['session'] ?? '') == 'asia' ? 'selected' : '' }}>Asia</option>
-                    <option value="sydney" {{ ($filters['session'] ?? '') == 'sydney' ? 'selected' : '' }}>Sydney</option>
+                    <option style="background-color: #0f172a; color: white;" value="">All Sessions</option>
+                    <option style="background-color: #0f172a; color: white;" value="london" {{ ($filters['session'] ?? '') == 'london' ? 'selected' : '' }}>London</option>
+                    <option style="background-color: #0f172a; color: white;" value="newyork" {{ ($filters['session'] ?? '') == 'newyork' ? 'selected' : '' }}>New York</option>
+                    <option style="background-color: #0f172a; color: white;" value="asia" {{ ($filters['session'] ?? '') == 'asia' ? 'selected' : '' }}>Asia</option>
+                    <option style="background-color: #0f172a; color: white;" value="sydney" {{ ($filters['session'] ?? '') == 'sydney' ? 'selected' : '' }}>Sydney</option>
                 </select>
             </div>
             <div class="flex items-end gap-2">

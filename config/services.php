@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    ],
+
+    'chapa' => [
+        'mode' => env('CHAPA_MODE', 'simulation'), // Default to simulation if not set
+        'secret_key' => env('CHAPA_SECRET_KEY'),
+        'secret_hash' => env('CHAPA_SECRET_HASH'),
+    ],
+
 ];

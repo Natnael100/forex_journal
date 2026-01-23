@@ -10,12 +10,26 @@
     </div>
 
     <!--Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
         @include('components.stat-card', [
             'icon' => '👥',
             'value' => $stats['total_traders'],
             'label' => 'Assigned Traders',
             'accentColor' => 'blue'
+        ])
+
+        @include('components.stat-card', [
+            'icon' => '⭐',
+            'value' => $stats['active_subscriptions'],
+            'label' => 'Active Subscribers',
+            'accentColor' => 'emerald'
+        ])
+
+        @include('components.stat-card', [
+            'icon' => '💰',
+            'value' => '$' . number_format($stats['monthly_revenue'] ?? 0, 0),
+            'label' => 'Monthly Revenue',
+            'accentColor' => 'green'
         ])
 
         @include('components.stat-card', [
@@ -29,7 +43,7 @@
             'icon' => '📝',
             'value' => $stats['recent_feedback_count'],
             'label' => 'Feedback This Week',
-            'accentColor' => 'emerald'
+            'accentColor' => 'indigo'
         ])
     </div>
 
@@ -64,6 +78,7 @@
                     <thead>
                         <tr class="border-b border-slate-700">
                             <th class="text-left py-3 px-4 text-slate-300 font-semibold">Trader</th>
+                            <th class="text-center py-3 px-4 text-slate-300 font-semibold">Plan</th>
                             <th class="text-center py-3 px-4 text-slate-300 font-semibold">Total Trades</th>
                             <th class="text-center py-3 px-4 text-slate-300 font-semibold">Win Rate</th>
                             <th class="text-center py-3 px-4 text-slate-300 font-semibold">Profit Factor</th>
@@ -80,6 +95,19 @@
                                         <p class="font-semibold text-white">{{ $trader['name'] }}</p>
                                         <p class="text-sm text-slate-400">{{ $trader['email'] }}</p>
                                     </div>
+                                </td>
+                                <td class="py-4 px-4 text-center">
+                                    @if($trader['subscription_plan'])
+                                        <span class="px-2 py-1 rounded text-xs font-bold uppercase
+                                            {{ $trader['subscription_plan'] === 'elite' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 
+                                               ($trader['subscription_plan'] === 'premium' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 
+                                               'bg-slate-500/20 text-slate-400 border border-slate-500/30') }}">
+                                            {{ $trader['subscription_plan'] }}
+                                        </span>
+                                        <p class="text-xs text-slate-500 mt-1">${{ number_format($trader['subscription_price'], 0) }}/mo</p>
+                                    @else
+                                        <span class="text-slate-600 text-sm">-</span>
+                                    @endif
                                 </td>
                                 <td class="py-4 px-4 text-center text-slate-300">{{ $trader['total_trades'] }}</td>
                                 <td class="py-4 px-4 text-center">

@@ -17,6 +17,59 @@
         </button>
     </div>
 
+    <!-- Active Mentorships (Subscriptions) -->
+    @if($activeSubscriptions->count() > 0)
+    <div class="mb-8">
+        <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <span>🎓</span> Active Mentorships
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach($activeSubscriptions as $subscription)
+            <div class="bg-gradient-to-br from-indigo-900/40 to-slate-900/40 backdrop-blur-xl rounded-xl p-6 border border-indigo-500/30">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                            {{ substr($subscription->analyst->name, 0, 1) }}
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white">{{ $subscription->analyst->name }}</h3>
+                            <p class="text-xs text-indigo-300 uppercase tracking-wide">{{ $subscription->plan }} Tier</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-1 rounded text-xs font-bold {{ $subscription->status === 'active' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-yellow-500/20 text-yellow-400' }}">
+                        {{ ucfirst($subscription->status) }}
+                    </span>
+                </div>
+                
+                <div class="space-y-2 mb-6">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-400">Renewal Date</span>
+                        <span class="text-white">{{ $subscription->current_period_end->format('M d, Y') }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-400">Price</span>
+                        <span class="text-white">{{ number_format($subscription->price, 2) }} ETB/mo</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <a href="{{ route('analysts.show', $subscription->analyst) }}" class="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors text-center flex items-center justify-center">
+                        View Profile
+                    </a>
+                    <form action="{{ route('subscription.destroy', $subscription->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this subscription? You will lose access at the end of the billing period.');" class="flex-1">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="w-full px-4 py-2 bg-slate-700 hover:bg-red-600/80 text-white text-sm font-semibold rounded-lg transition-colors">
+                            Cancel
+                        </button>
+                    </form>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         @include('components.stat-card', [

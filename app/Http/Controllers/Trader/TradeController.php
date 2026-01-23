@@ -44,6 +44,13 @@ class TradeController extends Controller
         $assignment = \App\Models\AnalystAssignment::where('trader_id', Auth::id())->first();
         if ($assignment) {
             $focusArea = $assignment->current_focus_area;
+            
+            // Feature Gating: Only allow guided journaling if user has the feature (Elite)
+            // If they don't, fallback to standard even if analyst assigned a focus
+            $subscription = Auth::user()->activeSubscription;
+            if (!$subscription || !$subscription->hasFeature('guided_journaling')) {
+                $focusArea = 'standard';
+            }
         }
 
         return view('trader.trades.create', compact('pairs', 'directions', 'sessions', 'outcomes', 'emotions', 'postEmotions', 'accounts', 'strategies', 'focusArea'));

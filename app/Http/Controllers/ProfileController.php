@@ -33,6 +33,11 @@ class ProfileController extends Controller
             abort(404);
         }
         
+        // NEW: Redirect analysts to new marketplace profile
+        if ($user->hasRole('analyst')) {
+            return redirect()->route('analysts.show', $user->username ?? $user->id);
+        }
+        
         // Check if user can view this profile
         $this->authorize('view', $user);
         
@@ -99,24 +104,35 @@ class ProfileController extends Controller
             'timezone' => 'nullable|string',
             'experience_level' => 'nullable|in:beginner,intermediate,advanced',
             'trading_style' => 'nullable|string|max:100',
-            'specialization' => 'nullable|string|max:100',
             'preferred_sessions' => 'nullable|array',
             'favorite_pairs' => 'nullable|array',
+            'primary_goal' => 'nullable|in:get_funded,side_income,full_time_career,wealth_compounding',
+            'biggest_challenge' => 'nullable|in:psychology_discipline,risk_management,technical_strategy,consistency',
             'profile_tags' => 'nullable|array',
             'social_links' => 'nullable|array',
             'profile_visibility' => 'required|in:public,analyst_only,private',
             'show_last_active' => 'boolean',
         ]);
-        
+    
         $user->update($validated);
-        
+    
+        // Handle Profile Photo Upload
+        if ($request->hasFile('photo')) {
+            $this->photoService->uploadProfilePhoto($request->file('photo'), $user);
+        }
+    
+        // Handle Cover Photo Upload
+        if ($request->hasFile('cover')) {
+            $this->photoService->uploadCoverPhoto($request->file('cover'), $user);
+        }
+    
         // Check if profile is now 100% complete
         if ($user->calculateProfileCompletion() >= 100 && !$user->isProfileComplete()) {
             $user->update(['profile_completed_at' => now()]);
         }
-        
+    
         return redirect()
-            ->route('profile.edit')
+            ->route('profile.show', $user->username ?? $user->id)
             ->with('success', 'Profile updated successfully!');
     }
 

@@ -36,6 +36,73 @@
         </x-profile-card>
     </div>
 
+    <!-- Features & Subscription Card -->
+    <div class="mb-8 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl border border-slate-700/50 p-6">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+            
+            <!-- Plan Info -->
+            <div class="flex items-center gap-6 w-full md:w-auto">
+                <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-600/20 flex items-center justify-center border border-indigo-500/30">
+                    <span class="text-3xl">💎</span>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-1">
+                        Subscription Status
+                    </h3>
+                    @if($subscription)
+                        <div class="flex items-center gap-3">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-500/20 text-indigo-400 font-bold uppercase text-sm border border-indigo-500/20">
+                                {{ $subscription->plan ?? 'Standard' }} Plan
+                            </span>
+                            <span class="text-slate-400 text-sm">
+                                Active since {{ $subscription->created_at->format('M Y') }}
+                            </span>
+                        </div>
+                    @else
+                         <span class="px-3 py-1 rounded-lg bg-slate-700/50 text-slate-400 font-medium text-sm">
+                            No Active Subscription
+                        </span>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Features Grid -->
+            @if($subscription)
+            <div class="flex-1 w-full border-t md:border-t-0 md:border-l border-slate-700 pt-4 md:pt-0 md:pl-8">
+                <p class="text-xs font-bold text-slate-500 uppercase mb-3">Plan Entitlements</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    @php
+                        // Standard features list to check against
+                        $allFeatures = [
+                            'text_feedback' => 'Text Feedback',
+                            'monthly_review' => 'Monthly Review',
+                            'email_support' => 'Email Support',
+                            'weekly_checkins' => 'Weekly Check-ins',
+                            'risk_rules' => 'Automated Risk Rules',
+                            'custom_reports' => 'Custom Reports',
+                            'video_consultations' => 'Video Consultations',
+                            'guided_journaling' => 'Guided Journaling',
+                            'direct_access' => '24/7 Access'
+                        ];
+                    @endphp
+
+                    @foreach($allFeatures as $key => $label)
+                        @php $hasFeature = $subscription->hasFeature($key); @endphp
+                        <div class="flex items-center gap-2 {{ $hasFeature ? 'opacity-100' : 'opacity-40 grayscale' }}">
+                            <div class="w-5 h-5 rounded-full flex items-center justify-center {{ $hasFeature ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 text-slate-500' }}">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <span class="text-sm font-medium {{ $hasFeature ? 'text-white' : 'text-slate-500' }}">
+                                {{ $label }}
+                            </span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+        </div>
+    </div>
+
     <!-- Analyst Governance Section (Phase 6) -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <!-- Focus Area Manager -->
@@ -45,18 +112,27 @@
             </h3>
             <p class="text-sm text-slate-400 mb-4">Set the trader's journaling priority. This changes their trade entry form.</p>
             
+            @if($subscription && $subscription->hasFeature('guided_journaling'))
             <form action="{{ route('analyst.trader.update-focus', $trader->id) }}" method="POST" class="flex gap-4">
                 @csrf
-                <select name="current_focus_area" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500">
-                    <option value="standard" {{ ($assignment->current_focus_area ?? 'standard') === 'standard' ? 'selected' : '' }}>Standard Journaling</option>
-                    <option value="psychology" {{ ($assignment->current_focus_area ?? '') === 'psychology' ? 'selected' : '' }}>Psychology (Stress & Distractions)</option>
-                    <option value="execution" {{ ($assignment->current_focus_area ?? '') === 'execution' ? 'selected' : '' }}>Execution (Slippage & Timing)</option>
-                    <option value="risk" {{ ($assignment->current_focus_area ?? '') === 'risk' ? 'selected' : '' }}>Risk Management (Confluence)</option>
+                <select name="current_focus_area" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white  focus:ring-2 focus:ring-blue-500">
+                    <option style="background-color: #0f172a; color: white;" value="standard" {{ ($assignment->current_focus_area ?? 'standard') === 'standard' ? 'selected' : '' }}>Standard Journaling</option>
+                    <option style="background-color: #0f172a; color: white;" value="psychology" {{ ($assignment->current_focus_area ?? '') === 'psychology' ? 'selected' : '' }}>Psychology (Stress & Distractions)</option>
+                    <option style="background-color: #0f172a; color: white;" value="execution" {{ ($assignment->current_focus_area ?? '') === 'execution' ? 'selected' : '' }}>Execution (Slippage & Timing)</option>
+                    <option style="background-color: #0f172a; color: white;" value="risk" {{ ($assignment->current_focus_area ?? '') === 'risk' ? 'selected' : '' }}>Risk Management (Confluence)</option>
                 </select>
                 <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg">
                     Update
                 </button>
             </form>
+            @else
+                <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-700 text-center">
+                    <p class="text-slate-400 text-sm mb-2">Guided Journaling is an <span class="text-indigo-400 font-bold">Elite</span> feature.</p>
+                    <button disabled class="w-full py-2 bg-slate-700 text-slate-500 font-bold rounded-lg cursor-not-allowed">
+                        Locked 🔒
+                    </button>
+                </div>
+            @endif
         </div>
 
         <!-- Risk Governor -->
@@ -97,24 +173,33 @@
             </div>
 
             <!-- Add New Rule Form -->
+            @if($subscription && $subscription->hasFeature('risk_rules'))
             <form action="{{ route('analyst.trader.rules.store', $trader->id) }}" method="POST" class="grid grid-cols-2 gap-2">
                 @csrf
                 <select name="rule_type" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white text-sm">
-                    <option value="max_risk_percent">Max Risk %</option>
-                    <option value="max_lot_size">Max Lot Size</option>
-                    <option value="restricted_session">Block Session</option>
-                    <option value="restricted_pair">Block Pair</option>
+                    <option style="background-color: #0f172a; color: white;" value="max_risk_percent">Max Risk %</option>
+                    <option style="background-color: #0f172a; color: white;" value="max_lot_size">Max Lot Size</option>
+                    <option style="background-color: #0f172a; color: white;" value="restricted_session">Block Session</option>
+                    <option style="background-color: #0f172a; color: white;" value="restricted_pair">Block Pair</option>
                 </select>
                 <input type="text" name="value" placeholder="Value (e.g. 2.0)" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white text-sm">
                 <input type="text" name="parameters" placeholder="Param (e.g. Asia)" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white text-sm">
                 <select name="is_hard_stop" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-white text-sm">
-                    <option value="0">Warning Only</option>
-                    <option value="1">Block Trade</option>
+                    <option style="background-color: #0f172a; color: white;" value="0">Warning Only</option>
+                    <option style="background-color: #0f172a; color: white;" value="1">Block Trade</option>
                 </select>
                 <button type="submit" class="col-span-2 mt-2 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold uppercase rounded-lg">
                     + Add Rule
                 </button>
             </form>
+            @else
+                <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-700 text-center">
+                    <p class="text-slate-400 text-sm mb-2">Automated Rules are a <span class="text-emerald-400 font-bold">Premium</span> feature.</p>
+                    <button disabled class="w-full py-2 bg-slate-700 text-slate-500 font-bold rounded-lg cursor-not-allowed">
+                        Locked 🔒
+                    </button>
+                </div>
+            @endif
         </div>
     </div>
 
@@ -124,9 +209,9 @@
             <div class="flex-1 min-w-[200px]">
                 <label class="block text-sm font-medium text-slate-300 mb-2">Account</label>
                 <select name="trade_account_id" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">All Accounts</option>
+                    <option style="background-color: #0f172a; color: white;" value="">All Accounts</option>
                     @foreach($accounts as $account)
-                        <option value="{{ $account->id }}" {{ request('trade_account_id') == $account->id ? 'selected' : '' }}>
+                        <option style="background-color: #0f172a; color: white;" value="{{ $account->id }}" {{ request('trade_account_id') == $account->id ? 'selected' : '' }}>
                             {{ $account->account_name }} ({{ $account->currency }})
                         </option>
                     @endforeach
@@ -135,9 +220,9 @@
             <div class="flex-1 min-w-[200px]">
                 <label class="block text-sm font-medium text-slate-300 mb-2">Strategy</label>
                 <select name="strategy_id" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">All Strategies</option>
+                    <option style="background-color: #0f172a; color: white;" value="">All Strategies</option>
                     @foreach($strategies as $strategy)
-                        <option value="{{ $strategy->id }}" {{ request('strategy_id') == $strategy->id ? 'selected' : '' }}>
+                        <option style="background-color: #0f172a; color: white;" value="{{ $strategy->id }}" {{ request('strategy_id') == $strategy->id ? 'selected' : '' }}>
                             {{ $strategy->name }}
                         </option>
                     @endforeach
@@ -146,12 +231,12 @@
             <div class="flex-1 min-w-[200px]">
                 <label class="block text-sm font-medium text-slate-300 mb-2">Period</label>
                 <select name="period" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Custom</option>
-                    <option value="this_week" {{ request('period') == 'this_week' ? 'selected' : '' }}>This Week</option>
-                    <option value="last_week" {{ request('period') == 'last_week' ? 'selected' : '' }}>Last Week</option>
-                    <option value="this_month" {{ request('period') == 'this_month' ? 'selected' : '' }}>This Month</option>
-                    <option value="last_month" {{ request('period') == 'last_month' ? 'selected' : '' }}>Last Month</option>
-                    <option value="this_year" {{ request('period') == 'this_year' ? 'selected' : '' }}>This Year</option>
+                    <option style="background-color: #0f172a; color: white;" value="">Custom</option>
+                    <option style="background-color: #0f172a; color: white;" value="this_week" {{ request('period') == 'this_week' ? 'selected' : '' }}>This Week</option>
+                    <option style="background-color: #0f172a; color: white;" value="last_week" {{ request('period') == 'last_week' ? 'selected' : '' }}>Last Week</option>
+                    <option style="background-color: #0f172a; color: white;" value="this_month" {{ request('period') == 'this_month' ? 'selected' : '' }}>This Month</option>
+                    <option style="background-color: #0f172a; color: white;" value="last_month" {{ request('period') == 'last_month' ? 'selected' : '' }}>Last Month</option>
+                    <option style="background-color: #0f172a; color: white;" value="this_year" {{ request('period') == 'this_year' ? 'selected' : '' }}>This Year</option>
                 </select>
             </div>
             <div>

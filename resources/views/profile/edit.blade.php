@@ -165,21 +165,23 @@
                                     <label for="country" class="text-sm text-gray-400 mb-1.5 block">
                                         Country
                                     </label>
-                                    <select id="country" name="country" class="flex h-10 w-full items-center justify-between rounded-md border border-gray-600 bg-gray-900 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="" disabled selected>Select country</option>
-                                        @foreach(["United States", "United Kingdom", "Germany", "Japan", "Australia", "Canada", "Singapore"] as $country)
-                                            <option value="{{ $country }}" {{ old('country', $user->country) == $country ? 'selected' : '' }}>{{ $country }}</option>
-                                        @endforeach
-                                    </select>
+                                    <input 
+                                        id="country" 
+                                        name="country" 
+                                        type="text"
+                                        placeholder="e.g., United States, Ethiopia, Nigeria..."
+                                        value="{{ old('country', $user->country) }}"
+                                        class="flex h-10 w-full rounded-md border border-gray-600 bg-gray-900 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    >
                                 </div>
                                 <div>
                                     <label for="timezone" class="text-sm text-gray-400 mb-1.5 block">
                                         Timezone
                                     </label>
                                     <select id="timezone" name="timezone" class="flex h-10 w-full items-center justify-between rounded-md border border-gray-600 bg-gray-900 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="" disabled selected>Select timezone</option>
+                                        <option value="" disabled {{ !$user->timezone ? 'selected' : '' }} style="background-color: #0f172a; color: white;">Select timezone</option>
                                         @foreach(["UTC-8 (PST)", "UTC-5 (EST)", "UTC+0 (GMT)", "UTC+1 (CET)", "UTC+8 (SGT)", "UTC+9 (JST)"] as $tz)
-                                            <option value="{{ $tz }}" {{ old('timezone', $user->timezone) == $tz ? 'selected' : '' }}>{{ $tz }}</option>
+                                            <option value="{{ $tz }}" {{ old('timezone', $user->timezone) == $tz ? 'selected' : '' }} style="background-color: #0f172a; color: white;">{{ $tz }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -191,15 +193,15 @@
                     <section>
                         <h3 class="text-sm font-medium text-gray-200 mb-4">Trading Preferences</h3>
                         <div class="grid gap-4">
-                            <div class="grid gap-4 sm:grid-cols-3">
+                            <div class="grid gap-4 sm:grid-cols-2">
                                 <div>
                                     <label for="experience_level" class="text-sm text-gray-400 mb-1.5 block">
                                         Experience Level
                                     </label>
                                     <select id="experience_level" name="experience_level" class="flex h-10 w-full items-center justify-between rounded-md border border-gray-600 bg-gray-900 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="" disabled selected>Select level</option>
+                                        <option value="" disabled {{ !$user->experience_level ? 'selected' : '' }} style="background-color: #0f172a; color: white;">Select level</option>
                                         @foreach(["Beginner", "Intermediate", "Advanced", "Professional"] as $level)
-                                            <option value="{{ strtolower($level) }}" {{ old('experience_level', $user->experience_level) == strtolower($level) ? 'selected' : '' }}>{{ $level }}</option>
+                                            <option value="{{ strtolower($level) }}" {{ old('experience_level', $user->experience_level) == strtolower($level) ? 'selected' : '' }} style="background-color: #0f172a; color: white;">{{ $level }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -208,20 +210,9 @@
                                         Trading Style
                                     </label>
                                     <select id="trading_style" name="trading_style" class="flex h-10 w-full items-center justify-between rounded-md border border-gray-600 bg-gray-900 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="" disabled selected>Select style</option>
+                                        <option value="" disabled {{ !$user->trading_style ? 'selected' : '' }} style="background-color: #0f172a; color: white;">Select style</option>
                                         @foreach(["Day Trading", "Swing Trading", "Scalping", "Position Trading"] as $style)
-                                            <option value="{{ $style }}" {{ old('trading_style', $user->trading_style) == $style ? 'selected' : '' }}>{{ $style }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="specialization" class="text-sm text-gray-400 mb-1.5 block">
-                                        Specialization
-                                    </label>
-                                    <select id="specialization" name="specialization" class="flex h-10 w-full items-center justify-between rounded-md border border-gray-600 bg-gray-900 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="" disabled selected>Select market</option>
-                                        @foreach(["Forex", "Stocks", "Crypto", "Commodities", "Indices"] as $spec)
-                                            <option value="{{ $spec }}" {{ old('specialization', $user->specialization) == $spec ? 'selected' : '' }}>{{ $spec }}</option>
+                                            <option value="{{ $style }}" {{ old('trading_style', $user->trading_style) == $style ? 'selected' : '' }} style="background-color: #0f172a; color: white;">{{ $style }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -258,6 +249,39 @@
                                             </label>
                                         </div>
                                     @endforeach
+                                </div>
+                            </div>
+
+                            <!-- PRIMARY GOAL & CHALLENGE (The Trader DNA) -->
+                            <div class="grid gap-4 sm:grid-cols-2 pt-4 border-t border-indigo-500/20">
+                                <!-- Primary Goal -->
+                                <div>
+                                    <label for="primary_goal" class="text-sm text-indigo-300 mb-1.5 block font-medium">
+                                        🎯 Primary Goal
+                                    </label>
+                                    <select id="primary_goal" name="primary_goal" class="flex h-10 w-full items-center justify-between rounded-md border border-gray-600 bg-gray-900 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                        <option value="" disabled {{ !$user->primary_goal ? 'selected' : '' }} style="background-color: #0f172a; color: white;">What's your goal?</option>
+                                        <option value="get_funded" {{ old('primary_goal', $user->primary_goal) == 'get_funded' ? 'selected' : '' }} style="background-color: #0f172a; color: white;">Get Funded (Prop Firm)</option>
+                                        <option value="side_income" {{ old('primary_goal', $user->primary_goal) == 'side_income' ? 'selected' : '' }} style="background-color: #0f172a; color: white;">Generate Side Income</option>
+                                        <option value="full_time_career" {{ old('primary_goal', $user->primary_goal) == 'full_time_career' ? 'selected' : '' }} style="background-color: #0f172a; color: white;">Full-Time Career</option>
+                                        <option value="wealth_compounding" {{ old('primary_goal', $user->primary_goal) == 'wealth_compounding' ? 'selected' : '' }} style="background-color: #0f172a; color: white;">Wealth Compounding</option>
+                                    </select>
+                                    <p class="text-xs text-gray-500 mt-1">Helps analysts tailor their coaching.</p>
+                                </div>
+
+                                <!-- Biggest Challenge -->
+                                <div>
+                                    <label for="biggest_challenge" class="text-sm text-indigo-300 mb-1.5 block font-medium">
+                                        🎭 Biggest Challenge
+                                    </label>
+                                    <select id="biggest_challenge" name="biggest_challenge" class="flex h-10 w-full items-center justify-between rounded-md border border-gray-600 bg-gray-900 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                        <option value="" disabled {{ !$user->biggest_challenge ? 'selected' : '' }} style="background-color: #0f172a; color: white;">What do you struggle with?</option>
+                                        <option value="psychology_discipline" {{ old('biggest_challenge', $user->biggest_challenge) == 'psychology_discipline' ? 'selected' : '' }} style="background-color: #0f172a; color: white;">Psychology/Discipline (FOMO)</option>
+                                        <option value="risk_management" {{ old('biggest_challenge', $user->biggest_challenge) == 'risk_management' ? 'selected' : '' }} style="background-color: #0f172a; color: white;">Risk Management</option>
+                                        <option value="technical_strategy" {{ old('biggest_challenge', $user->biggest_challenge) == 'technical_strategy' ? 'selected' : '' }} style="background-color: #0f172a; color: white;">Technical Strategy</option>
+                                        <option value="consistency" {{ old('biggest_challenge', $user->biggest_challenge) == 'consistency' ? 'selected' : '' }} style="background-color: #0f172a; color: white;">Consistency</option>
+                                    </select>
+                                    <p class="text-xs text-gray-500 mt-1">This helps analysts diagnose exactly where to look.</p>
                                 </div>
                             </div>
 

@@ -31,11 +31,16 @@ class RegisterController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => ['required', 'in:trader,analyst'],
-            // Common profile fields
-            'username' => ['required', 'string', 'min:3', 'max:20', 'regex:/^[a-z0-9_]+$/', 'unique:users'],
-            'country' => ['nullable', 'string', 'max:100'],
-            'timezone' => ['nullable', 'string', 'max:100'],
         ];
+
+        // Analyst-specific fields (Common profile fields required for Analyst)
+        if ($request->role === 'analyst') {
+            $validationRules += [
+                'username' => ['required', 'string', 'min:3', 'max:20', 'regex:/^[a-z0-9_]+$/', 'unique:users'],
+                'country' => ['nullable', 'string', 'max:100'],
+                'timezone' => ['nullable', 'string', 'max:100'],
+            ];
+        }
 
         // Trader-specific fields
         if ($request->role === 'trader') {
@@ -56,6 +61,7 @@ class RegisterController extends Controller
                 'psychology_focus_areas' => ['nullable', 'array'],
                 'feedback_style' => ['nullable', 'string', 'max:100'],
                 'max_traders_assigned' => ['nullable', 'integer', 'min:1', 'max:20'],
+                'profile_photo' => ['required', 'image', 'max:2048'], // Mandatory for Analysts
             ];
         }
 
@@ -71,11 +77,22 @@ class RegisterController extends Controller
             'verification_status' => $request->role === 'trader' ? 'verified' : 'pending',
             'is_active' => true, // Active but unverified
             // Common profile fields
-            'username' => $request->username,
             'country' => $request->country,
             'timezone' => $request->timezone,
             'profile_visibility' => 'public', // Default visibility
         ];
+
+        // Auto-generate username for Traders if needed
+        if ($request->role === 'trader' && empty($userData['username'])) {
+            $base = strtolower(str_replace(' ', '_', $request->name));
+            $userData['username'] = $base . '_' . substr(md5(uniqid()), 0, 4);
+        }
+
+        // Handle Profile Photo Upload (Analyst Only)
+        if ($request->hasFile('profile_photo') && $request->role === 'analyst') {
+            $path = $request->file('profile_photo')->store('profiles', 'public');
+            $userData['profile_photo'] = basename($path);
+        }
 
         // Add trader-specific fields
         if ($request->role === 'trader') {

@@ -106,10 +106,16 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4">
-                                <span class="px-3 py-1 text-xs font-medium rounded-full
-                                    {{ $user->is_active ? 'bg-green-500/20 text-green-400' : 'bg-slate-500/20 text-slate-400' }}">
-                                    {{ $user->is_active ? 'Active' : 'Inactive' }}
-                                </span>
+                                @if($user->banned_at)
+                                    <span class="px-3 py-1 text-xs font-medium rounded-full bg-red-500/20 text-red-400">
+                                        Banned
+                                    </span>
+                                @else
+                                    <span class="px-3 py-1 text-xs font-medium rounded-full
+                                        {{ $user->is_active ? 'bg-green-500/20 text-green-400' : 'bg-slate-500/20 text-slate-400' }}">
+                                        {{ $user->is_active ? 'Active' : 'Inactive' }}
+                                    </span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 text-sm">
                                 {{ $user->created_at->format('M d, Y') }}

@@ -28,10 +28,13 @@ class ProfilePhotoService
         // Generate unique filename
         $filename = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
         
-        // Store the file directly (copy for all sizes - will resize later when GD is enabled)
-        $file->storeAs($this->path, 'large_' . $filename, $this->disk);
-        copy($file->getPathname(), storage_path('app/public/' . $this->path . '/medium_' . $filename));
-        copy($file->getPathname(), storage_path('app/public/' . $this->path . '/small_' . $filename));
+        // Get the temp file path BEFORE moving it
+        $tempPath = $file->getRealPath();
+        
+        // Create all three sizes from the temp file BEFORE storeAs moves it
+        copy($tempPath, storage_path('app/public/' . $this->path . '/large_' . $filename));
+        copy($tempPath, storage_path('app/public/' . $this->path . '/medium_' . $filename));
+        copy($tempPath, storage_path('app/public/' . $this->path . '/small_' . $filename));
         
         // Update user
         $user->update(['profile_photo' => $filename]);
@@ -50,8 +53,8 @@ class ProfilePhotoService
         // Generate unique filename
         $filename = 'cover_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
         
-        // Store the file
-        $file->storeAs($this->path, $filename, $this->disk);
+        // Copy the temp file directly
+        copy($file->getRealPath(), storage_path('app/public/' . $this->path . '/' . $filename));
         
         // Update user
         $user->update(['cover_photo' => $filename]);
