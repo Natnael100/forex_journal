@@ -9,14 +9,21 @@ class ChapaPaymentService
 {
     private string $secretKey;
     private string $baseUrl;
+    private string $mode;
 
     public function __construct()
     {
         $this->secretKey = (string) config('services.chapa.secret_key', '');
-        $mode = config('services.chapa.mode');
-        // Default to 'live' if not explicitly 'simulation'. 
-        // We are replacing the simulation as the primary method.
-        $this->mode = $mode === 'simulation' ? 'simulation' : 'live';
+        $configMode = config('services.chapa.mode');
+        
+        // If a secret key is present, we assume the user wants to use the API (Live or Test),
+        // effectively disabling the local simulation fallback.
+        if (!empty($this->secretKey)) {
+            $this->mode = 'live';
+        } else {
+            $this->mode = $configMode === 'simulation' ? 'simulation' : 'live';
+        }
+
         $this->baseUrl = 'https://api.chapa.co/v1';
         
         Log::info('Chapa Service Initialized', ['mode' => $this->mode]);
@@ -164,7 +171,7 @@ class ChapaPaymentService
             'callback_url' => route('chapa.callback'),
             'return_url' => route('subscription.success'),
             'customization' => [
-                'title' => 'Subscription Renewal',
+                'title' => 'Sub Renewal',
                 'description' => 'Renew your ' . ucfirst($subscription->plan) . ' plan with ' . $subscription->analyst->name,
             ],
             'meta' => [

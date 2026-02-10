@@ -84,7 +84,7 @@ class SubscriptionController extends Controller
                 'callback_url' => route('chapa.callback'),
                 'return_url' => route('subscription.success', ['tx_ref' => $txRef]),
                 'customization' => [
-                    'title' => ucfirst($validated['plan']) . ' Subscription',
+                    'title' => ucfirst($validated['plan']) . ' Plan',
                     'description' => 'Monthly coaching with ' . $analyst->name,
                 ],
                 'meta' => [

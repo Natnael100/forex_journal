@@ -33,15 +33,6 @@ class RegisterController extends Controller
             'role' => ['required', 'in:trader,analyst'],
         ];
 
-        // Analyst-specific fields (Common profile fields required for Analyst)
-        if ($request->role === 'analyst') {
-            $validationRules += [
-                'username' => ['required', 'string', 'min:3', 'max:20', 'regex:/^[a-z0-9_]+$/', 'unique:users'],
-                'country' => ['nullable', 'string', 'max:100'],
-                'timezone' => ['nullable', 'string', 'max:100'],
-            ];
-        }
-
         // Trader-specific fields
         if ($request->role === 'trader') {
             $validationRules += [
@@ -50,18 +41,6 @@ class RegisterController extends Controller
                 'specialization' => ['nullable', 'string', 'max:100'],
                 'preferred_sessions' => ['nullable', 'array'],
                 'favorite_pairs' => ['nullable', 'array'],
-            ];
-        }
-
-        // Analyst-specific fields
-        if ($request->role === 'analyst') {
-            $validationRules += [
-                'years_of_experience' => ['nullable', 'integer', 'min:0', 'max:50'],
-                'analysis_specialization' => ['nullable', 'string', 'max:100'],
-                'psychology_focus_areas' => ['nullable', 'array'],
-                'feedback_style' => ['nullable', 'string', 'max:100'],
-                'max_traders_assigned' => ['nullable', 'integer', 'min:1', 'max:20'],
-                'profile_photo' => ['required', 'image', 'max:2048'], // Mandatory for Analysts
             ];
         }
 
@@ -82,39 +61,13 @@ class RegisterController extends Controller
             'profile_visibility' => 'public', // Default visibility
         ];
 
-        // Auto-generate username for Traders if needed
-        if ($request->role === 'trader' && empty($userData['username'])) {
+        // Auto-generate username if not provided
+        if (empty($userData['username'])) {
             $base = strtolower(str_replace(' ', '_', $request->name));
             $userData['username'] = $base . '_' . substr(md5(uniqid()), 0, 4);
         }
 
-        // Handle Profile Photo Upload (Analyst Only)
-        if ($request->hasFile('profile_photo') && $request->role === 'analyst') {
-            $path = $request->file('profile_photo')->store('profiles', 'public');
-            $userData['profile_photo'] = basename($path);
-        }
 
-        // Add trader-specific fields
-        if ($request->role === 'trader') {
-            $userData += [
-                'experience_level' => $request->experience_level,
-                'trading_style' => $request->trading_style,
-                'specialization' => $request->specialization,
-                'preferred_sessions' => $request->preferred_sessions,
-                'favorite_pairs' => $request->favorite_pairs,
-            ];
-        }
-
-        // Add analyst-specific fields
-        if ($request->role === 'analyst') {
-            $userData += [
-                'years_of_experience' => $request->years_of_experience,
-                'analysis_specialization' => $request->analysis_specialization,
-                'psychology_focus_areas' => $request->psychology_focus_areas,
-                'feedback_style' => $request->feedback_style,
-                'max_traders_assigned' => $request->max_traders_assigned ?? 5,
-            ];
-        }
 
         $user = User::create($userData);
 
@@ -125,14 +78,20 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        // Check verification status - redirect pending users to verification page
+        // FIRST: Check if analyst needs to complete application
+        if ($user->hasRole('analyst') && !$user->application_id) {
+            return redirect()->route('analyst-application.create')
+                ->with('info', 'Account created! Please complete your analyst application to get verified.');
+        }
+
+        // SECOND: Check verification status - redirect pending users to verification page
         if ($user->verification_status === 'pending') {
             return redirect()
                 ->route('verification.pending')
                 ->with('info', 'Your account has been created and is pending admin approval.');
         }
 
-        // Redirect verified users to role-specific dashboard
+        // THIRD: Redirect verified users to role-specific dashboard
         if ($user->hasRole('analyst')) {
             return redirect()->route('analyst.dashboard');
         } else {

@@ -71,16 +71,7 @@
             <p class="mt-2 text-xs text-slate-500">Choose the role that best describes your purpose</p>
         </div>
 
-        <!-- Analyst Application Message (Hidden by default) -->
-        <div id="analystMessage" class="hidden p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
-            <h3 class="font-semibold text-purple-300 mb-2">Analyst Application Required</h3>
-            <p class="text-sm text-slate-300 mb-4">
-                To maintain high quality standards, all Performance Analysts must complete a pre-approval application. You will be redirected to the application form.
-            </p>
-            <a id="proceedButton" href="#" class="inline-flex items-center justify-center w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors">
-                Proceed to Application →
-            </a>
-        </div>
+
 
         <!-- Standard Fields Container -->
         <div id="standardFields">
@@ -132,49 +123,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const roleSelect = document.getElementById('role');
-            const nameInput = document.getElementById('name');
-            const emailInput = document.getElementById('email');
-            
-            const analystMessage = document.getElementById('analystMessage');
-            const standardFields = document.getElementById('standardFields');
-            const proceedButton = document.getElementById('proceedButton');
-            const passwordInput = document.getElementById('password');
-            const confirmInput = document.getElementById('password_confirmation');
-            
-            const appUrl = "{{ route('analyst-application.create') }}";
-
-            function updateUI() {
-                const isAnalyst = roleSelect.value === 'analyst';
-                
-                if (isAnalyst) {
-                    analystMessage.classList.remove('hidden');
-                    standardFields.classList.add('hidden');
-                    
-                    // Update Link
-                    const name = encodeURIComponent(nameInput.value || '');
-                    const email = encodeURIComponent(emailInput.value || '');
-                    proceedButton.href = `${appUrl}?name=${name}&email=${email}`;
-                    
-                    // Remove required from password to avoid validation error if form submitted (though button is hidden)
-                    passwordInput.removeAttribute('required');
-                    confirmInput.removeAttribute('required');
-                } else {
-                    analystMessage.classList.add('hidden');
-                    standardFields.classList.remove('hidden');
-                    
-                    passwordInput.setAttribute('required', 'required');
-                    confirmInput.setAttribute('required', 'required');
-                }
+            // Logic to auto-fill email from query param if present
+            const params = new URLSearchParams(window.location.search);
+            if(params.has('email')) {
+                document.getElementById('email').value = params.get('email');
             }
-
-            // Events
-            roleSelect.addEventListener('change', updateUI);
-            nameInput.addEventListener('input', updateUI);
-            emailInput.addEventListener('input', updateUI);
-
-            // Initial check (for old input or back button)
-            updateUI();
+            if(params.has('name')) {
+                document.getElementById('name').value = params.get('name');
+            }
         });
     </script>
 @endsection

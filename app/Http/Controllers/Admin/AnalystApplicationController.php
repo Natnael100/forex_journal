@@ -47,45 +47,61 @@ class AnalystApplicationController extends Controller
         }
 
         DB::transaction(function () use ($application) {
-            // Create the user account
-            // Note: We generate a random password. The user will reset it via the link sent in email.
-            // Alternatively, we could just send them a temporary password.
-            // Using Password Broker to generate a reset token is a clean way.
+            // Check if user already exists (new flow: register first, then apply)
+            $user = User::where('email', $application->email)->first();
             
-            // Check if user already exists with this email (should be caught by validation, but safety first)
-            if (User::where('email', $application->email)->exists()) {
-                throw new \Exception('A user with this email already exists.');
-            }
-
-            // Generate a base username from name
-            $baseUsername = Str::slug($application->name, '_');
-            $username = $baseUsername;
-            $counter = 1;
-            while (User::where('username', $username)->exists()) {
-                $username = $baseUsername . '_' . $counter++;
-            }
-
-            $user = User::create([
-                'name' => $application->name,
-                'email' => $application->email,
-                'password' => Hash::make(Str::random(32)), // Random password initially
-                'username' => $username,
-                'country' => $application->country,
-                'timezone' => $application->timezone,
-                'years_experience' => $application->years_experience,
+            if ($user) {
+                // User already exists (registered first) - just verify them
+                $user->update([
+                    'analyst_verification_status' => 'verified',
+                    'verified_at' => now(),
+                    'verified_by' => auth()->id(),
+                    'application_id' => $application->id,
+                    
+                    // Update profile fields from application
+                    'country' => $application->country ?? $user->country,
+                    'timezone' => $application->timezone ?? $user->timezone,
+                    'years_experience' => $application->years_experience,
+                    'specializations' => $application->specializations,
+                    'certifications' => $application->certifications,
+                ]);
                 
-                // Verification fields
-                'analyst_verification_status' => 'verified',
-                'verified_at' => now(),
-                'verified_by' => auth()->id(),
-                'application_id' => $application->id,
-                
-                // Set these from application if they map directly, or user can fill them later
-                'specializations' => $application->specializations,
-                'certifications' => $application->certifications,
-            ]);
+                // Ensure they have analyst role
+                if (!$user->hasRole('analyst')) {
+                    $user->assignRole('analyst');
+                }
+            } else {
+                // Old flow: User doesn't exist yet - create account
+                // Generate a base username from name
+                $baseUsername = Str::slug($application->name, '_');
+                $username = $baseUsername;
+                $counter = 1;
+                while (User::where('username', $username)->exists()) {
+                    $username = $baseUsername . '_' . $counter++;
+                }
 
-            $user->assignRole('analyst');
+                $user = User::create([
+                    'name' => $application->name,
+                    'email' => $application->email,
+                    'password' => Hash::make(Str::random(32)), // Random password initially
+                    'username' => $username,
+                    'country' => $application->country,
+                    'timezone' => $application->timezone,
+                    'years_experience' => $application->years_experience,
+                    
+                    // Verification fields
+                    'analyst_verification_status' => 'verified',
+                    'verified_at' => now(),
+                    'verified_by' => auth()->id(),
+                    'application_id' => $application->id,
+                    
+                    // Set these from application
+                    'specializations' => $application->specializations,
+                    'certifications' => $application->certifications,
+                ]);
+
+                $user->assignRole('analyst');
+            }
 
             // Update application status
             $application->update([
@@ -94,14 +110,22 @@ class AnalystApplicationController extends Controller
                 'reviewed_at' => now(),
             ]);
 
-            // Send approval email with password reset link
-            // We'll generate a token manually to send in the email
-            $token = Password::createToken($user);
-            
-            try {
-                Mail::to($user->email)->send(new AnalystApprovedMail($user, $token));
-            } catch (\Exception $e) {
-                \Log::error('Failed to send approval email: ' . $e->getMessage());
+            // Send approval email
+            if (!$user->wasRecentlyCreated) {
+                // User already had account - just send verification email
+                try {
+                    Mail::to($user->email)->send(new AnalystApprovedMail($user, null));
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send approval email: ' . $e->getMessage());
+                }
+            } else {
+                // New user - send password reset link
+                $token = Password::createToken($user);
+                try {
+                    Mail::to($user->email)->send(new AnalystApprovedMail($user, $token));
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send approval email: ' . $e->getMessage());
+                }
             }
         });
 

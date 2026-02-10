@@ -12,6 +12,7 @@
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700&display=swap" rel="stylesheet" />
 
     <!-- Vite -->
+    <!-- Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100 antialiased font-sans">
@@ -94,7 +95,21 @@
                     @if(session('error'))
                         <div class="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-lg mb-6 flex items-center gap-3">
                             <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                            <p class="font-medium">{{ session('error') }}</p>
+                            @if(is_array(session('error')))
+                                <ul class="list-disc list-inside">
+                                    @foreach(session('error') as $err)
+                                        @if(is_array($err))
+                                            @foreach($err as $subErr)
+                                                <li>{{ $subErr }}</li>
+                                            @endforeach
+                                        @else
+                                            <li>{{ $err }}</li>
+                                        @endif
+                                    @endforeach
+                                </ul>
+                            @else
+                                <p class="font-medium">{{ session('error') }}</p>
+                            @endif
                         </div>
                     @endif
 

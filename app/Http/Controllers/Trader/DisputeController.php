@@ -59,7 +59,7 @@ class DisputeController extends Controller
             'description' => 'required|string|min:20|max:1000',
         ]);
 
-        Dispute::create([
+        $dispute = Dispute::create([
             'trader_id' => Auth::id(),
             'analyst_id' => $subscription->analyst_id,
             'subscription_id' => $subscriptionId,
@@ -68,7 +68,36 @@ class DisputeController extends Controller
             'status' => 'pending',
         ]);
 
-        // TODO: Send notification to admin
+        // Notify Analyst (Email + DB)
+        $analyst = $subscription->analyst;
+        if ($analyst) {
+            \App\Models\Notification::create([
+                'user_id' => $analyst->id,
+                'type' => 'dispute_filed',
+                'title' => 'Dispute Filed',
+                'message' => 'A trader has filed a dispute against you regarding their subscription.',
+                'data' => json_encode(['dispute_id' => $dispute->id]),
+            ]);
+
+            try {
+                \Illuminate\Support\Facades\Mail::to($analyst->email)->send(new \App\Mail\DisputeFiledMail($dispute));
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to send dispute email: ' . $e->getMessage());
+            }
+        }
+        
+        // Notify Admin (DB only for now, or email if configured)
+        // Find all admins
+        $admins = \App\Models\User::role('admin')->get();
+        foreach ($admins as $admin) {
+            \App\Models\Notification::create([
+                'user_id' => $admin->id,
+                'type' => 'admin_alert',
+                'title' => 'New Dispute Filed',
+                'message' => "Dispute #{$dispute->id} needs review.",
+                'data' => json_encode(['dispute_id' => $dispute->id, 'url' => route('admin.disputes.show', $dispute->id)]),
+            ]);
+        }
 
         return redirect()
             ->route('trader.subscriptions.index')

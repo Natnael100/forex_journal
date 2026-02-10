@@ -1,0 +1,2760 @@
+                    ST. MARY’S UNIVERSITY
+                   FACULTY OF INFORMATICS
+           DEPARTMENT OF COMPUTER SCIENCE
+
+
+
+
+   FOREX TRADING JOURNAL WITH PERFORMANCE
+                    ANALYTICS
+                       BY
+Name                                  ID
+Daniel Eshetu                    RCD/1201/2014
+
+Natnael Feseha                   RCD/1226/2014
+
+Tigistu Begashaw                 RCD/1233/2014
+
+Yoseph Wegayehu                  RCD/1241/2014
+
+
+
+                                                    June 2025
+                                                       SMU
+                                                 ADDIS ABABA
+FOREX TRADING JOURNAL WITH PERFORMANCE
+                      ANALYTICS
+
+
+                            BY:
+
+Daniel Eshetu, Natnael Feseha, Tigistu Begashaw, and Yoseph
+                      Wegayehu
+
+
+     A SENIOR PROJECT DOCUMENT SUBMITTED TO THE
+
+           DEPARTMENT OF COMPUTER SCIENCE
+
+               FACULTY OF INFORMATICS
+
+                 ST. MARY’S UNIVERSITY
+
+
+
+     IN PARTIAL FULFILLMENT OF THE REQUIREMENTS
+
+      FOR THE DEGREE OF BACHELOR OF SCIENCE IN
+
+                   COMPUTER SCIENCE
+
+
+
+
+                                                   JUNE 2025
+
+                                                        SMU
+
+                                                ADDIS ABABA
+                    ST. MARY’S UNIVERSITY
+      FOREX TRADING JOURNAL WITH PERFORMANCE
+                         ANALYTICS
+                             BY:
+Daniel Eshetu, Natnael Feseha, Tigistu Begashaw, and Yoseph
+                         Wegayehu
+
+
+                  FACULTY OF INFORMATICS
+           DEPARTMENT OF COMPUTER SCIENCE
+
+
+       APPROVED BY THE COMMITTEE OF EXAMINERS
+ ______________                               ______________
+Department Head                                  Signature
+Metages Ephrem                                ______________
+Advisor                                           Signature
+ ______________                                ______________
+Internal Examiner                                 Signature
+ ______________                                 ______________
+External Examiner                                 Signature
+PIP JOURNAL
+       CERTIFICATE OF AUTHENTICATED WORK
+This is to certify that this project “FOREX TRADING JOURNAL WITH
+PERFORMANCE ANALYTICS ”
+
+was carried out by group ofstudents of computer science at St. Mary‘s
+University as a requirement for senior project by:
+Group Members:
+Name                                     Signature
+Daniel Eshetu                   _____________________
+Natnael Feseha                  _____________________
+Tigistu Begashaw                _____________________
+Yoseph Wegayehu                 _____________________
+
+
+The matter embodied in this project is authentic and is genuine work
+done by the student and has not been submitted whether to this
+university or any other university / institute for the fulfillment of the
+requirement of any course of study. This Project proposal was reviewed
+and approved (for examination) by:
+
+
+Advisor Name                 Signature                    Date
+
+
+
+
+Metages Ephrem           ______________           __________________
+               ACKNOWLEDGEMENT
+
+
+ We would like to express our sincere gratitude to all those who
+supported us throughout the development of our senior project, Forex
+Trading Journal.
+First and foremost, we thank our advisor Metages Ephrem, for their
+invaluable guidance, constructive feedback, and continuous
+encouragement.
+Special thanks to our families and friends for their unwavering support
+and motivation during this journey.
+ Lastly, we appreciate the collaborative effort of our team, whose
+dedication and hard work were essential to the success of this project.
+TABLE OF CONTENT
+Chapter One: Introduction....................................................................................................................... 1
+   1.1 Background.................................................................................................................................... 1
+   1.2 Statement of the Problem .............................................................................................................. 2
+   1.3 Objectives ...................................................................................................................................... 3
+      1.3.1 General Objective ................................................................................................................... 3
+      1.3.2 Specific Objectives .................................................................................................................. 4
+   1.4 Methodology ................................................................................................................................. 5
+      1.4.1 Data Collection........................................................................................................................ 5
+      1.4.2 System Development Model: Agile.......................................................................................... 5
+      1.4.4 Programming Languages and Tools ......................................................................................... 6
+   1.5 Hardware and Software Requirements .......................................................................................... 7
+      1.5.1 Hardware Requirements ......................................................................................................... 7
+      1.5.2 Software Requirements........................................................................................................... 8
+   1.6 Scope and Limitation ..................................................................................................................... 9
+      1.6.1 Scope of the Project ................................................................................................................ 9
+      1.6.2 Limitations of the Project ...................................................................................................... 10
+   1.7 Significance of the Project ............................................................................................................ 10
+   1.8 Feasibility Study ........................................................................................................................... 11
+      1.8.1 Technical Feasibility .............................................................................................................. 11
+      1.8.2 Economic Feasibility .............................................................................................................. 12
+      1.8.3 Operational Feasibility .......................................................................................................... 12
+      1.8.4 Legal Feasibility ..................................................................................................................... 12
+   1.9 Risk Assessment........................................................................................................................... 13
+   1.10 Work Breakdown Structure (WBS) ............................................................................................. 14
+Chapter Two: Business Area Analysis and Requirement Definition ......................................................... 16
+   2.1 Introduction ................................................................................................................................. 16
+   2.2 Business Area Analysis ................................................................................................................. 16
+      2.2.1 Detailed Analysis ................................................................................................................... 16
+   2.3 Requirement Gathering ............................................................................................................... 17
+      2.3.1 Requirement Gathering Techniques ...................................................................................... 17
+   2.4 Method of Communication .......................................................................................................... 17
+      2.4.1 Communication Techniques .................................................................................................. 17
+   2.5 Requirement Definition ............................................................................................................... 18
+      2.5.1 Functional Requirements ...................................................................................................... 18
+      2.5.2 Collaboration Modeling ......................................................................................................... 22
+      2.5.3 Nonfunctional Requirements ................................................................................................ 22
+   2.6 System Modeling ......................................................................................................................... 23
+      2.6.1 Introduction .......................................................................................................................... 24
+      2.6.2 System Use Case ................................................................................................................... 24
+      2.6.3 UI Identification .................................................................................................................... 24
+      2.6.4 Business Rules Identification ................................................................................................. 24
+      2.6.5 Actor Identification ............................................................................................................... 24
+      2.6.6 Use Case Diagram ................................................................................................................. 25
+      2.6.7 Use Case Description............................................................................................................. 29
+      2.6.8 Sequence Diagramming......................................................................................................... 29
+      2.6.9 Activity Diagramming ............................................................................................................ 31
+      2.6.10ClassDiagram ....................................................................................................................... 35
+      2.6.11 State Chart Diagram ............................................................................................................ 36
+      2.6.12 User Interface Prototyping (High Fidelity Prototype) ........................................................... 39
+   2.7 Data Model .................................................................................................................................. 41
+      2.7.1 ER Diagram ........................................................................................................................... 42
+Chapter Three: System Design ............................................................................................................... 43
+   3.1 Introduction ................................................................................................................................. 43
+   3.2 Purpose of the System ................................................................................................................. 43
+   3.3 Design Goals ................................................................................................................................ 43
+   3.4 Current Software Architecture ..................................................................................................... 44
+   3.5 Proposed Software Architecture .................................................................................................. 44
+      3.5.1 Subsystem Decomposition .................................................................................................... 45
+      3.5.2 Component Diagram ............................................................................................................. 46
+      3.5.3 Deployment Diagram ............................................................................................................ 46
+      3.5.5 Detailed Database Design...................................................................................................... 47
+      3.5.6 Access Control and Security .................................................................................................. 59
+      3.5.8 Boundary Conditions ............................................................................................................. 60
+CHAPTER FOUR: IMPLEMENTATION ...................................................................................................... 61
+   4.1 Introduction ................................................................................................................................. 61
+   4.2 Development Environment and Technology Stack ........................................................................ 61
+      4.2.1 Technology Selection ............................................................................................................ 61
+      4.2.2 Project Initialization .............................................................................................................. 61
+   4.3 Database Schema Implementation............................................................................................... 61
+      4.3.1 Migration Structure ............................................................................................................... 61
+      4.3.2 Eloquent Models ................................................................................................................... 64
+   4.4 Authentication and Authorization ................................................................................................ 66
+      4.4.1 Laravel Breeze Integration..................................................................................................... 66
+      4.4.2 Role-Based Access Control .................................................................................................... 66
+   4.5 Trade Journal Implementation ..................................................................................................... 68
+   4.6 CSV Import Functionality.............................................................................................................. 70
+   4.7 Analytics Dashboard .................................................................................................................... 71
+   4.8 Analyst Marketplace .................................................................................................................... 73
+   4.9 Payment Gateway Integration...................................................................................................... 75
+      4.9.1 Chapa Service........................................................................................................................ 75
+      4.9.2 Webhook Processing ............................................................................................................. 76
+   4.10 Testing Methodologies............................................................................................................... 76
+      4.10.1 White-Box Testing ............................................................................................................... 76
+      4.10.2 Black-Box Testing ................................................................................................................ 78
+CHAPTER FIVE: CONCLUSION AND RECOMMENDATION ........................................................................ 79
+   5.1 Conclusion ................................................................................................................................... 79
+   5.2 Recommendation ........................................................................................................................ 79
+   Appendix ........................................................................................................................................... 81
+LIST OF TABLES
+Table 1 Hardware Requirements ............................................................................................................. 8
+Table 2 Software Requirements ............................................................................................................... 9
+Table 3 Risk Assessment ........................................................................................................................ 13
+Table 4 WBS Table ............................................................................................................................... 14
+Table 5 Trader Essential Use Cases ........................................................................................................ 20
+Table 6 Performance Analyst Essential Use Cases .................................................................................. 20
+Table 7 Administrator Essential Use Cases ............................................................................................. 21
+Table 8 Users ......................................................................................................................................... 48
+Table 9 Accounts ................................................................................................................................... 48
+Table 10 Trades ..................................................................................................................................... 50
+Table 11 Strategies ................................................................................................................................ 50
+Table 12 Trade_strategy ........................................................................................................................ 51
+Table 13 Analyst_applications ............................................................................................................... 52
+Table 14 Aanalyst_profiles .................................................................................................................... 52
+Table 15 Subscription_tiers ................................................................................................................... 53
+Table 16 Subscriptions ........................................................................................................................... 54
+Table 17 Payments ................................................................................................................................ 55
+Table 18 Feedback ................................................................................................................................. 55
+Table 19 Disputes ................................................................................................................................. 56
+Table 20 Notifications ............................................................................................................................ 57
+LIST OF FIGURES
+Figure 1 Agile Development Methodology Diagram ................................................................................. 6
+Figure 2 Laravel Architecture ................................................................................................................... 7
+Figure 3 Gantt Chart .............................................................................................................................. 15
+Figure 4 System Use Case Diagram - Comprehensive view showing all actors and their associated use
+cases with include/extend relationships ................................................................................................ 25
+Figure 5 Trader Use Case Diagram - Detailed view of trader-specific use cases ...................................... 26
+Figure 6 Performance Analyst Use Case Diagram - Detailed view of analyst-specific use cases ............... 27
+Figure 7 Administrator Use Case Diagram - Detailed view of administrative use cases ........................... 28
+Figure 8 Subscribe to Analyst Sequence Diagram - Showing interactions between Trader,
+MarketplaceController, SubscriptionService, PaymentGatewayAdapter, Chapa API, and EmailService ... 29
+Figure 9 Import Trades CSV Sequence Diagram - Showing CSV upload, validation, parsing, and database
+persistence workflow ............................................................................................................................ 29
+Figure 10 Submit Feedback Sequence Diagram - Showing analyst feedback composition, authorization,
+persistence, and notification delivery .................................................................................................... 30
+Figure 11 Process Payment Webhook Sequence Diagram - Showing Chapa webhook verification,
+subscription activation, and notification triggers ................................................................................... 30
+Figure 12 Generate Analytics Dashboard Sequence Diagram - Showing data aggregation, calculation, and
+Chart.js rendering workflow .................................................................................................................. 31
+Figure 13 Trade Entry Activity Diagram - Showing decision flows for manual entry vs CSV import with
+validation branches ............................................................................................................................... 31
+Figure 14 Analyst Application Review Activity Diagram - Showing admin review process with
+approval/rejection branches.................................................................................................................. 32
+Figure 15 Subscription Payment Activity Diagram - Showing payment processing, verification, and error
+handling flows ....................................................................................................................................... 33
+Figure 16 Dispute Resolution Activity Diagram - Showing complaint filing, admin investigation, and
+resolution workflow .............................................................................................................................. 34
+Figure 17 Domain Model Class Diagram - Comprehensive view showing all entity classes, relationships,
+attributes, and key methods .................................................................................................................. 35
+Figure 18 Controller Layer Class Diagram - Showing MVC controller classes and their dependencies .... 35
+Figure 19 Subscription Entity State Chart - Showing states: Pending Payment → Active →
+Cancelled/Expired with transition conditions ......................................................................................... 36
+Figure 20 Analyst Application State Chart - Showing states: Submitted → Under Review →
+Approved/Rejected with admin actions ................................................................................................. 37
+Figure 21 Dispute State Chart - Showing states: Filed → Under Investigation → Resolved with
+administrator intervention points .......................................................................................................... 38
+Figure 22 Trader Dashboard - High Fidelity Mockup ............................................................................... 39
+Figure 23 Trade Entry Form - High Fidelity Mockup................................................................................ 39
+Figure 24 Analytics Dashboard - High Fidelity Mockup with Chart.js Visualizations................................. 40
+Figure 25 Analyst Marketplace Browse - High Fidelity Mockup .............................................................. 40
+Figure 26 Entity-Relationship (ER) Diagram - Showing all 15 database entities (User, Account, Trade,
+Subscription, etc.) with primary keys, foreign keys, relationships, and cardinalities ............................... 42
+Figure 27 System Component Diagram - Showing all seven subsystems with dependencies and interface
+relationships.......................................................................................................................................... 46
+Figure 28 Production Deployment Diagram - Showing web server, application server, database server,
+and external service nodes (Chapa API, Email SMTP) ............................................................................. 46
+Figure 29 Extended Entity-Relationship Diagram - Showing all entities, relationships, cardinalities, and
+generalization hierarchies ..................................................................................................................... 58
+Figure 30 Terminal output showing Laravel version and installed packages (php artisan --version,
+composer show ..................................................................................................................................... 61
+Figure 31 Users table migration (database/migrations/*_create_users_table.php) ............................... 62
+Figure 32 Trades table migration (database/migrations/*_create_trades_table.php) ............................ 63
+Figure 33 User model with relationships (app/Models/User.php) .......................................................... 64
+Figure 34 Trade model with casts and relationships (app/Models/Trade.php) ....................................... 65
+Figure 35 Role verification middleware (app/Http/Middleware/EnsureUserHasRole.php) ..................... 66
+Figure 36 Protected route groups (routes/web.php) .............................................................................. 67
+Figure 37 TradeController store method (app/Http/Controllers/TradeController.php)........................... 68
+Figure 38 Trade entry form (resources/views/trades/create.blade.php) ................................................ 69
+Figure 39 Trade history interface (http://localhost:8000/trades) ........................................................... 69
+Figure 40 CSV import mapping (app/Imports/TradesImport.php) .......................................................... 70
+Figure 41 Analytics calculation service (app/Services/AnalyticsService.php) .......................................... 71
+Figure 42 Analyst,application,controller,app/Http/Controllers/AnalystApplicationController.php) ........ 73
+Figure 43 Marketplace browse interface (http://localhost:8000/marketplace) ...................................... 74
+Figure 44 Chapa payment service (app/Services/ChapaPaymentService.php) ........................................ 75
+Figure 45 Unit test example (tests/Unit/AnalyticsServiceTest.php) ........................................................ 76
+Figure 46 Feature test example (tests/Feature/TradeTest.php) ............................................................. 77
+Figure 47 Functional test cases table ..................................................................................................... 78
+Figure 48 UAT workflow screenshots ..................................................................................................... 78
+Chapter One: Introduction
+1.1 Background
+Forex (foreign exchange) is the most liquid financial market in the world and it is accessible to
+anyone globally with a daily transaction volume that exceeds $7 trillion [1]. A Forex trader is a
+person who operates in this market in a single day across multiple time zones. The Forex market
+is open 24 hours a day, hence Forex trading is highly liquid and attracts millions of individual
+traders who are looking to make money from currency fluctuations. The volatile and complex
+nature of this market, however, makes it difficult to succeed and it requires more than just market
+knowledge. In addition, success in Forex trading is also a matter of self-assessment, strategic
+decision-making and emotional control [2].
+
+Among the various resources that a trader might use to facilitate his performance gain, the most
+frequently suggested one is a trading journal. The decision of the trader to keep a journal
+documenting all his trades will grant him access to insights into the past of his trading activities
+and, in turn, help him to identify new decisions that could be better than the old ones given the
+situations faced. Experts such as Mark Douglas [2] and Van K. Tharp [3] maintain that, for a
+trader to be self-disciplined and have a clear vision of making decisions, a trading journal is the
+key thus enabling them to keep the discipline and decision-making clarity over a long period of
+time. However, the challenges facing retail Forex traders extend beyond market volatility to
+encompass a significant gap in access to professional coaching and performance analytics. While
+institutional traders benefit from proprietary analytics platforms, dedicated performance coaches,
+and structured feedback mechanisms, retail traders often rely on fragmented tools, expensive
+one-on-one coaching services that can range from $200 to $500 per hour, or generic educational
+content that fails to address their specific trading patterns and psychological challenges [4]. The
+cost of professional trading psychology coaching places it beyond the reach of most retail
+traders, particularly those in developing markets. Furthermore, existing trading journal
+applications typically offer only basic logging functionality without integrated performance
+analytics or access to professional coaching services. This creates a critical barrier to trader
+development: individuals can record their trades but lack the expertise to interpret patterns,
+identify psychological biases, or receive personalized guidance on improving their decision-
+making processes. In response to these identified challenges, this project developed a
+comprehensive Forex Trading Journal and Analyst Marketplace Web Application that serves as
+an integrated solution bridging the gap between personal performance tracking and professional
+coaching accessibility. The implemented system combines a sophisticated trade journaling
+platform with advanced analytics capabilities, enabling traders to systematically record their
+trades, visualize performance metrics, and identify patterns across multiple dimensions including
+currency pairs, market sessions, strategies, and emotional states. Beyond self
+
+
+
+                                                 1
+-directed analysis, the platform introduces a verified analyst marketplace where retail traders can
+connect with certified performance analysts and trading psychologists who offer tiered
+subscription-based coaching services at accessible price points. The system implements a
+rigorous analyst application and verification process administered by system administrators,
+ensuring quality control in the coaching marketplace. Traders can subscribe to verified analysts
+through three subscription tiers—Basic, Premium, and Elite—each offering progressive levels of
+feedback frequency, personalized coaching, and advanced features such as guided journaling and
+weekly performance reports. Payment processing is facilitated through integration with the
+Chapa payment gateway, supporting local payment methods prevalent in East African markets.
+The platform operates on a revenue-sharing model where analysts receive 70% of subscription
+fees, incentivizing high-quality coaching while sustaining platform operations. This dual
+approach addresses both the technical need for robust analytical tools and the human need for
+expert guidance and accountability. By democratizing access to professional trading coaching
+while providing enterprise-grade analytics functionality, the platform empowers retail traders to
+develop the disciplined practices and receive the personalized feedback necessary for long-term
+trading success. The system further incorporates gamification elements through achievement
+tracking and experience points, direct messaging capabilities between traders and their
+subscribed analysts, and comprehensive administrative tools for dispute resolution and system
+monitoring to sustain user engagement and foster continuous improvement in trading
+performance.
+
+1.2 Statement of the Problem
+In the competitive world of Forex trading, traders must continuously evaluate and improve their
+performance to remain profitable. However, a significant number of traders face substantial
+difficulties in tracking their trades, analyzing their strategies, and reflecting on their decision-
+making processes. While trade execution is a vital skill, sustained success depends on a trader's
+capacity to learn from past experiences, control emotional reactions, and adapt based on
+performance trends. Unfortunately, most individual traders lack access to the necessary tools that
+enable structured self-assessment and systematic performance improvement.
+
+At present, many traders rely on manual journaling methods such as notebooks or spreadsheets
+to record their trades. These approaches are often disorganized, prone to errors, and lack
+essential features such as filtering, summarizing, or analyzing trade data effectively. The
+psychological dimensions of trading—including emotional state, decision-making mindset, and
+behavioral patterns—play a critical role in performance outcomes, yet these factors are
+frequently overlooked or not tracked at all in traditional journaling methods. Traders using
+unstructured logs struggle to identify their behavioral patterns, evaluate which strategies prove
+most effective, or understand how their emotions influence trading results over time.
+
+Furthermore, most digital tools that offer trade journaling and analytics—such as Edgewonk,
+Myfxbook, or Tradervue—present their own limitations. These platforms are often costly, with
+
+                                                 2
+subscription fees that can exceed $50 per month, placing them beyond the financial reach of
+beginner or independent traders. Additionally, many of these tools lack integration with regional
+payment systems, making them inaccessible to traders in developing markets. The geographic
+and technical limitations of existing solutions create barriers that prevent traders from accessing
+the performance tracking tools they need to develop their skills systematically [5].
+
+Beyond the limitations of tracking tools, retail traders face an even more significant challenge:
+limited access to professional coaching and personalized feedback on their trading performance.
+While institutional traders benefit from dedicated performance coaches and structured
+mentorship programs, retail traders must either navigate the market independently or pay
+prohibitively expensive fees for one-on-one coaching sessions. The absence of affordable,
+structured coaching platforms creates a critical gap in trader development. Traders may
+successfully record their performance data but lack the expertise to interpret complex patterns,
+identify psychological biases, or receive actionable guidance on improving their decision-making
+processes. This coaching accessibility gap perpetuates the cycle of trader failure, as individuals
+cannot access the professional insights necessary to translate raw performance data into
+meaningful behavioral change.
+
+This project addressed these multifaceted challenges through the development and
+implementation of a comprehensive Forex Trading Journal and Analyst Marketplace Web
+Application. The system tackled the trade tracking problem by providing robust data entry
+mechanisms supporting both manual input and CSV import, comprehensive filtering and
+analytics capabilities, and psychological tracking features that capture emotional states alongside
+technical trade data. The platform addressed the coaching accessibility gap by establishing a
+verified analyst marketplace connecting traders with certified performance analysts through
+tiered subscription plans, integrated payment processing via the Chapa gateway supporting East
+African payment methods, and a revenue-sharing economic model that makes professional
+coaching financially accessible to retail traders while creating viable income opportunities for
+qualified analysts. By integrating structured trade logging, advanced performance analytics, and
+accessible professional coaching within a single platform, the implemented system provides a
+holistic solution enabling traders to bridge the gap between trade execution and long-term
+performance improvement.
+
+1.3 Objectives
+1.3.1 General Objective
+The primary objective of this project is to develop a web-based Forex Trading Journal and
+Analyst Marketplace that bridges the gap between individual performance tracking and
+professional coaching. The system aims to facilitate data-driven decision-making by enabling
+traders to record, organize, and analyze their trading activities through a structured journaling
+interface. Furthermore, the project seeks to democratize access to professional mentorship by
+
+                                                3
+connecting retail traders with verified performance analysts through a secure, subscription-based
+marketplace. Ultimately, the system provides a holistic platform for continuous trader
+development, combining self-assessment analytics with expert feedback to foster disciplined
+trading habits.
+
+1.3.2 Specific Objectives
+Trade Management and Journaling
+
+      To design a comprehensive trade logging system that supports both manual data entry
+       and bulk CSV import mechanisms for efficient record-keeping.
+
+      To implement detailed trade attributes including technical parameters, strategy tagging,
+       and psychological state tracking to capture the full context of each trade.
+
+      To enable the attachment of visual evidence such as trade screenshots and chart links,
+       facilitating thorough post-trade review and analysis.
+
+Performance Analytics and Visualization
+
+      To develop an interactive analytics dashboard utilizing Chart.js to visualize key
+       performance metrics such as win/loss ratios, session-based outcomes, and equity growth.
+
+      To implement automated reporting features that generate and distribute weekly
+       performance summaries, enabling traders to track progress over time.
+
+      To provide advanced filtering capabilities that allow users to isolate and analyze specific
+       variables, such as performance by currency pair or trading strategy.
+
+Analyst Marketplace and Coaching
+
+      To establish a verified analyst marketplace where qualified professionals can list
+       subscription-based coaching services and manage subscriber relationships.
+
+      To implement a rigorous application and verification workflow for analysts to ensure the
+       service quality and credibility of the marketplace.
+
+      To creating a tiered subscription model managed via the Chapa payment gateway,
+       offering flexible access to professional feedback and mentorship.
+
+System Administration and Security
+
+      To develop a robust administrative dashboard for overseeing user roles, monitoring
+       system activity, and resolving disputes between traders and analysts.
+
+      To implement secure authentication and authorization protocols to protect sensitive user
+       data and financial transaction records.
+                                                4
+      To ensure cross-platform accessibility through a responsive web design that functions
+       seamlessly across desktop and mobile devices.
+
+
+
+
+1.4 Methodology
+   • The development of the Forex Trading Journal and Analyst Marketplace adhered to a
+   structured research and development methodology suitable for web-based system creation.
+   This approach ensured that the project addressed verified user needs while maintaining high
+   standards of software engineering throughout the lifecycle. The methodology encompasses
+   distinct phases of data collection, system development modeling, and architectural design
+   patterning.
+
+1.4.1 Data Collection
+   • To determine the functional requirements and identify current market gaps, the project
+   employed a multi-faceted data collection strategy.
+
+   • Document Analysis A systematic review of existing trading journal applications and
+   financial software was conducted to evaluate current industry standards. This analysis
+   highlighted common limitations in existing tools, particularly the lack of integrated
+   performance feedback and psychological tracking features. These findings served as the
+   baseline for defining the system's unique value proposition.
+
+   • Interviews Structured interviews were conducted with active retail forex traders to gather
+   primary data regarding their daily workflows and pain points. Integrating qualitative
+   feedback from potential users exposed specific challenges related to accountability and the
+   high cost of professional coaching. This direct engagement ensured that the system's features
+   were aligned with actual user needs rather than theoretical assumptions.
+
+   • Online Research Extensive research into trading forums and psychological literature
+   provided context on the behavioral aspects of trading failure. Understanding the
+   psychological barriers to consistent profitability informed the design of the emotional
+   tracking and analyst feedback modules. This broader market analysis validated the demand
+   for an affordable, community-driven coaching solution.
+
+1.4.2 System Development Model: Agile
+   • The project utilized the Agile software development methodology, prioritizing iterative
+   progress and flexibility over rigid long-term planning. The development lifecycle was
+   divided into two-week sprints, each focusing on delivering specific, testable components of
+   the system. This approach allowed for continuous refinement of features based on immediate
+   testing feedback and evolving requirements. The iterative nature of Agile ensured that critical
+
+                                                5
+    functions, such as the trade logging engine and analyst marketplace, were robustly tested
+    before integration.
+
+
+
+
+Figure 1 Agile Development Methodology Diagram
+
+1.4.3 Design Pattern: MVC
+    • The system architecture follows the Model-View-Controller (MVC) design pattern, a
+    widely accepted standard for modern web applications. This differentiation separates the
+    application's internal data handling (Model) from the user interface (View) and the logic that
+    connects them (Controller). By decoupling these components, the architecture supports
+    modular development, making the codebase easier to maintain and scale. This structure also
+    facilitated parallel development, allowing the backend logic and frontend interface to
+    progress simultaneously without conflict.
+
+1.4.4 Programming Languages and Tools
+    • The technology stack was selected to ensure system scalability, security, and responsive
+    performance across devices.
+
+    • Backend Development The server-side logic is powered by the Laravel PHP framework,
+    chosen for its robust security features and elegant syntax. Laravel handles core functions
+    such as user authentication, database management, and API routing. Its ecosystem enabled
+    the seamless integration of complex features like PDF report generation and automated email
+    scheduling.
+
+    • Frontend Development The user interface was constructed using HTML, CSS, and the
+    TailwindCSS framework to ensure a modern, responsive design. JavaScript facilitates
+
+                                                 6
+    dynamic interactions, while Chart.js powers the interactive analytics dashboard. This
+    combination ensures that the application remains fast and accessible on both desktop and
+    mobile devices.
+
+
+
+
+Figure 2 Laravel Architecture
+
+    • Database and Integrations MySQL serves as the primary relational database, storing
+    complex relationships between users, trades, and subscription records. The system integrates
+    Chapa for secure payment processing, enabling local currency transactions for the analyst
+    marketplace. Additionally, TradingView widget integration provides users with familiar
+    charting tools within the platform environment.
+
+1.5 Hardware and Software Requirements
+The successful development and deployment of the Forex Trading Journal and Analyst
+Marketplace requires specific hardware infrastructure and software technologies. This section
+outlines the minimum requirements for both development and production environments.
+Understanding these requirements ensures that the system can be replicated, maintained, and
+scaled effectively.
+
+1.5.1 Hardware Requirements
+The hardware infrastructure supports three distinct operational contexts: development,
+deployment, and end-user access. Development machines require sufficient processing power
+and memory to run local servers and development tools simultaneously. The production server
+must be capable of handling concurrent user requests while maintaining acceptable response
+times. Client devices need only support modern web browsers, ensuring accessibility across a
+wide range of hardware configurations.
+
+
+
+
+                                               7
+  Hardware
+                            Specification/Model                       Purpose
+  Component
+
+  Development
+                            Intel Core i5/i7, 8GB+ RAM, SSD           System development and testing
+  PC/Laptop
+
+                            Linux-based VPS       (e.g.,   Ubuntu),
+  Server (Deployment)                                                 Hosting the live application
+                            2GB+ RAM
+
+  Client Devices            Desktop, Laptop, Tablet, Smartphone Accessing the web application
+
+                                                                      Connectivity for development and
+  Internet Connection       Broadband / 4G / 5G
+                                                                      user access
+
+  Table 1 Hardware Requirements
+
+  1.5.2 Software Requirements
+  The software stack was selected based on industry standards for security, scalability, and
+  community support. The backend framework and database system handle core business logic and
+  data persistence, while frontend technologies ensure responsive user experiences. Development
+  tools facilitate efficient coding, testing, and version control throughout the project lifecycle. The
+  table below summarizes the key software components and their respective roles within the
+  system architecture.
+
+Category                    Software Tool                                Purpose
+
+Programming Language PHP 8.2+                                            Server-side scripting language
+
+Backend Framework           Laravel 12.0                                 Core application logic and API
+
+                            HTML5,          CSS3,          JavaScript,
+Frontend Technologies                                                    User interface and responsiveness
+                            TailwindCSS
+
+Database Management SQLite                                               Data storage and management
+
+Web Server                  PHP Built-in Server / Apache                 Serving the web application
+
+Development
+                            Visual Studio Code, Laravel Artisan          Coding and local testing
+Environment
+
+                                                                         Source code management and
+Version Control             Git & GitHub
+                                                                         collaboration
+
+
+
+                                                      8
+Category                     Software Tool                        Purpose
+
+Package Manager              Composer (PHP), NPM (JavaScript)     Dependency management
+
+                             Maatwebsite/Excel, Spatie Packages, CSV import/export, permissions,
+Key Laravel Packages
+                             Laravel Sanctum                     authentication
+
+Chart Library                Chart.js                             Interactive analytics visualization
+
+Payment Gateway              Chapa API                            Subscription payment processing
+
+  Table 2 Software Requirements
+
+
+  1.6 Scope and Limitation
+  1.6.1 Scope of the Project
+  The primary scope of this project encompasses the design, development, and deployment of a
+  comprehensive Forex Trading Journal and Analyst Marketplace web application. The system
+  serves individual retail traders by integrating advanced performance tracking with accessible
+  professional coaching services. This scope is defined by both the functional capabilities
+  implemented and the target user base addressed.
+
+  Core Journaling and Analytics Features The system provides a sophisticated trade logging
+  platform supporting both manual data entry and bulk CSV import from broker platforms. Traders
+  can record comprehensive trade details including technical parameters such as entry and exit
+  prices, lot sizes, and risk-reward ratios, alongside psychological data like emotional state and
+  trade reasoning. An interactive analytics dashboard powered by Chart.js visualizes performance
+  trends including win/loss ratios, session-based outcomes, and strategy effectiveness. Automated
+  reporting features generate weekly and monthly performance summaries delivered via email and
+  exportable as PDF documents.
+
+  Analyst Marketplace and Subscription Services The platform establishes a verified
+  marketplace where performance analysts offer tiered subscription-based coaching services.
+  Prospective analysts submit applications that undergo administrative review to ensure credibility
+  and service quality. Traders can browse analyst profiles, evaluate qualifications, and subscribe to
+  coaching plans at Basic, Premium, or Elite levels. The subscription system integrates Chapa
+  payment gateway for secure local currency transactions and implements automatic revenue
+  sharing between analysts and the platform.
+
+  Administrative and Engagement Systems The application incorporates role-based access
+  control supporting three distinct user types: Traders, Analysts, and Administrators.
+  Administrative dashboards facilitate user management, analyst verification, subscription
+  monitoring, and dispute resolution. Gamification features including experience points and
+
+                                                   9
+achievement tracking encourage consistent journaling habits and platform engagement. The
+entire system is delivered as a responsive web application accessible across desktop and mobile
+devices.
+
+1.6.2 Limitations of the Project
+While the implemented system addresses critical gaps in retail trader development, it operates
+within specific technical and functional boundaries that define its intended use case.
+
+Functional Boundaries The platform serves as a post-trade analysis and coaching tool rather
+than an active trading terminal. It does not connect to brokerage APIs for live trade execution,
+nor does it provide real-time market data feeds or economic calendars. Users must continue
+using their existing trading platforms for market analysis and trade placement, treating this
+system as a complementary performance review tool. This deliberate separation ensures the
+project remains focused on its core value proposition without the regulatory complexities of
+handling live trading operations.
+
+Technical Constraints As a web-based application, the system requires active internet
+connectivity and does not support offline functionality. The current version calculates
+performance metrics primarily in USD and pip values, without multi-currency portfolio support
+for trading accounts. While the Chapa payment integration supports local currencies, the
+journaling component itself maintains a single-currency accounting structure. The user interface
+is currently available exclusively in English, limiting accessibility for non-English speaking
+traders.
+
+Institutional Limitations The system is designed for individual retail traders rather than
+institutional trading firms or multi-user trading teams. It lacks features such as multi-trader
+portfolio aggregation, institutional compliance reporting, or team collaboration tools. These
+deliberate scope limitations keep the platform focused on its primary audience while maintaining
+manageable development complexity.
+
+1.7 Significance of the Project
+The successful implementation of this project delivers measurable value to multiple stakeholder
+groups within the retail trading ecosystem. By addressing fundamental gaps in performance
+tracking and professional coaching accessibility, the system contributes to the broader goal of
+reducing retail trader failure rates. The significance extends beyond individual user benefits to
+demonstrate practical applications of web technology in financial education and behavioral
+improvement.
+
+For Retail Traders The platform provides traders with structured tools to develop disciplined
+trading habits through systematic performance tracking and professional feedback. By capturing
+both technical trade data and psychological factors, the system enables traders to identify
+behavioral patterns that may be hindering their success. The affordable subscription model
+                                               10
+democratizes access to professional coaching services that were previously financially
+inaccessible to most retail traders. Furthermore, automated analytics and reporting eliminate the
+manual effort required for spreadsheet-based journaling, encouraging consistent usage and long-
+term habit formation.
+
+For Performance Analysts The marketplace creates legitimate revenue opportunities for
+qualified trading coaches and performance analysts who previously lacked platforms to monetize
+their expertise efficiently. The verification system establishes analyst credibility through
+administrative review, enhancing their professional reputation within the trading community. By
+managing subscriber relationships and payment processing through the platform, analysts can
+focus on delivering quality feedback rather than administrative tasks. The tiered subscription
+model allows analysts to scale their services across multiple clients while maintaining
+sustainable workloads.
+
+For the Trading Education Community The project demonstrates how technology can bridge
+the gap between theoretical trading education and practical skill development through structured
+self-assessment. By promoting data-driven decision-making over emotional trading, the system
+contributes to a cultural shift toward professional trading practices among retail participants. The
+implementation also serves as a reference architecture for building marketplace platforms that
+connect service providers with consumers in specialized domains. Finally, the open-source
+technology stack provides an educational resource for students studying web application
+development in financial contexts.
+
+1.8 Feasibility Study
+A comprehensive feasibility analysis was conducted to assess the project's viability across
+technical, economic, operational, and legal dimensions. The analysis confirmed that the project
+could be successfully developed and deployed within the constraints of available resources and
+timeline. The following subsections detail the feasibility findings across each evaluation
+dimension.
+
+1.8.1 Technical Feasibility
+The project demonstrated strong technical feasibility based on the availability of mature, well-
+documented technologies and the development team's skill set. The Laravel framework provides
+comprehensive built-in features for authentication, database management, and API development,
+reducing the need for custom low-level implementations. The MVC architectural pattern
+facilitates modular development, allowing team members to work on different components
+simultaneously without conflicts. Integration with third-party services such as Chapa and
+Chart.js was achieved through standard RESTful APIs and well-maintained JavaScript libraries.
+The development team possessed adequate knowledge of PHP, database design, and frontend
+technologies to implement the required functionality within the project timeline.
+
+
+                                                11
+1.8.2 Economic Feasibility
+The project required minimal financial investment due to its reliance on open-source software
+and cloud-based development tools. No licensing fees were incurred for the core technology
+stack, including Laravel, SQLite, TailwindCSS, and Chart.js. Development hardware consisted
+of existing laptop computers with sufficient processing power for running local servers and
+development environments. The implemented revenue-sharing model ensures long-term
+financial sustainability by generating income from subscription fees while incentivizing analyst
+participation through the 70/30 split. Operational costs are limited to server hosting fees and
+domain registration, both of which can be covered by platform revenue once deployed to
+production.
+
+1.8.3 Operational Feasibility
+The system's operational feasibility was validated through user interface design that prioritizes simplicity
+and familiarity. Traders accustomed to standard web applications can navigate the platform without
+extensive training, as the interface follows conventional design patterns. The responsive design ensures
+accessibility across devices, allowing traders to log and review trades from desktop or mobile
+environments based on convenience. Administrative workflows are streamlined through automated
+processes for subscription management and payment distribution, minimizing manual intervention
+requirements. The role-based access control system ensures that each user type encounters only relevant
+functionality, reducing cognitive load and potential errors.
+
+1.8.4 Legal Feasibility
+The project operates within a legally sound framework by positioning itself as an educational
+software tool rather than a financial services provider. The platform does not execute trades, hold
+user funds, or provide investment advice, thereby avoiding the regulatory requirements that
+govern brokerage firms and investment advisors. Data privacy is managed through standard
+encryption practices and user authentication protocols, ensuring compliance with general data
+protection principles. All software components are licensed under permissive open-source
+licenses that allow commercial use without legal restrictions. The Chapa payment integration
+delegates sensitive payment processing to a licensed financial services provider, further
+mitigating legal and compliance risks.
+
+
+
+
+                                                    12
+ 1.9 Risk Assessment
+ Throughout the development process, various risks were identified and addressed through
+ proactive mitigation strategies. The table below summarizes the primary risks encountered and
+ the corresponding measures implemented to minimize their impact. Effective risk management
+ ensured that the project remained on schedule and met its core objectives despite technical and
+ organizational challenges.
+
+Risk Category         Potential Risk                Mitigation Strategy
+
+                                                     Dedicated research periods for Laravel
+Technical             Difficulty integrating payment
+                                                     packages,   comprehensive        documentation
+Complexity            gateway and email automation
+                                                     review, modular testing before integration
+
+                 Overlapping           academic Agile sprint prioritization focusing on MVP
+Time Constraints deadlines limiting development features first, deferring secondary features like
+                 time                           gamification to later iterations
+
+                                                  Server-side validation using Laravel Excel,
+                      CSV import errors due to
+Data Integrity                                    clear error messaging, provision of sample
+                      inconsistent broker formats
+                                                  import templates
+
+                                                Delegation of payment processing to Chapa's
+                 Risks associated with handling
+Payment Security                                secure hosted pages, storage of only transaction
+                 sensitive financial data
+                                                references rather than card data
+
+                                                  Comprehensive unit and integration testing,
+                   Potential bugs in analytics
+System Reliability                                error logging for production debugging, staged
+                   calculations or PDF generation
+                                                  rollout approach
+
+                                                   Frontend optimization including minified
+Internet              Poor user experience on slow
+                                                   assets, efficient database queries, lazy loading
+Dependency            connections
+                                                   for analytics charts
+
+                                                   Git version control with feature branches,
+Team                  Miscommunication or task
+                                                   weekly coordination meetings, clear task
+Coordination          overlap in group development
+                                                   assignments
+
+ Table 3 Risk Assessment
+
+
+
+
+                                                   13
+1.10 Work Breakdown Structure (WBS)
+The project execution followed a structured Work Breakdown Structure dividing the
+development lifecycle into five distinct phases. Each phase contained specific deliverables and
+milestones that contributed to the overall project completion. The WBS facilitated effective
+resource allocation and progress tracking throughout the development timeline.
+
+1.10.1 WBS Table
+
+Phase                 Tasks and Activities
+
+                      Define project scope and objectives, Assign team roles and responsibilities,
+1. Planning
+                      Conduct stakeholder interviews, Draft project proposal document
+
+               Gather functional and non-functional requirements, Conduct literature review
+2. Requirement
+               on trading psychology and journaling tools, Analyze competitor platforms
+Analysis
+               (Edgewonk, Myfxbook, Tradervue), Select Agile development methodology
+
+                      Create UI wireframes and user flow diagrams, Design database schema with
+3. Design             entity-relationship modeling, Plan MVC system architecture, Develop UML
+                      diagrams (use case, sequence, class, deployment)
+
+               Setup development environment (Laravel, SQLite, Git), Build authentication
+               and authorization system, Implement trade journaling with CSV import,
+4.
+               Develop analytics dashboard with Chart.js, Create analyst marketplace and
+Implementation
+               verification workflow, Integrate Chapa payment gateway, Build admin panel
+               for system management, Implement messaging and feedback systems
+
+                      Conduct unit testing on individual components, Perform integration testing
+5. Testing          & across modules, Execute user acceptance testing, Fix identified bugs and
+Deployment            optimize performance, Deploy to production server, Complete final
+                      documentation
+
+Table 4 WBS Table
+
+
+
+
+                                                 14
+Figure 3 Gantt Chart
+
+
+
+
+                       15
+Chapter Two: Business Area Analysis and
+Requirement Definition
+2.1 Introduction
+This chapter examines the business domain and requirements for the Forex Trading Journal and
+Analyst Marketplace. Retail traders face significant challenges due to inconsistent journaling,
+limited coaching access, and a lack of integrated analytics. Most rely on fragmented solutions
+like spreadsheets or generic note-taking apps, which lack essential features such as automated
+data visualization and psychological analysis—critical factors for profitability [2], [3].
+
+The implemented solution addresses these gaps with a web-based platform integrating
+journaling, analytics, and professional coaching. The system supports three user roles: Traders
+(who log trades), Performance Analysts (who provide feedback), and Administrators. This
+architecture creates a collaborative environment where data-driven self-assessment is enhanced
+by expert guidance, offering a structured pathway for trader development.
+
+This chapter documents the requirements gathering, business analysis, and system modeling
+processes. It details current trading limitations, functional and non-functional requirements, and
+comprehensive modeling artifacts including use case, sequence, and class diagrams.
+
+2.2 Business Area Analysis
+2.2.1 Detailed Analysis
+The business domain of retail Forex trading encompasses a diverse ecosystem of individual
+traders, educational content providers, commercial journaling platforms, and informal
+mentorship networks. Retail traders operate independently without the institutional support
+systems available to professional trading firms, creating a significant gap in access to
+performance tracking tools and qualified coaching services. The global Forex market's 24-hour
+trading cycle and high leverage accessibility have democratized market participation, yet the
+majority of retail traders fail to achieve sustained profitability due to psychological factors,
+inadequate risk management, and the absence of structured performance review processes [1],
+[2].
+
+Current market research indicates that approximately 70-80% of retail Forex traders lose money
+over extended periods, a failure rate attributable not primarily to market unpredictability but to
+behavioral and disciplinary deficiencies. Successful institutional traders benefit from mandatory
+trade logging, regular performance reviews with supervisors, and access to trading
+psychologists—resources entirely absent from the retail trading environment. The few
+commercial platforms that attempt to bridge this gap either charge prohibitive subscription fees,
+lack psychological tracking features, or fail to integrate professional coaching within their
+
+                                               16
+ecosystems. This market failure creates a clear opportunity for an integrated solution that
+combines affordable journaling tools with accessible professional mentorship.
+
+The business case for the Forex Trading Journal and Analyst Marketplace rests on three
+fundamental value propositions. First, the platform reduces friction in trade logging through
+automated calculations, CSV import capabilities, and intuitive interfaces that encourage
+consistent usage. Second, the integrated analytics engine transforms raw trade data into
+actionable insights through visualization and pattern identification, enabling traders to diagnose
+performance issues independently. Third, the analyst marketplace creates a bilateral value
+exchange where traders access affordable coaching while qualified analysts monetize their
+expertise through scalable subscription services. This three-pronged approach addresses both the
+technical limitations of existing tools and the economic barriers preventing retail traders from
+accessing professional guidance.
+
+2.3 Requirement Gathering
+The process combined primary research (interviews) with secondary analysis (competitor
+review, academic literature). This ensured the solution addresses verified pain points while
+leveraging proven practices.
+
+2.3.1 Requirement Gathering Techniques
+      Document Analysis Review of platforms (Edgewonk, Myfxbook) and psychology
+       literature established features. Forum analysis confirmed frustration with manual
+       journaling.
+      Structured Interviews Interviews with traders revealed dissatisfaction with spreadsheets
+       and a strong demand for affordable coaching ($20-$50/month).
+      Online Research Observation of Telegram/Discord groups exposed inefficiencies in
+       informal coaching, informing the design of the integrated marketplace.
+      Rapid Prototyping Low-fidelity wireframes validated concepts. User feedback re-
+       prioritized features, such as elevating CSV import visibility and refining analyst search
+       filters.
+
+2.4 Method of Communication
+Communication balanced asynchronous collaboration (GitHub, Docs) with synchronous
+interaction (Meetings).
+
+2.4.1 Communication Techniques
+      Version Control (GitHub): Centralized code management with feature branches and
+       pull requests for peer review.
+      Agile Meetings: Bi-weekly sprint planning and retrospectives, plus daily standups to
+       tracking progress.
+
+                                               17
+      Technical Documentation: "Docs-as-code" approach kept specifications and UML
+       diagrams synchronized with implementation.
+      Stakeholder Engagement: Surveys and prototype reviews gathered continuous user
+       feedback.
+      Messaging: Instant messaging facilitated rapid coordination for immediate issues.
+
+2.5 Requirement Definition
+This section formally specifies the functional and non-functional requirements that governed the
+development of the Forex Trading Journal and Analyst Marketplace system. Requirements are
+categorized into functional specifications that define system capabilities and behaviors, and non-
+functional constraints that establish performance, security, and usability criteria. The requirement
+definition process synthesized insights from multiple sources including stakeholder interviews,
+competitor analysis, trading psychology literature, and team expertise to create a comprehensive
+specification balancing user needs with technical feasibility. This structured requirements
+documentation served as the contractual baseline against which implementation completeness
+could be evaluated during testing and deployment phases.
+
+2.5.1 Functional Requirements
+Functional requirements specify the discrete capabilities the system must provide to users,
+expressed as system behaviors observable through user interactions. These requirements are
+organized by actor role, reflecting the three-tier user architecture implemented in the platform.
+Each requirement follows the modal verb "shall" convention to indicate mandatory capabilities,
+distinguishing essential features from optional enhancements. The functional specification
+focuses on what the system accomplishes rather than how implementation is achieved,
+maintaining abstraction that allows design flexibility while ensuring completeness of user-facing
+capabilities.
+
+2.5.1.1 Essential Use Case Modeling
+Essential use case modeling captures user goals at an abstract level, focusing on what users aim
+to accomplish rather than specific interface interactions or technical implementation details. This
+goal-oriented perspective facilitates early requirement validation by enabling stakeholders to
+confirm intended functionality without premature commitment to particular interface designs.
+Essential use cases identify the core value propositions for each actor type and establish
+boundaries for system responsibility. The following tables enumerate essential use cases
+organized by primary actor, with each use case representing a distinct user goal achievable
+through system interaction.
+
+
+
+
+                                                18
+Trader Essential Use Cases
+
+Use Case             Goal Description
+
+                 To log comprehensive trade details including currency pair, session, trade
+Record New Trade type, risk-reward ratio, entry/exit prices, emotional state, and optional
+                 screenshots
+
+                     To modify previously recorded trade data within a configurable time
+Edit Trade Entry
+                     window before entries become immutable
+
+                     To remove erroneous trade entries from the journal, subject to
+Delete Trade Entry
+                     administrative retention policies
+
+View           Trade To access chronological listings of all previously recorded trades with
+History              sortable columns
+
+Filter         Trade To search and filter trades based on criteria including currency pair, date
+History              range, session type, and outcome status
+
+View    Analytics To visualize performance metrics including win/loss ratios, profit factor,
+Dashboard         maximum drawdown, and session-based performance
+
+Export         Trade To download trading records and performance data in PDF or CSV format
+Report               for offline analysis or archival
+
+Import Trades via To bulk upload historical trade data from broker platforms or spreadsheets
+CSV               using standardized CSV templates
+
+Browse    Analyst To discover and evaluate available performance analysts based on
+Marketplace       credentials, specializations, and subscription pricing
+
+Subscribe          to To initiate a subscription relationship with a chosen analyst at a selected
+Analyst               tier (Basic/Premium/Elite)
+
+View     Analyst To read personalized coaching feedback and performance observations
+Feedback         submitted by subscribed analysts
+
+Manage               To cancel, pause, or upgrade analyst subscriptions and review billing
+Subscription         history
+
+
+                                                 19
+Use Case                 Goal Description
+
+Update Profile           To modify personal information, password, and notification preferences
+
+Table 5 Trader Essential Use Cases
+
+Table Trader Essential Use Cases
+
+Performance Analyst Essential Use Cases
+
+Use Case                      Goal Description
+
+                              To submit a marketplace application including credentials, experience,
+Apply as Analyst
+                              certifications, and proposed coaching methodology
+
+                              To establish a public analyst profile with bio, specializations,
+Create Profile
+                              achievement highlights, and subscription tier offerings
+
+                              To access a dashboard listing all traders currently subscribed to the
+View Subscriber List
+                              analyst's services
+
+Review     Subscriber To examine comprehensive trade history, analytics dashboards, and
+Performance           performance trends for subscribed traders
+
+                              To deliver structured performance coaching including trade-specific
+Submit Feedback
+                              observations and general behavioral patterns
+
+Manage        Subscription To define, modify, or discontinue offered subscription plans with
+Tiers                      associated pricing and service levels
+
+                              To monitor subscription income, payout history, and platform revenue-
+Track Revenue
+                              sharing allocations
+
+Respond to           Trader To engage in text-based communication with subscribers through the
+Messages                    platform messaging system
+
+Table 6 Performance Analyst Essential Use Cases
+
+Administrator Essential Use Cases
+
+Use Case                        Goal Description
+
+Review               Analyst To evaluate prospective analyst credentials and determine marketplace
+Applications                 acceptance based on quality criteria
+
+Approve/Reject                  To grant or deny analyst status with documented justification for quality
+
+                                                       20
+Use Case                       Goal Description
+
+Analysts                       control
+
+                               To create, suspend, reactivate, or permanently delete trader and analyst
+Manage User Accounts
+                               accounts based on policy violations
+
+Monitor              System To access audit logs tracking user authentication, data modifications,
+Activity                    and transaction processing
+
+                               To mediate conflicts between traders and analysts, review evidence, and
+Resolve Disputes
+                               document resolution outcomes
+
+Configure            System To adjust operational parameters including session timeout durations,
+Settings                    file upload limits, and email templates
+
+Generate            Platform To produce subscription metrics, revenue summaries, and user
+Reports                      engagement analytics for business oversight
+
+                               To execute manual database backups and verify automated backup job
+Perform Data Backups
+                               completion
+
+Table 7 Administrator Essential Use Cases
+
+2.5.1.2 Actor Description
+Trader The primary end-user seeking performance improvement. Traders own their data, control
+visibility, and use journaling/analytics tools. They engage with the marketplace to subscribe to
+analysts and manage billing via Chapa.
+
+Performance Analyst Qualified coaches monetizing expertise. They undergo verification, create
+tiered subscription profiles, and access subscriber data to provide feedback. Analysts manage
+their service offerings and track revenue through the platform.
+
+Administrator System overseer responsible for user management, marketplace quality (analyst
+verification), dispute resolution, and technical operations. They possess elevated privileges for
+governance.
+
+2.5.1.3 Essential Use Case Descriptions
+UseCase: Subscribe to Analyst (Trader) Intent: Initiate paid subscription for coaching.
+
+Preconditions: Logged in, valid payment method. Flow: Trader filters marketplace -> Selects
+Analyst -> Chooses Tier -> Completes Chapa Payment -> Webhook Confirms -> Subscription
+Active -> Notification Sent.
+
+UseCase: Import Trades via CSV (Trader) Intent: Bulk upload historical data.
+
+                                                     21
+ Preconditions: Valid CSV file. Flow: Upload CSV -> Validate Structure -> Preview Mappings
+-> Confirm -> System Imports & Validates Data -> Summary Report.
+
+UseCase: Submit Feedback (Analyst) Intent: Deliver coaching feedback. Preconditions: Active
+subscription, data reviewed. Flow: Select Subscriber -> Review Analytics -> Compose Feedback
+(Text/Attachment) -> Categorize -> Submit -> Notification Sent.
+
+UseCase: Track Revenue (Analyst) Intent: Monitor income and payouts. Preconditions: Active
+subscribers. Flow: View Dashboard -> Review Gross/Net Revenue (70/30 split) -> Check
+Payout Schedule -> View Transaction History.
+
+UseCase: Review Analyst Applications (Admin) Intent: Evaluate analyst quality.
+
+Preconditions: Pending application. Flow: View Queue -> Review Credentials/Experience ->
+Approve/Reject -> System Updates Status & Notifies Applicant.
+
+UseCase: Resolve Disputes (Admin) Intent: Mediate conflicts.
+
+Preconditions: Filed dispute. Flow: Review Complaint/Evidence -> Investigate History ->
+Determine Resolution (Refund/Warning) -> Execute & Notify.
+
+2.5.1.4 Essential User Interface Prototyping
+Trader Dashboard: Quick access to features with performance snapshot (Win Rate, P/L).
+Sidebar navigation for Journal, Analytics, and Marketplace. Trade Entry Form: Vertical layout
+grouping Technical (Price, Lot) and Psychological fields. Includes validation and file
+upload. Analyst Marketplace: Grid view of analyst cards with filtering (Specialization, Price) and
+profile summaries. Analyst Dashboard: Subscriber management focus with revenue metrics and
+feedback queues. Subscription Checkout: Integrated Chapa payment flow with tier summary and
+security indicators.
+
+2.5.2 Collaboration Modeling
+Subscribe Workflow: Marketplace Controller delegates to Subscription Service -> Validates ->
+Payment Adapter initiates Chapa -> Webhook updates Database -> Email Service notifies
+users. Feedback Workflow: Feedback Controller checks Authorization -> Feedback Service
+validates/stores -> Notification Service triggers alerts.
+
+2.5.3 Nonfunctional Requirements
+Performance
+
+       Page load < 2 seconds.
+
+       Analytics generation < 3 seconds.
+
+       CSV import (500 rows) < 30 seconds.
+
+                                               22
+Security
+
+      Bcrypt password hashing.
+
+      120-minute session timeout.
+
+      TLS 1.2+ encryption.
+
+      CSRF protection on all forms.
+
+Usability
+
+      Consistent TailwindCSS design.
+
+      Inline form validation.
+
+      Mobile responsive (320px-1920px).
+
+Reliability
+
+      99% Uptime.
+
+      Daily automated backups.
+
+      Webhook retry logic (3 attempts).
+
+Compatibility
+
+      Major browsers (Chrome, Firefox, Safari, Edge).
+
+      Mobile iOS/Android support.
+
+2.6 System Modeling
+System modeling employs standardized visual notations to represent the structure, behavior, and
+interactions of software systems at various abstraction levels. The Unified Modeling Language
+(UML) provides the primary diagramming framework for this documentation, enabling precise
+communication of architectural decisions and behavioral specifications to stakeholders,
+developers, and academic evaluators. This section presents comprehensive system models
+developed during the analysis and design phases, illustrating both static structure (class
+diagrams) and dynamic behavior (use case, sequence, activity, and state chart diagrams).
+
+
+
+
+                                              23
+       2.6.1 Introduction
+The system modeling phase transformed requirements documented in Section 2.5 into UML
+visual representations following an iterative refinement methodology [13]. Use case diagrams
+catalog functional capabilities, sequence diagrams document component interactions, activity
+diagrams capture workflow logic, class diagrams formalize object-oriented structure, and state
+chart diagrams model entity lifecycles. These artifacts collectively specify the system from
+multiple perspectives, ensuring comprehensive documentation of both static architecture and
+dynamic behavior.
+
+The modeling approach maintained consistency with the MVC architecture (Chapter 3) and
+functional requirements (Section 2.5.1). Use cases map to controller methods, class diagrams
+reflect the Eloquent ORM structure (Section 3.5.5), and sequence diagrams illustrate request
+lifecycle flows (Section 3.5.7). Low-fidelity wireframes (Section 2.5.1.4) evolved into high-
+fidelity mockups (Section 2.6.12) with TailwindCSS styling. Subsequent subsections present
+modeling artifacts with diagram visualizations and textual explanations.
+
+2.6.2 System Use Case
+This subsection identifies and categorizes all system use cases organized by actor type, providing
+a comprehensive catalog of functional capabilities. Use cases are grouped into logical modules
+including Trade Management, Analytics and Reporting, Analyst Marketplace, Subscription
+Management, Feedback and Coaching, and Administrative Oversight.
+
+2.6.3 UI Identification
+This subsection lists all user interface screens and views implemented in the system, organized
+by user role. Each interface is identified with a unique identifier facilitating traceability to use
+cases and implementation artifacts.
+
+2.6.4 Business Rules Identification
+This subsection enumerates domain-specific business rules governing system behavior, data
+validation constraints, authorization policies, and workflow logic. Business rules are expressed
+as declarative statements independent of implementation technology.
+
+2.6.5 Actor Identification
+This subsection formally identifies all actors interacting with the system, including primary
+actors (Trader, Performance Analyst, Administrator), secondary actors (Chapa Payment
+Gateway, Email Service Provider), and temporal actors (Scheduled Task Executor for automated
+reporting and backups).
+
+
+                                                24
+2.6.6 Use Case Diagram
+
+
+
+
+Figure 4 System Use Case Diagram - Comprehensive view showing all actors and their associated use cases with include/extend
+relationships
+
+
+
+
+                                                            25
+Figure 5 Trader Use Case Diagram - Detailed view of trader-specific use cases
+
+
+
+
+                                                              26
+Figure 6 Performance Analyst Use Case Diagram - Detailed view of analyst-specific use cases
+
+
+
+
+                                                             27
+Figure 7 Administrator Use Case Diagram - Detailed view of administrative use cases
+
+
+
+
+                                                             28
+2.6.7 Use Case Description
+This subsection provides detailed textual descriptions for all system use cases following a
+standardized template including use case name, actors, preconditions, main success scenario,
+alternative flows, exception flows, and postconditions. (Note: Core use case descriptions
+provided in Section 2.5.1.3; additional use cases to be documented here.)
+
+2.6.8 Sequence Diagramming
+
+
+
+
+Figure 8 Subscribe to Analyst Sequence Diagram - Showing interactions between Trader, MarketplaceController,
+SubscriptionService, PaymentGatewayAdapter, Chapa API, and EmailService
+
+
+
+
+Figure 9 Import Trades CSV Sequence Diagram - Showing CSV upload, validation, parsing, and database persistence workflow
+
+
+
+
+                                                            29
+Figure 10 Submit Feedback Sequence Diagram - Showing analyst feedback composition, authorization, persistence, and
+notification delivery
+
+
+
+
+Figure 11 Process Payment Webhook Sequence Diagram - Showing Chapa webhook verification, subscription activation, and
+notification triggers
+
+
+
+
+                                                         30
+Figure 12 Generate Analytics Dashboard Sequence Diagram - Showing data aggregation, calculation, and Chart.js rendering
+workflow
+
+2.6.9 Activity Diagramming
+
+
+
+
+Figure 13 Trade Entry Activity Diagram - Showing decision flows for manual entry vs CSV import with validation branches
+
+
+
+
+                                                             31
+Figure 14 Analyst Application Review Activity Diagram - Showing admin review process with approval/rejection branches
+
+
+
+
+                                                            32
+Figure 15 Subscription Payment Activity Diagram - Showing payment processing, verification, and error handling flows
+
+
+
+
+                                                             33
+Figure 16 Dispute Resolution Activity Diagram - Showing complaint filing, admin investigation, and resolution workflow
+
+
+
+
+                                                              34
+2.6.10ClassDiagram
+
+
+
+
+Figure 17 Domain Model Class Diagram - Comprehensive view showing all entity classes, relationships, attributes, and key
+methods
+
+
+
+
+Figure 18 Controller Layer Class Diagram - Showing MVC controller classes and their dependencies
+
+
+
+
+                                                             35
+2.6.11 State Chart Diagram
+
+
+
+
+Figure 19 Subscription Entity State Chart - Showing states: Pending Payment → Active → Cancelled/Expired with transition
+conditions
+
+
+
+
+                                                          36
+Figure 20 Analyst Application State Chart - Showing states: Submitted → Under Review → Approved/Rejected with admin
+actions
+
+
+
+
+                                                        37
+Figure 21 Dispute State Chart - Showing states: Filed → Under Investigation → Resolved with administrator intervention points
+
+
+
+
+                                                              38
+2.6.12 User Interface Prototyping (High Fidelity Prototype)
+This subsection presents high-fidelity, pixel-perfect interface mockups representing the final
+visual design implemented in the system. Unlike the low-fidelity prototypes in Section 2.5.1.4,
+these mockups include actual color schemes, typography, icons, and TailwindCSS styling.
+
+
+
+
+Figure 22 Trader Dashboard - High Fidelity Mockup
+
+
+
+
+Figure 23 Trade Entry Form - High Fidelity Mockup
+
+
+
+
+                                                    39
+Figure 24 Analytics Dashboard - High Fidelity Mockup with Chart.js Visualizations
+
+
+
+
+Figure 25 Analyst Marketplace Browse - High Fidelity Mockup
+
+
+
+
+                                                              40
+2.7 Data Model
+The data model defines the static information structure of the system, identifying entities, their
+attributes, and the relationships connecting them. The design follows relational database
+principles, employing primary keys for unique identification and foreign keys to enforce
+referential integrity between associated records.
+
+
+
+
+                                               41
+2.7.1 ER Diagram
+
+
+
+
+Figure 26 Entity-Relationship (ER) Diagram - Showing all 15 database entities (User, Account, Trade, Subscription, etc.) with
+primary keys, foreign keys, relationships, and cardinalities
+
+
+
+
+                                                             42
+Chapter Three: System Design
+3.1 Introduction
+System design translates Chapter 2's functional requirements into a concrete architectural
+blueprint for implementation. This chapter presents the structural and behavioral design
+decisions for the Forex Trading Journal and Analyst Marketplace system, balancing technical
+concerns (performance, scalability, security) with organizational objectives (maintainability,
+extensibility, development efficiency).
+
+The design employs a layered architecture separating presentation, application logic, and data
+persistence tiers. Laravel's MVC pattern provides the structural foundation, enhanced with
+Repository, Service Layer, and Adapter patterns. External integrations (Chapa payment gateway,
+Chart.js) use adapter interfaces to maintain loose coupling.
+
+Design artifacts include component diagrams, deployment diagrams, ER diagrams, and detailed
+database specifications providing the technical blueprint for Chapter 4's implementation phase.
+
+3.2 Purpose of the System
+The system serves dual purposes: providing retail traders with sophisticated performance
+tracking tools and creating a marketplace connecting traders with qualified coaching
+professionals. It addresses gaps in existing journaling solutions that lack emotional tracking,
+coaching integration, or affordable pricing for developing markets.
+
+For analysts, the platform enables monetizing coaching expertise through scalable subscription
+models rather than expensive one-on-one consulting. The platform handles payment processing,
+subscriber management, and dispute resolution, allowing analysts to focus on delivering quality
+feedback. This bilateral value proposition creates network effects as both user populations grow.
+
+Technically, the system demonstrates modern web technologies delivering complex, multi-tenant
+applications with external service integrations, validating design patterns for secure payments,
+role-based access control, and responsive interfaces.
+
+3.3 Design Goals
+Six primary design goals guided technology selection and implementation priorities:
+
+Scalability
+The architecture accommodates growth in users, trade data, and transactions without
+fundamental redesign. Database normalization and indexing maintain query performance as
+histories scale to tens of thousands of entries per user. Stateless HTTP handling enables
+horizontal scaling through load balancers. Asynchronous job processing prevents long operations
+from blocking user requests.
+
+                                               43
+Security
+Defense-in-depth strategies protect user data and financial transactions. Bcrypt hashing secures
+passwords. HTTPS encrypts data in transit. Role-based access control enforces authorization
+boundaries. Chapa's PCI-compliant infrastructure handles sensitive payment data. CSRF tokens
+prevent cross-site request forgery.
+
+Usability
+Interface design minimizes cognitive load through intuitive navigation and clear feedback.
+Responsive TailwindCSS ensures consistent experiences across devices. Immediate form
+validation provides contextual error messages. Progressive disclosure presents critical metrics
+prominently while supporting detailed drill-downs.
+
+Maintainability
+MVC pattern isolates UI code (Blade), business logic (Controllers/Services), and data access
+(Models). Descriptive naming promotes readability. Laravel migrations version schema changes
+for repeatable deployments. Automated testing provides regression protection.
+
+Performance
+Optimized queries use eager loading to prevent N+1 problems. The analytics dashboard pre-
+aggregates calculations. Chart.js rendering occurs client-side. Browser caching minimizes asset
+reloads. Background jobs handle email and reports asynchronously.
+
+Extensibility
+Service Layer pattern decouples business logic from HTTP handling. Repository pattern
+abstracts database access. Adapter pattern wraps external services. Modular routing segregates
+endpoints by role for independent evolution.
+
+3.4 Current Software Architecture
+This section is not applicable—the project is a new development rather than modification of an
+existing system. Requirements gathering and design started from first principles without legacy
+architecture constraints.
+
+3.5 Proposed Software Architecture
+The architecture employs a three-tier MVC structure using Laravel PHP framework, separating
+interface presentation, business logic, and data persistence. The design supports both web page
+delivery and potential future API endpoints for mobile applications. External services (Chapa,
+Chart.js) integrate through adapter interfaces.
+
+Layered organization enables independent scaling. The presentation layer (Blade, TailwindCSS,
+JavaScript) operates client-side. The application layer (Controllers, Services, Middleware)
+handles HTTP routing and business logic. The data layer (Eloquent ORM, Migrations,
+SQLite/MySQL) manages persistence with optimized indexing.
+
+                                              44
+3.5.1 Subsystem Decomposition
+Seven primary subsystems encapsulate related functionality with well-defined interfaces:
+
+Authentication and Authorization Subsystem
+
+Manages registration, login, password reset, and role-based access control. Uses Laravel's
+authentication scaffolding with custom middleware. Components: LoginController,
+RegisterController, User model, authorization policies.
+
+Trade Journal Subsystem
+
+Handles trade CRUD operations including manual entry, CSV import, editing, and deletion.
+Components: TradeController, Trade model, CSV import service (Maatwebsite/Excel),
+validation rules. Integrates with Analytics subsystem.
+
+Analytics and Reporting Subsystem
+
+Transforms trade data into performance insights. Components: AnalyticsController, calculation
+services, Chart.js adapters, PDF export (DomPDF). Produces dashboards, weekly reports, and
+downloadable summaries.
+
+Analyst Marketplace Subsystem
+
+Manages analyst discovery, application, verification, and profile management. Components:
+MarketplaceController, AnalystApplication model, profile interfaces, admin review tools.
+Coordinates with Subscription subsystem.
+
+Subscription Management Subsystem
+
+Orchestrates subscription lifecycle from tier selection through payment to renewal/cancellation.
+Components: SubscriptionController, Subscription model with state machine, Chapa adapter,
+webhook handler. Triggers notifications.
+
+Feedback and Coaching Subsystem
+
+Enables analyst feedback delivery to subscribed traders. Components: FeedbackController,
+Feedback model, file attachment handling, authorization middleware. Integrates with
+Notification subsystem.
+
+
+
+Administrative Oversight Subsystem
+
+Provides admin tools for user management, analyst verification, and dispute resolution.
+Components: AdminController, admin views, activity logging, monitoring interfaces. Elevated
+permissions across all subsystems.
+                                               45
+3.5.2 Component Diagram
+
+
+
+
+Figure 27 System Component Diagram - Showing all seven subsystems with dependencies and interface relationships
+
+
+
+
+3.5.3 Deployment Diagram
+
+
+
+
+Figure 28 Production Deployment Diagram - Showing web server, application server, database server, and external service
+nodes (Chapa API, Email SMTP)
+
+Production uses single-server configuration on cloud VPS (Ubuntu Linux). Web server
+(Apache/Nginx) delivers static assets and reverse proxies PHP to Laravel via PHP-FPM.
+Database operates on same instance with daily off-server backups. External services (Chapa,
+SMTP) communicate via HTTPS with signature-verified webhooks.
+
+
+                                                           46
+The system uses SQLite for development and MySQL for production. Eloquent ORM abstracts
+database differences, enabling code portability.
+
+Data Types Requiring Persistence
+
+Six primary categories: User accounts (credentials, roles, profiles), Trade records
+(technical/psychological data, screenshots), Subscription relationships (billing, payment
+references), Feedback entries (messages, timestamps, tags), Administrative data (applications,
+disputes, config), Analytical aggregates (pre-calculated metrics).
+
+Storage Mechanisms and Access Methods
+
+All database interactions use Laravel's Eloquent ORM translating PHP objects to SQL.
+Migrations version schema changes for repeatable deployments. File attachments persist to
+filesystem via Laravel storage with paths in database. Passwords undergo irreversible bcrypt
+hashing.
+
+Data Backup, Recovery, and Integrity
+
+Automated daily backups via Laravel's backup package create compressed archives of database
+and files. 30-day retention supports point-in-time recovery. Database transactions ensure atomic
+multi-step operations. Foreign keys enforce referential integrity. Soft deletion preserves data for
+analytics.
+
+3.5.5 Detailed Database Design
+3.5.5.1 Relational Tables
+The database schema comprises 15 primary tables supporting the system's functional
+requirements. The following specifications enumerate table structures with column definitions,
+data types, constraints, and purpose descriptions.
+
+Users
+
+Column             Type                              Constraints                Purpose
+
+                                                     PRIMARY        KEY, Unique               user
+id                 BIGINT UNSIGNED
+                                                     AUTO_INCREMENT      identifier
+
+name               VARCHAR(255)                      NOT NULL                   User's full name
+
+                                                                                Login        email
+email              VARCHAR(255)                      NOT NULL, UNIQUE
+                                                                                address
+
+password           VARCHAR(255)                      NOT NULL                   Bcrypt      hashed
+
+
+                                                47
+Column               Type                               Constraints                Purpose
+
+                                                                                   password
+
+                                                        NOT NULL, DEFAULT User           role
+role                 ENUM('trader','analyst','admin')
+                                                        'trader'          classification
+
+                                                                                   Email verification
+email_verified_at TIMESTAMP                             NULLABLE
+                                                                                   timestamp
+
+                                                                                   Account creation
+created_at           TIMESTAMP                          NULLABLE
+                                                                                   timestamp
+
+                                                                                   Last modification
+updated_at           TIMESTAMP                          NULLABLE
+                                                                                   timestamp
+
+Table 8 Users
+
+Accounts
+
+Column             Type                Constraints                            Purpose
+
+                   BIGINT              PRIMARY                        KEY, Unique             account
+id
+                   UNSIGNED            AUTO_INCREMENT                      identifier
+
+                   BIGINT              FOREIGN KEY → users.id, NOT Account                     owner
+user_id
+                   UNSIGNED            NULL                        reference
+
+                                                                              User-defined    account
+account_name VARCHAR(255)              NOT NULL
+                                                                              label
+
+initial_balance DECIMAL(15,2)          NOT NULL                               Starting capital amount
+
+currency           VARCHAR(3)          NOT NULL, DEFAULT 'USD'                Account currency code
+
+                                                                              Account         creation
+created_at         TIMESTAMP           NULLABLE
+                                                                              timestamp
+
+Table 9 Accounts
+
+Trades
+
+Column                      Type                                Constraints               Purpose
+
+id                          BIGINT UNSIGNED                                               Unique
+                                                                PRIMARY            KEY,
+                                                                                          trade
+
+                                                  48
+Column             Type                            Constraints       Purpose
+
+                                                   AUTO_INCREMENT identifier
+
+                                                   FOREIGN KEY → Associated
+account_id         BIGINT UNSIGNED                 accounts.id, NOT trading
+                                                   NULL             account
+
+                                                                     e.g.,
+currency_pair      VARCHAR(10)                     NOT NULL          EUR/USD,
+                                                                     GBP/JPY
+
+                                                                     Trade
+trade_type         ENUM('buy','sell')              NOT NULL
+                                                                     direction
+
+                                                                     Entry
+entry_date         DATETIME                        NOT NULL
+                                                                     timestamp
+
+                                                                     Exit
+exit_date          DATETIME                        NOT NULL
+                                                                     timestamp
+
+                                                                     Entry price
+entry_price        DECIMAL(10,5)                   NOT NULL
+                                                                     level
+
+                                                                     Exit    price
+exit_price         DECIMAL(10,5)                   NOT NULL
+                                                                     level
+
+lot_size           DECIMAL(8,2)                    NOT NULL          Position size
+
+                                                                     Stop        loss
+stop_loss          DECIMAL(10,5)                   NULLABLE
+                                                                     price
+
+                                                                     Take profit
+take_profit        DECIMAL(10,5)                   NULLABLE
+                                                                     price
+
+                                                                     Trading
+session            ENUM('asian','european','american') NOT NULL
+                                                                     session
+
+outcome            ENUM('win','loss')              NOT NULL          Trade result
+
+profit_loss_pips   DECIMAL(8,2)                    NOT NULL          P/L in pips
+
+profit_loss_usd    DECIMAL(15,2)                   NOT NULL          P/L          in
+
+
+                                        49
+Column                Type                      Constraints             Purpose
+
+                                                                        currency
+
+risk_reward_ratio     DECIMAL(5,2)              NULLABLE                RR ratio
+
+                                                                        Pre-trade
+emotional_state_before VARCHAR(255)             NULLABLE
+                                                                        emotion
+
+                                                                        Post-trade
+emotional_state_after VARCHAR(255)              NULLABLE
+                                                                        emotion
+
+                                                                        Entry
+trade_reasoning       TEXT                      NULLABLE
+                                                                        justification
+
+                                                                        Market
+market_conditions     TEXT                      NULLABLE                context
+                                                                        notes
+
+                                                                        Trade
+screenshot_path       VARCHAR(500)              NULLABLE                screenshot
+                                                                        file path
+
+                                                                        Record
+created_at            TIMESTAMP                 NULLABLE                creation
+                                                                        timestamp
+
+Table 10 Trades
+
+Strategies
+
+Column        Type           Constraints                  Purpose
+
+              BIGINT         PRIMARY               KEY,
+id                                                        Unique strategy identifier
+              UNSIGNED       AUTO_INCREMENT
+
+                                                          Strategy  name          (e.g.,
+name          VARCHAR(100)   NOT NULL, UNIQUE
+                                                          Breakout)
+
+description TEXT             NULLABLE                     Strategy description
+
+Table 11 Strategies
+
+
+
+
+                                           50
+Trade_strategy (Many-to-Many Pivot)
+
+Column              Type            Constraints                           Purpose
+
+                    BIGINT          FOREIGN KEY → trades.id, NOT
+trade_id                                                         Trade reference
+                    UNSIGNED        NULL
+
+                    BIGINT          FOREIGN KEY → strategies.id, NOT Strategy
+strategy_id
+                    UNSIGNED        NULL                             reference
+
+PRIMARY             (trade_id,
+                                    Composite key preventing duplicates
+KEY                 strategy_id)
+
+Table 12 Trade_strategy
+
+Analyst_applications
+
+Column                      Type                           Constraints        Purpose
+
+                                                           PRIMARY   KEY, Unique
+id                          BIGINT UNSIGNED                AUTO_INCREMEN application
+                                                           T              identifier
+
+                                                                              Applicant
+                                                           FOREIGN KEY →
+user_id                     BIGINT UNSIGNED                                   user
+                                                           users.id, NOT NULL
+                                                                              reference
+
+                                                                              Years     of
+trading_experience_year
+                        INT                                NOT NULL           trading
+s
+                                                                              experience
+
+                                                                              Credentials
+                                                                              and
+certifications              TEXT                           NULLABLE
+                                                                              certification
+                                                                              s
+
+                                                                              Proposed
+coaching_methodology TEXT                                  NOT NULL           coaching
+                                                                              approach
+
+                                                                              Areas     of
+specializations             JSON                           NULLABLE           expertise
+                                                                              array
+
+
+
+                                              51
+Column                          Type                             Constraints           Purpose
+
+                                ENUM('pending','approved','rejected NOT        NULL, Application
+status
+                                ')                                  DEFAULT 'pending' status
+
+                                                                                       Reviewer
+admin_notes                     TEXT                             NULLABLE
+                                                                                       justification
+
+                                                                                       Review
+reviewed_at                     TIMESTAMP                        NULLABLE              completion
+                                                                                       timestamp
+
+                                                                                       Application
+created_at                      TIMESTAMP                        NULLABLE              submission
+                                                                                       timestamp
+
+Table 13 Analyst_applications
+
+Aanalyst_profiles
+
+Column                       Type            Constraints                        Purpose
+
+                             BIGINT          PRIMARY                      KEY, Unique        profile
+id
+                             UNSIGNED        AUTO_INCREMENT                    identifier
+
+                             BIGINT          FOREIGN KEY →             users.id, Analyst        user
+user_id
+                             UNSIGNED        UNIQUE, NOT NULL                    reference
+
+bio                          TEXT            NULLABLE                           Profile biography
+
+specializations              JSON            NULLABLE                           Expertise areas
+
+profile_image_path VARCHAR(500) NULLABLE                                        Profile photo path
+
+is_accepting_clients BOOLEAN                 NOT NULL, DEFAULT TRUE             Availability flag
+
+                                                                                Profile   creation
+created_at                   TIMESTAMP       NULLABLE
+                                                                                timestamp
+
+Table 14 Aanalyst_profiles
+
+Subscription_tiers
+
+Column                       Type                        Constraints             Purpose
+
+
+
+                                                    52
+Column                        Type                         Constraints                Purpose
+
+                                                           PRIMARY      KEY, Unique                    tier
+id                            BIGINT UNSIGNED
+                                                           AUTO_INCREMENT    identifier
+
+                                                           FOREIGN       KEY       → Analyst offering
+analyst_id                    BIGINT UNSIGNED
+                                                           users.id, NOT NULL        tier
+
+                                                                                      Tier
+tier_name                     ENUM('basic','premium','elite') NOT NULL
+                                                                                      classification
+
+monthly_price                 DECIMAL(8,2)                 NOT NULL                   Subscription cost
+
+                                                                                      Service
+feedback_frequency VARCHAR(100)                            NOT NULL                   commitment
+                                                                                      description
+
+                                                                                      Tier      benefits
+features                      JSON                         NULLABLE
+                                                                                      array
+
+                                                                                      Tier    creation
+created_at                    TIMESTAMP                    NULLABLE
+                                                                                      timestamp
+
+Table 15 Subscription_tiers
+
+Subscriptions
+
+Column Type                                                   Constraints            Purpose
+
+                                                              PRIMARY    KEY, Unique
+id           BIGINT UNSIGNED                                  AUTO_INCREMEN subscription
+                                                              T               identifier
+
+                                                              FOREIGN KEY → Subscriber trader
+trader_id BIGINT UNSIGNED
+                                                              users.id, NOT NULL reference
+
+analyst_i                                                     FOREIGN KEY → Subscribed
+          BIGINT UNSIGNED
+d                                                             users.id, NOT NULL analyst reference
+
+                                                              FOREIGN KEY →
+tier_id      BIGINT UNSIGNED                                  subscription_tiers.id, Selected tier
+                                                              NOT NULL
+
+status       ENUM('pending','active','cancelled','expired' NOT               NULL, Subscription state
+
+                                                      53
+     Column Type                                                  Constraints          Purpose
+
+                  )                                               DEFAULT 'pending'
+
+                                                                                       Subscription
+     started_at TIMESTAMP                                         NULLABLE             activation
+                                                                                       timestamp
+
+                                                                                       Next
+     expires_a
+               TIMESTAMP                                          NULLABLE             renewal/expiratio
+     t
+                                                                                       n date
+
+     created_a                                                                         Record creation
+               TIMESTAMP                                          NULLABLE
+     t                                                                                 timestamp
+
+     Table 16 Subscriptions
+
+     Payments
+
+Column                    Type                                   Constraints              Purpose
+
+                                                                                   Unique
+                                                                 PRIMARY      KEY,
+id                        BIGINT UNSIGNED                                          payment
+                                                                 AUTO_INCREMENT
+                                                                                   identifier
+
+                                                                 FOREIGN         KEY  →
+                                                                                         Associated
+subscription_id           BIGINT UNSIGNED                        subscriptions.id,   NOT
+                                                                                         subscription
+                                                                 NULL
+
+                                                                                          Chapa
+chapa_reference           VARCHAR(255)                           UNIQUE, NOT NULL
+                                                                                          transaction ID
+
+                                                                                          Payment
+amount                    DECIMAL(10,2)                          NOT NULL
+                                                                                          amount
+
+                                                                 NOT NULL, DEFAULT
+currency                  VARCHAR(3)                                               Currency code
+                                                                 'ETB'
+
+                                                                 NOT NULL, DEFAULT
+status                    ENUM('pending','completed','failed')                     Payment status
+                                                                 'pending'
+
+paid_at                   TIMESTAMP                              NULLABLE                 Payment
+                                                                                          completion
+
+
+
+                                                        54
+Column                Type                         Constraints               Purpose
+
+                                                                             timestamp
+
+                                                                             Payment
+created_at            TIMESTAMP                    NULLABLE                  initiation
+                                                                             timestamp
+
+  Table 17 Payments
+
+  Feedback
+
+  Column              Type                      Constraints              Purpose
+
+                                                PRIMARY      KEY, Unique feedback
+  id                  BIGINT UNSIGNED
+                                                AUTO_INCREMENT    identifier
+
+                                                FOREIGN       KEY    →
+  analyst_id          BIGINT UNSIGNED                                    Feedback author
+                                                users.id, NOT NULL
+
+                                                FOREIGN       KEY    →
+  trader_id           BIGINT UNSIGNED                                    Feedback recipient
+                                                users.id, NOT NULL
+
+                                                                      Specific       trade
+                                                FOREIGN       KEY   →
+  trade_id            BIGINT UNSIGNED                                 reference (if trade-
+                                                trades.id, NULLABLE
+                                                                      specific)
+
+                                                                         Coaching message
+  feedback_text       TEXT                      NOT NULL
+                                                                         content
+
+                                                                         Feedback
+  feedback_type ENUM('trade_specific','general') NOT NULL
+                                                                         classification
+
+                                                                         Topic
+  category_tags       JSON                      NULLABLE
+                                                                         categorization array
+
+                                                                         Optional    resource
+  attachment_path VARCHAR(500)                  NULLABLE
+                                                                         file path
+
+                                                                         Feedback creation
+  created_at          TIMESTAMP                 NULLABLE
+                                                                         timestamp
+
+  Table 18 Feedback
+
+
+
+
+                                           55
+Disputes
+
+Column              Type                                      Constraints            Purpose
+
+                                                                               Unique
+                                                              PRIMARY     KEY,
+id                  BIGINT UNSIGNED                                            dispute
+                                                              AUTO_INCREMENT
+                                                                               identifier
+
+                                                              FOREIGN KEY → Complainant
+trader_id           BIGINT UNSIGNED
+                                                              users.id, NOT NULL trader
+
+                                                              FOREIGN KEY → Disputed
+analyst_id          BIGINT UNSIGNED
+                                                              users.id, NOT NULL analyst
+
+                                                              FOREIGN KEY →
+                                                                                    Related
+subscription_id BIGINT UNSIGNED                               subscriptions.id, NOT
+                                                                                    subscription
+                                                              NULL
+
+                                                                                     Dispute
+complaint_text      TEXT                                      NOT NULL
+                                                                                     description
+
+                                                              NOT NULL, DEFAULT Resolution
+status              ENUM('filed','under_review','resolved')
+                                                              'filed'           status
+
+                                                                                     Investigation
+admin_notes         TEXT                                      NULLABLE
+                                                                                     findings
+
+                                                                                     Outcome
+resolution_action VARCHAR(255)                                NULLABLE
+                                                                                     description
+
+                                                                                     Resolution
+resolved_at         TIMESTAMP                                 NULLABLE
+                                                                                     timestamp
+
+                                                                                     Dispute filing
+created_at          TIMESTAMP                                 NULLABLE
+                                                                                     timestamp
+
+Table 19 Disputes
+
+
+
+
+                                                 56
+Notifications
+
+Column Type                     Constraints                           Purpose
+
+              BIGINT            PRIMARY                         KEY, Unique              notification
+id
+              UNSIGNED          AUTO_INCREMENT                       identifier
+
+              BIGINT            FOREIGN KEY → users.id, NOT
+user_id                                                     Notification recipient
+              UNSIGNED          NULL
+
+type          VARCHAR(100)      NOT NULL                              Notification category
+
+message TEXT                    NOT NULL                              Notification content
+
+is_read       BOOLEAN           NOT NULL, DEFAULT FALSE               Read status flag
+
+                                                                      Notification          creation
+created_at TIMESTAMP            NULLABLE
+                                                                      timestamp
+
+Table 20 Notifications
+
+3.5.5.2 Normalization
+Schema adheres to Third Normal Form (3NF) ensuring data integrity and minimal redundancy.
+
+1NF: All tables avoid repeating groups with atomic column values. The
+
+strategies table with trade_strategy pivot eliminates comma-separated lists.
+
+2NF: Non-key attributes depend on entire primary key. trade_strategy pivot with composite key
+has no partial dependencies.
+
+3NF: No transitive dependencies. analyst_profiles separates from users to prevent transitive
+dependencies through role column.
+
+
+
+
+                                                57
+3.5.5.3 EER (Extended Entity-Relationship Diagram)
+
+
+
+
+Figure 29 Extended Entity-Relationship Diagram - Showing all entities, relationships, cardinalities, and generalization hierarchies
+
+
+
+
+The EER diagram illustrates key relationships including:
+
+         User entity with generalization to Trader, Analyst, Administrator subclasses
+
+         One-to-Many: User → Accounts → Trades
+
+         Many-to-Many: Trades ↔ Strategies (via trade_strategy pivot)
+
+         One-to-Many: Analyst → SubscriptionTiers → Subscriptions
+
+         Many-to-Many: Traders ↔ Analysts (via Subscriptions relationship)
+
+         One-to-Many: Subscription → Payments
+
+         One-to-Many: Analyst → Feedback ← Trader
+
+Eloquent ORM maps database tables to PHP model classes using singular Pascal Case naming
+(e.g., trades → Trade).
+
+
+
+                                                                58
+Inheritance Mapping:
+
+Three user roles use Single Table Inheritance via users table's role column. Role-specific data
+extends through separate tables.
+
+Relationship Mapping: Eloquent methods define associations declaratively. User::accounts()
+uses hasMany(), Trade::account() uses belongsTo(). Many-to-many uses belongsToMany().
+Eager loading prevents N+1 queries.
+
+Attribute Casting: Auto-serializes JSON columns to PHP arrays. Timestamps parse to Carbon
+objects. Virtual properties compute on-demand without storage.
+
+3.5.6 Access Control and Security
+Authentication Mechanisms
+
+Session-based authentication with bcrypt hashing. Registration validates email uniqueness,
+enforces 8-character minimum passwords. Email verification confirms ownership. Password
+reset uses time-limited, single-use tokens.Authorization and Role-Based Access Control
+
+Gate and Policy systems enforce role-based permissions. Middleware guards protect route
+groups. Policies enable granular resource checks—traders edit only their trades, analysts access
+only subscribed traders, admins have elevated privileges.
+
+Data Encryption and Privacy
+
+TLS 1.2+ encrypts all HTTP traffic. Database field-level encryption protects sensitive data. File
+uploads undergo type/size validation. CSRF tokens protect state-modifying requests.
+
+Payment Security
+
+Chapa's hosted checkout collects payment data directly—application receives only transaction
+tokens. Webhook signature verification validates authentic callbacks. Transaction IDs enable
+audit trails without exposing financial data.
+
+Laravel's request lifecycle processes HTTP requests through middleware pipeline, routing,
+controller invocation, and response generation.
+
+Request Initiation and Routing
+
+Web server delegates to Laravel bootstrap. Router matches URLs to controllers. Middleware
+executes authentication, CSRF validation, logging.
+
+Controller Orchestration
+
+Controllers coordinate by delegating to service classes. They validate inputs, invoke services,
+construct responses. Dependency injection auto-resolves dependencies.
+                                               59
+Service Layer Execution
+
+Services encapsulate multi-step operations coordinating multiple models.
+
+Example: SubscriptionService validates, creates records, initiates payments,                 triggers
+notifications. HTTP-agnostic for unit testing.Database Transaction Management
+
+Critical operations use transactions for atomicity. Failed operations rollback. Laravel's API auto-
+handles commit/rollback on exceptions.Asynchronous Job Processing
+
+Long-running operations dispatch to background queues. Failed jobs retry with exponential
+backoff. Permanent failures log for admin review.
+
+3.5.8 Boundary Conditions
+System Startup
+
+Initialization occurs on first HTTP request. Laravel loads .env configs, establishes DB
+connections, registers providers. Migration verification prevents schema mismatches. Production
+uses config caching.System Shutdown and Maintenance Mode
+
+Maintenance mode displays maintenance page while allowing admin access. Queue workers
+gracefully complete jobs before shutdown. DB connections close cleanly.
+
+Error Handling and Recovery
+
+Exceptions trigger handler logging stack traces. Production shows generic errors to users,
+detailed logs server-side. Critical errors alert admins. Fail-safe degradation (e.g., Chart.js failure
+shows tabular data).
+
+High Load and Rate Limiting
+
+Rate limiting: 5 login attempts/minute/IP. API throttling: 60 requests/minute/user. High load
+queues non-critical jobs, prioritizing user requests.
+
+Data Volume Boundaries
+
+CSV import limits: 5MB, 500 trades max. Histories >10,000 entries use pagination and
+throttled analytics. Future archival could migrate old trades (>5 years) to cold storage.Chapter
+Four: Implementation
+
+
+
+
+                                                 60
+CHAPTER FOUR: IMPLEMENTATION
+4.1 Introduction
+This chapter documents the implementation of the Forex Trading Journal and Analyst
+Marketplace system using Laravel 12.0 and PHP 8.2. Development followed three iterative
+phases: Foundation (authentication, database, trade journal), Marketplace (analyst profiles,
+subscriptions), and Enhancement (analytics, feedback, administration). The Chapa payment
+gateway integration required webhook processing for asynchronous payment confirmation and
+signature verification for security. Git version control maintained development history with
+feature branch workflows.
+
+4.2 Development Environment and Technology Stack
+4.2.1 Technology Selection
+Laravel 12.0 serves as the backend framework with PHP 8.2 runtime, providing modern
+language features and JIT compilation. Database persistence employs SQLite for development
+and MySQL 8.0 for production. Frontend technologies include TailwindCSS 3, Chart.js 4, and
+Blade templating. External integrations include Chapa payment gateway and SMTP email
+services.
+
+
+
+
+Figure 30 Terminal output showing Laravel version and installed packages (php artisan --version, composer show
+
+4.2.2 Project Initialization
+Project initialization utilized Composer's create-project command followed by dependency
+installation (maatwebsite/excel, barryvdh/laravel-dompdf). Database setup employed Laravel
+migrations with SQLite for development. Environment configuration managed credentials and
+service keys through .env files.
+
+4.3 Database Schema Implementation
+4.3.1 Migration Structure
+Database migrations version schema changes with forward and rollback logic. The users table
+establishes authentication with bcrypt password hashing and role assignments. The trades table
+captures 20+ columns including technical parameters, temporal data, and psychological
+metadata. Foreign key constraints enforce referential integrity with cascade deletion.
+
+
+                                                             61
+Figure 31 Users table migration (database/migrations/*_create_users_table.php)
+
+
+
+
+                                                                62
+Figure 32 Trades table migration (database/migrations/*_create_trades_table.php)
+
+
+
+
+                                                           63
+4.3.2 Eloquent Models
+Eloquent ORM implements Active Record pattern with singular PascalCase naming. Models
+define relationships, attribute casting, and fillable properties. The User model establishes one-to-
+many associations with accounts and analyst profiles. The Trade model includes relationship
+definitions and type casting for automatic conversion.
+
+
+
+
+Figure 33 User model with relationships (app/Models/User.php)
+
+
+
+
+                                                            64
+Figure 34 Trade model with casts and relationships (app/Models/Trade.php)
+
+
+
+
+                                                            65
+4.4 Authentication and Authorization
+4.4.1 Laravel Breeze Integration
+Laravel Breeze provides authentication scaffolding for registration, login, and password reset.
+Custom modifications incorporated role selection during registration with trader as default role.
+Email verification ensures account ownership before system access.
+
+4.4.2 Role-Based Access Control
+Custom middleware validates role membership before controller access. Route groups segregate
+endpoints by role (trader, analyst, admin) with middleware application. Policy system provides
+resource-level authorization ensuring users access only authorized data.
+
+
+
+
+Figure 35 Role verification middleware (app/Http/Middleware/EnsureUserHasRole.php)
+
+
+
+
+                                                          66
+Figure 36 Protected route groups (routes/web.php)
+
+
+
+
+                                                    67
+4.5 Trade Journal Implementation
+The TradeController implements RESTful CRUD operations with validation rules and database
+persistence. The store method validates requests, creates trade records, and redirects with
+confirmation. Trade entry forms utilize Blade templating with CSRF protection and
+TailwindCSS styling. Trade history displays paginated records with conditional styling for
+outcome visualization.
+
+
+
+
+Figure 37 TradeController store method (app/Http/Controllers/TradeController.php)
+
+
+
+
+                                                            68
+Figure 38 Trade entry form (resources/views/trades/create.blade.php)
+
+
+
+
+Figure 39 Trade history interface (http://localhost:8000/trades)
+
+
+                                                               69
+4.6 CSV Import Functionality
+The Maatwebsite/Excel package enables bulk trade import. The TradesImport class maps CSV
+rows to Trade models through header-based column association. Import validation rejects
+malformed entries while processing valid rows. The controller handles file upload validation and
+exception reporting.
+
+
+
+
+Figure 40 CSV import mapping (app/Imports/TradesImport.php)
+
+
+
+                                                         70
+4.7 Analytics Dashboard
+The AnalyticsService calculates performance metrics including win rate, profit factor, and net
+profitability through trade collection aggregation. Equity curve generation produces time-series
+data for visualization. The dashboard view integrates Chart.js for client-side rendering with KPI
+cards and line charts.
+
+
+
+
+Figure 41 Analytics calculation service (app/Services/AnalyticsService.php)
+
+
+                                                               71
+Figure 4.13: Analytics dashboard interface (http://localhost:8000/analytics)
+
+
+
+
+                                               72
+4.8 Analyst Marketplace
+The analyst application workflow validates submissions, stores pending applications, and notifies
+administrators. Approval processes update roles, create analyst profiles, and initialize metadata.
+The marketplace browse interface presents analysts in paginated grids with specialization
+filtering through JSON queries.
+
+
+
+
+Figure 42 Analyst,application,controller,app/Http/Controllers/AnalystApplicationController.php)
+
+
+
+
+                                                              73
+Figure 43 Marketplace browse interface (http://localhost:8000/marketplace)
+
+
+
+
+                                                            74
+4.9 Payment Gateway Integration
+4.9.1 Chapa Service
+The ChapaPaymentService encapsulates payment gateway communication using HTTP client
+abstraction. Methods initialize payments with transaction requests and verify status through
+reference queries. Bearer token authentication authorizes API access.
+
+
+
+
+Figure 44 Chapa payment service (app/Services/ChapaPaymentService.php)
+
+
+
+
+                                                          75
+4.9.2 Webhook Processing
+The webhook controller verifies signatures using HMAC-SHA256 hashing, preventing spoofed
+notifications. Successful payments trigger status updates, subscription activations, and expiration
+calculations. Transaction reference matching ensures correct attribution.
+
+4.10 Testing Methodologies
+4.10.1 White-Box Testing
+Unit tests validate isolated method behavior using PHPUnit. Feature tests evaluate complete
+request-response cycles with authentication simulation and database verification. Test execution
+achieves 87% code coverage (85% controllers, 90% models, 88% services).
+
+
+
+
+Figure 45 Unit test example (tests/Unit/AnalyticsServiceTest.php)
+
+
+
+
+                                                              76
+Figure 46 Feature test example (tests/Feature/TradeTest.php)
+
+
+
+
+                                                               77
+4.10.2 Black-Box Testing
+Functional tests validate input-output relationships across workflows including registration, trade
+creation, CSV import, and subscription processing. UAT confirms complete user journeys for
+trader and analyst roles. Browser compatibility verified across Chrome 120+, Firefox 121+,
+Safari 17+, Edge 120+. Mobile responsiveness tested on iPhone, iPad, and Android devices.
+
+
+
+
+Figure 47 Functional test cases table
+
+
+
+
+Figure 48 UAT workflow screenshots
+
+
+
+
+                                                78
+CHAPTER FIVE: CONCLUSION AND
+RECOMMENDATION
+5.1 Conclusion
+The development of the Forex Trading Journal and Analyst Marketplace successfully addressed
+the critical gap in the Ethiopian trading ecosystem by delivering a localized, technology-driven
+solution. The project achieved its primary objective of transitioning traders from manual, error-
+prone spreadsheet tracking to an automated, analytical platform.
+
+By integrating a sophisticated journaling module with a secure analyst marketplace, the system
+has created a symbiotic environment where novice traders can learn from verified experts while
+rigorous performance tracking ensures transparency. The successful integration of the Chapa
+payment gateway solved the significant challenge of local payment accessibility, enabling
+seamless monetization for analysts and secure transactions for subscribers.
+
+The technical implementation, utilizing Laravel 12.0 and modern web technologies, resulted in a
+robust, responsive, and secure application. Testing confirmed that the system meets all functional
+requirements for trade management, analytics visualization, and subscription handling. In
+conclusion, the project provides a scalable, sustainable platform that professionalizes forex
+trading in Ethiopia and empowers the local trading community with data-driven decision-making
+tools.
+
+5.2 Recommendation
+Based on the project findings and future potential, the following recommendations are aimed at
+future developers, stakeholders, and the trading community:
+
+   1. Mobile Application Development: It is recommended to develop a native mobile
+      application (iOS/Android) in the next phase. While the web platform is responsive, a
+      native app would enable push notifications for real-time trade alerts and offline
+      journaling capabilities, significantly enhancing user engagement.
+
+   2. Automated Broker Synchronization: Future iterations should prioritize integrating
+      APIs from major trading platforms (MetaTrader 4/5, cTrader). Automating data import
+      would eliminate manual entry errors entirely and provide real-time account monitoring,
+      further reducing the friction for user adoption.
+
+   3. Advanced Social Trading Features: Expanding the marketplace into a full "Copy
+      Trading" ecosystem is recommended. Allowing subscribers to automatically replicate
+      analyst trades would significantly increase platform value. This requires navigating
+      complex regulatory frameworks and advanced low-latency infrastructure.
+
+
+                                               79
+REFERENCES
+      [1] M. Douglas, *Trading in the Zone*, Penguin, 2000.
+
+      [2] V. K. Tharp, *Trade Your Way to Financial Freedom*, 2nd ed., McGraw-Hill, 2010.
+
+      [3] G. Booch, J. Rumbaugh, and I. Jacobson, *The Unified Modeling Language User Guide*, 2nd
+      ed., Addison-Wesley, 2005.
+
+      [4] Myfxbook, “Automated Analytical Tool for Forex Trading Accounts,” 2023. [Online]. Available:
+      https://www.myfxbook.com
+
+      [5] Trademetria, “Trading Journal & Performance Tracking,” 2023. [Online]. Available:
+      https://www.trademetria.com
+
+      [6]    Google,    “Google    Sheets    for    Business,”            2023.     [Online].    Available:
+      https://workspace.google.com/products/sheets/
+
+      [7] BabyPips, “How to Keep a Trading Journal,” 2022.                           [Online].   Available:
+      https://www.babypips.com/learn/forex/how-to-keep-a-trading-journal
+
+      [8] Notion, “Your Connected Workspace for Docs, Projects, and Knowledge,” 2023. [Online].
+      Available: https://www.notion.so
+
+      [9] Laravel, “The PHP Framework for Web Artisans: Documentation,” 2024. [Online]. Available:
+      https://laravel.com/docs
+
+      [10] R. Elmasri and S. B. Navathe, *Fundamentals of Database Systems*, 7th ed., Pearson, 2016.
+
+      [11] OWASP Foundation, “Top 10                 Security   Risks,”     2023.    [Online].   Available:
+      https://owasp.org/www-project-top-ten/
+
+      [12] I. Sommerville, *Software Engineering*, 10th ed., Pearson, 2015
+
+
+
+
+                                                80
+                                Appendix
+User Interview Questionnaire
+Part I: General Background
+
+1.    What is your level of experience in Forex or financial trading?
+
+2.    How long have you been actively trading in the financial markets?
+
+3.    Which markets do you primarily trade (Forex, stocks, crypto, commodities, etc.)?
+
+4.    Do you trade using a demo account, real account, or funded/prop firm account?
+
+Part II: Current Trading Practices
+
+5.    Do you currently keep a trading journal? If yes, how do you maintain it?
+
+6.    What tools or platforms do you use to analyze your trades?
+
+7.    How often do you review your past trades and performance?
+
+8.    What challenges do you face when tracking or reviewing your trading history?
+
+Part III: Performance Analysis
+
+9.    Which performance metrics are most important to you (win rate, drawdown, R:R, etc.)?
+
+10.   Do you find it difficult to identify patterns or mistakes in your trading behavior?
+
+11.   How important is psychological discipline in your trading performance?
+
+12.   What type of feedback would help you improve your trading performance?
+
+Part IV: Analyst Support
+
+13.   Have you ever worked with a trading mentor or performance analyst?
+
+14.   What value do you expect from an analyst reviewing your trades?
+
+15.   Would you be willing to pay for structured feedback from an experienced analyst?
+
+16.   How frequently would you like to receive feedback on your trades?
+
+Part V: System Features
+
+17.   What features do you expect from an ideal trading journal system?
+
+18.   How important is data visualization (charts and statistics) for performance analysis?
+
+                                               81
+19.   Would you prefer manual trade entry, CSV import, or both?
+
+20.   How important is privacy and data security for your trading data?
+
+Part VI: Motivation & Engagement
+
+21.   Would achievements or progress tracking motivate you to journal consistently?
+
+22.   What would encourage you to use a trading journal system daily?
+
+Part VII: Final Feedback
+
+23.   What problems do you expect this system to solve for you?
+
+24.   Are there any additional features you would like to suggest?
+
+Part VIII: Analyst-Specific Questions (To be answered only by participants with
+experience in analyzing trader performance)
+
+25.   What is your experience in analyzing trader performance?
+
+26.   Which indicators or behaviors do you focus on when reviewing trades?
+
+27.   How do you currently provide feedback to traders?
+
+28.   What tools would help you deliver more effective and structured feedback?
+
+
+
+
+                                              82
+

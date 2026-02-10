@@ -224,10 +224,10 @@
 </div>
 
 <!-- Reject Modal -->
-<dialog id="rejectModal" class="bg-transparent p-0 w-full max-w-md backdrop:bg-gray-900/80">
-    <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-2xl p-6">
+<dialog id="rejectModal" class="p-0 w-full max-w-md rounded-xl backdrop:bg-black/80">
+    <div class="bg-gray-800 rounded-xl shadow-2xl p-6 border-2 border-gray-600">
         <h3 class="text-xl font-bold text-white mb-4">Reject Application</h3>
-        <p class="text-gray-400 mb-6">
+        <p class="text-gray-300 mb-6">
             Please provide a reason for rejecting this application. This will be emailed to the applicant.
         </p>
         
@@ -235,12 +235,12 @@
             @csrf
             
             <div class="mb-6">
-                <label for="rejection_reason" class="block text-sm font-medium text-gray-400 mb-2">Reason for Rejection</label>
+                <label for="rejection_reason" class="block text-sm font-medium text-gray-200 mb-2">Reason for Rejection</label>
                 <textarea 
                     name="rejection_reason" 
                     id="rejection_reason" 
                     rows="4" 
-                    class="w-full bg-gray-900 border border-gray-700 rounded-lg text-white p-3 focus:outline-none focus:border-red-500"
+                    class="w-full bg-slate-900 border-2 border-blue-600 rounded-lg text-white p-3 focus:outline-none focus:border-blue-400 placeholder:text-slate-400"
                     placeholder="e.g. Insufficient experience, invalid credentials..."
                     required
                     minlength="10"
@@ -248,10 +248,10 @@
             </div>
             
             <div class="flex justify-end gap-3">
-                <button type="button" onclick="document.getElementById('rejectModal').close()" class="px-4 py-2 text-gray-400 hover:text-white transition-colors">
+                <button type="button" onclick="document.getElementById('rejectModal').close()" class="px-6 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors border border-gray-600">
                     Cancel
                 </button>
-                <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors">
+                <button type="submit" class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors shadow-lg">
                     Confirm Rejection
                 </button>
             </div>

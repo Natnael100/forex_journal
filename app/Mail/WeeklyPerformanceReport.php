@@ -10,17 +10,21 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class AnalystApprovedMail extends Mailable
+class WeeklyPerformanceReport extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
+
+    public $user;
+    public $stats;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(
-        public User $user,
-        public ?string $token = null
-    ) {}
+    public function __construct(User $user, array $stats)
+    {
+        $this->user = $user;
+        $this->stats = $stats;
+    }
 
     /**
      * Get the message envelope.
@@ -28,7 +32,7 @@ class AnalystApprovedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Welcome to pipJournal - You are Approved!',
+            subject: 'Your Weekly Trading Performance Report 📈',
         );
     }
 
@@ -38,7 +42,7 @@ class AnalystApprovedMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.analyst-application.approved',
+            view: 'emails.weekly-performance',
         );
     }
 

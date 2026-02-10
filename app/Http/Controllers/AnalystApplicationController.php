@@ -14,6 +14,21 @@ class AnalystApplicationController extends Controller
      */
     public function create()
     {
+        $user = auth()->user();
+        // If user is logged in, we can pass their data to pre-fill
+        // The view handles request('name') but let's be explicit or let the view handle auth() check if desired.
+        // Actually, the view uses old('name', request('name')). 
+        // Let's rely on view accessing auth() or passing it. 
+        // Better:
+        if ($user) {
+            request()->merge([
+                'name' => $user->name,
+                'email' => $user->email,
+                'country' => $user->country,
+                'timezone' => $user->timezone,
+            ]);
+        }
+        
         return view('analyst-application.create');
     }
 
@@ -25,7 +40,21 @@ class AnalystApplicationController extends Controller
         $validated = $request->validate([
             // Personal Information
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:analyst_applications,email|unique:users,email',
+            'email' => [
+                'required',
+                'email',
+                'unique:analyst_applications,email',
+                // Only check unique in users if NOT logged in OR if logged in user has different email
+                function ($attribute, $value, $fail) {
+                    $user = auth()->user();
+                    if (!$user || $user->email !== $value) {
+                        // Check if email exists for OTHER users
+                        if (\App\Models\User::where('email', $value)->exists()) {
+                            $fail('The email has already been taken.');
+                        }
+                    }
+                },
+            ],
             'country' => 'nullable|string|max:100',
             'timezone' => 'nullable|string',
             'phone' => 'nullable|string|max:50',
@@ -70,6 +99,15 @@ class AnalystApplicationController extends Controller
 
         // Create application
         $application = AnalystApplication::create($validated);
+
+        // Link to user if logged in (or find by email)
+        $user = auth()->user() ?? \App\Models\User::where('email', $application->email)->first();
+        
+        if ($user) {
+            $user->application_id = $application->id;
+            $user->analyst_verification_status = 'pending';
+            $user->save();
+        }
 
         // Send confirmation email
         try {

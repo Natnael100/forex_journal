@@ -73,7 +73,34 @@ class DisputeController extends Controller
                 $dispute->subscription->update(['status' => 'cancelled', 'cancelled_at' => now(), 'cancelled_by' => 'admin']);
             }
             
-            // Notification would go here
+        // Notify Trader (Email + DB)
+        $trader = $dispute->trader;
+        if ($trader) {
+            \App\Models\Notification::create([
+                'user_id' => $trader->id,
+                'type' => 'dispute_resolved',
+                'title' => 'Dispute Resolved',
+                'message' => "Your dispute #{$dispute->id} has been resolved: " . ucfirst($request->resolution),
+                'data' => json_encode(['dispute_id' => $dispute->id]),
+            ]);
+
+            try {
+                \Illuminate\Support\Facades\Mail::to($trader->email)->send(new \App\Mail\DisputeResolvedMail($dispute));
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to send dispute resolved email: ' . $e->getMessage());
+            }
+        }
+
+        // Notify Analyst (DB Only)
+        $analyst = $dispute->analyst;
+        if ($analyst) {
+             \App\Models\Notification::create([
+                'user_id' => $analyst->id,
+                'type' => 'dispute_resolved',
+                'title' => 'Dispute Resolved',
+                'message' => "Dispute #{$dispute->id} has been resolved by admin.",
+                'data' => json_encode(['dispute_id' => $dispute->id]),
+            ]);
         }
 
         return redirect()->route('admin.disputes.show', $dispute->id)
