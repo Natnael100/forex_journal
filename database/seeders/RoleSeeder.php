@@ -18,9 +18,9 @@ class RoleSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Create roles
-        $adminRole = Role::create(['name' => UserRole::ADMIN->value]);
-        $traderRole = Role::create(['name' => UserRole::TRADER->value]);
-        $analystRole = Role::create(['name' => UserRole::ANALYST->value]);
+        $adminRole = Role::firstOrCreate(['name' => UserRole::ADMIN->value]);
+        $traderRole = Role::firstOrCreate(['name' => UserRole::TRADER->value]);
+        $analystRole = Role::firstOrCreate(['name' => UserRole::ANALYST->value]);
 
         // Create permissions for different modules
         $permissions = [
@@ -52,11 +52,11 @@ class RoleSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Assign permissions to Admin (all permissions)
-        $adminRole->givePermissionTo(Permission::all());
+        $adminRole->syncPermissions(Permission::all());
 
         // Assign permissions to Trader
         $traderRole->givePermissionTo([

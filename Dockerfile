@@ -50,4 +50,4 @@ RUN mkdir -p /var/data && chown -R www-data:www-data /var/data
 
 EXPOSE 80
 
-CMD php artisan migrate --force && apache2-foreground
+CMD php artisan migrate --force --seed && apache2-foreground
